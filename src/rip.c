@@ -276,7 +276,7 @@ register char monst;
 	raise_curtain();
 	move(LINES-1, 0);
 	score(purse, 0, monst);
-#else DEMO
+#else //DEMO
 	demo(0);
 	killer = killname(monst, TRUE);
 
