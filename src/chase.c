@@ -404,7 +404,7 @@ find_dest(tp)
 register THING *tp;
 {
 	register THING *obj;
-	register register int prob;
+	register int prob;
 	register struct room *rp;
 
 	if ((prob =	monsters[tp->t_type - 'A'].m_carry) <= 0 || tp->t_room == proom

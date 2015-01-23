@@ -176,7 +176,7 @@ vert(rp, startx)
 register struct room *rp;
 register int startx;
 {
-	register register int y;
+	register int y;
 
 	for (y = rp->r_pos.y + 1; y <= rp->r_max.y + rp->r_pos.y - 1; y++)
 		chat(y, startx) = VWALL;
