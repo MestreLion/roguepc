@@ -1,0 +1,4 @@
+.*
+!.gitignore
+src/*.o
+src/rogue
