@@ -78,7 +78,7 @@ flush_type()
 	regs->ax = 0xc06;		/* clear keyboard input */
 	regs->dx = 0xff;		/* set input flag */
 	swint(SW_DOS, regs);
-#endif CRASH_MACHINE
+#endif //CRASH_MACHINE
 	typeahead = "";
 }
 

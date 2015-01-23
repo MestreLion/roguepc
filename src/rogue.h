@@ -18,7 +18,7 @@
 #define P_DAMAGE 6
 #else
 #define P_DAMAGE 1
-#endif PROTECTED
+#endif //PROTECTED
 
 /*
  * if DEBUG or WIZARD is changed

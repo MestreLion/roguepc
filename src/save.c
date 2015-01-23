@@ -131,7 +131,7 @@ save_ds(savename)
 				return 1;
 		}
 }
-#endif DEMO
+#endif //DEMO
 /*
  *	Restore:
  *		Open saved data file, read in header, and determine how much
@@ -230,5 +230,5 @@ rok:
 	ifterse1("%s, Welcome back!","Hello %s, Welcome back to the Dungeons of Doom!",whoami);
 	dnum = srand();     /* make it a little tougher on cheaters */
 	unlink(save_name);
-#endif DEMO
+#endif //DEMO
 }

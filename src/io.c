@@ -546,7 +546,7 @@ str_attr(str)
 	standend();
 	}
 
-#endif LUXURY
+#endif //LUXURY
 }
 
 /*
@@ -565,7 +565,7 @@ SIG2()
 	char wbuf[10];
 #ifdef DEMO
 	static tot_time = 0;
-#endif DEMO
+#endif //DEMO
 
 	if (tick < ntick)
 		return;
@@ -690,7 +690,7 @@ SIG2()
 		 */
 		if (((tot_time++ - max_level) > DEMOTIME) || max_level > 10)
 			demo(DEMOTIME);
-#endif DEMO
+#endif //DEMO
 		/* work around the compiler buggie boos */
 		spare = littlehand % 10;
 		move(24,tspot);

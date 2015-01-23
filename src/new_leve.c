@@ -265,7 +265,7 @@ treas_room()
 #ifdef TEST
 			if (bailout && me())
 				msg("treasure rm bailout");
-#endif TEST
+#endif //TEST
 			tp->t_flags |= ISMEAN;	/* no sloughers in THIS room */
 			give_pack(tp);
 		}

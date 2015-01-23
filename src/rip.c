@@ -87,8 +87,8 @@ char monst;
 		}
 	}
 	pr_scores(rank,&top_ten);
-#endif WIZARD
-#endif DEMO
+#endif //WIZARD
+#endif //DEMO
 }
 
 #ifndef DEMO
@@ -219,8 +219,8 @@ add_scores(newscore,oldlist)
    *insert = *newscore;
    return retcode;
 }
-#endif WIZARD
-#endif DEMO
+#endif //WIZARD
+#endif //DEMO
 
 /*
  * death:
@@ -288,7 +288,7 @@ register char monst;
 	else
 		center(6, buf);
 	move(LINES-2,0);
-#endif DEMO
+#endif //DEMO
 	wclose(0);
 	exit();
 }
@@ -331,7 +331,7 @@ total_winner()
 	printw("You journey home and sell all your\n");
 	printw("loot at a great profit and are\n");
 	printw("admitted to the fighters guild.\n\n\n");
-#endif MINROG
+#endif //MINROG
 	mvaddstr(LINES - 1, 0, "--Press space to continue--");
 	wait_for(' ');
 	clear();
@@ -417,7 +417,7 @@ total_winner()
 	move(c - 'a' + 1, 0);
 	printw("   %5u  Gold Pieces          ", oldpurse);
 	score(purse, 2);
-#endif DEMO
+#endif //DEMO
 	exit(0);
 }
 
@@ -535,4 +535,4 @@ demo(endtype)
 	wclose(0);
 	exit(0);
 }
-#endif DEMO
+#endif //DEMO

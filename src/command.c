@@ -138,7 +138,7 @@ get_prefix()
 	case 't': case '.':
 #ifdef WIZARD
 	case CTRL(D): case 'C':
-#endif WIZARD
+#endif //WIZARD
 		break;
 	default:
 		count = 0;

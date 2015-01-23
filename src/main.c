@@ -93,7 +93,7 @@ char **argv;
 					log_read = -1;
 					dnum = 100;
 					break;
-#endif LOGFILE
+#endif //LOGFILE
 			}
 		}
 		else if (savfile == 0)
@@ -259,7 +259,7 @@ quit()
 		move(oy, ox);
 		mpos = 0;
 		count = 0;
-#endif DEMO
+#endif //DEMO
 	}
 	qstate = FALSE;
 }

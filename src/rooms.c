@@ -51,7 +51,7 @@ do_rooms()
 		if (rm > 2 && ((level > 10 && rnd(20) < level - 9) || istest()))
 #else  TEST
 		if (rm > 2 && level > 10 && rnd(20) < level - 9)
-#endif TEST
+#endif //TEST
 			rp->r_flags |= ISMAZE;
 	}
 	/*
@@ -223,7 +223,7 @@ register coord *cp;
 	if (bailout || (rp->r_flags & ISGONE && (rp->r_flags & ISMAZE) == 0)) {
 #ifdef DEBUG
 		msg("in a gone room");
-#endif DEBUG
+#endif //DEBUG
 		return;
 	}
 	door_open(rp);

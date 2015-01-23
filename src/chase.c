@@ -228,7 +228,7 @@ register coord *runner;
 #ifdef DEBUG
 	else
 		debug("start_run: moat == NULL ???");
-#endif DEBUG
+#endif //DEBUG
 }
 
 /*
@@ -354,7 +354,7 @@ register coord *cp;
 	return	&passages[*fp &	F_PNUM];
 #ifdef DEBUG
 	debug("in some bizarre place (%d, %d)", unc(*cp));
-#endif DEBUG
+#endif //DEBUG
 	bailout++;
 	return NULL;
 }

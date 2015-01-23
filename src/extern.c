@@ -9,10 +9,10 @@
 
 #ifdef LOG
 int captains_log = FALSE;
-#endif LOG
+#endif //LOG
 #ifdef SDEBUG
 int is_com;
-#endif SDEBUG
+#endif //SDEBUG
 /*
  * revno: current revision level
  * verno: current version of a particular rev
@@ -98,7 +98,7 @@ struct magic_item p_magic[MAXPOTIONS] = {
 	{ "advertisement",           6, 130 },
 #else
 	{ "monster detection",	 6, 130 },
-#endif DEMO
+#endif //DEMO
 	{ "magic detection",	 6, 105 },
 	{ "raise level",		 2, 250 },
 	{ "extra healing",		 5, 200 },
@@ -241,7 +241,7 @@ char *helpobjs[MAXHELPO] = {
 	"A-Z: 26 different monsters",
 	0
 };
-#endif HELP
+#endif //HELP
 /*
  * Names of the various experience levels
  */

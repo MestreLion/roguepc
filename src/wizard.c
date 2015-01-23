@@ -190,7 +190,7 @@ teleport()
 #ifdef WIZARD
 	if (!wizard)
 	{
-#endif WIZARD
+#endif //WIZARD
 	if (on(player, ISHUH))
 		lengthen(unconfuse, rnd(4)+2);
 	else
@@ -198,7 +198,7 @@ teleport()
 	player.t_flags |= ISHUH;
 #ifdef WIZARD
 	}
-#endif WIZARD
+#endif //WIZARD
 	return rm;
 }
 

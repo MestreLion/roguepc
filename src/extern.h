@@ -95,4 +95,4 @@ int	auto_save(), doctor(), endit(), leave(), nohaste(), quit(),
 
 #ifdef LOG
 extern int captains_log;
-#endif LOG
+#endif //LOG

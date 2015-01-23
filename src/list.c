@@ -79,7 +79,7 @@ new_item()
 	else
 #else
 	if ((item = (THING *) talloc()) != NULL)
-#endif DEBUG
+#endif //DEBUG
 			 item->l_next = item->l_prev = NULL;
 	return item;
 }

@@ -631,7 +631,7 @@ help(helpscr)
 		hcount++;
    }
    wrestor();
-#endif HELP
+#endif //HELP
 }
 
 #ifndef UNIX
@@ -657,7 +657,7 @@ INDEX(y,x)
 #ifdef DEBUG
 	if (offmap(y,x) && me())
 		fatal("BAD INDEX");
-#endif DEBUG
+#endif //DEBUG
 	return((x * (maxrow-1)) + y - 1);
 }
 
@@ -833,7 +833,7 @@ me()
 {
 	return is_me;
 }
-#endif ME
+#endif //ME
 
 
 #ifdef TEST
@@ -841,4 +841,4 @@ istest()
 {
 	return (!strcmp("debug",fruit));
 }
-#endif TEST
+#endif //TEST
