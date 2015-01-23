@@ -1,0 +1,93 @@
+#!/bin/bash -e
+#
+# Import Rogue sources to src/ dir, preparing them for initial git commit
+#
+#    Copyright (C) 2015 Rodrigo Silva (MestreLion) <linux@rodrigosilva.com>
+#
+#    This program is free software: you can redistribute it and/or modify
+#    it under the terms of the GNU General Public License as published by
+#    the Free Software Foundation, either version 3 of the License, or
+#    (at your option) any later version.
+#
+#    This program is distributed in the hope that it will be useful,
+#    but WITHOUT ANY WARRANTY; without even the implied warranty of
+#    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#    GNU General Public License for more details.
+#
+#    You should have received a copy of the GNU General Public License
+#    along with this program. See <http://www.gnu.org/licenses/gpl.html>
+
+sourcedir=$1
+
+myname=$(basename "$0")
+mydir=$(dirname "$(readlink -f "$0")")
+
+targetdir=$mydir/src
+
+usage(){
+	cat <<-USAGE
+	Usage: $myname SOURCE_DIR
+
+	Copy original sources from SOURCE_DIR to target dir $targetdir
+	(deleting target dir first, so beware!) and perform the following:
+	- Remove executable bit (if any)
+	- Lowercase all file names (MAKEFILE is renamed Makefile)
+	- Remove 0x1A (^Z) char (usually as last char in file)
+	- Change newline from Windows/DOS (CRLF) to Unix (LF)
+	- Remove blank lines from end of file
+	- Fix indentations using tabs
+	USAGE
+	exit
+}
+if ! [[ -d "$sourcedir" ]]; then usage; fi
+
+fatal() { [[ "$1" ]] && echo "$myname: error: $1" >&2 ; exit ${2:-1} ; }
+
+
+# emulate sed's --in-place for commands that lack it, such as unexpand
+inplace() {
+	local cmd=()
+	local outfile
+	local tmpfile
+
+	while (( $# )); do
+		case "$1" in
+		--) shift; break;;
+		*) cmd+=( "$1" );;
+		esac
+		shift
+	done
+
+	if ! (( $# && ${#cmd[@]} )); then
+		fatal "usage: inplace <command> [cmdargs...] -- FILE(s)..."
+	fi
+
+	for outfile; do
+		tmpfile=$(mktemp) || fatal
+		trap 'rm -f -- "$tmpfile"' EXIT
+
+		"${cmd[@]}" -- "$outfile" > "$tmpfile" && {
+		chmod --reference "$outfile" "$tmpfile" # GNU-only
+		mv "$tmpfile" -- "$outfile"; }
+	done
+}
+
+rm -rf "$targetdir"
+mkdir "$targetdir"
+cp "$sourcedir"/* "$targetdir"
+
+cd "$targetdir"
+
+chmod -x *
+rename 'y/A-Z/a-z/' *
+
+shopt -s nullglob
+files=(*.{asm,bat,c,h,opt} makefile? objs? tags?)
+
+sed -i 's/\x1A//'                 -- "${files[@]}"  # ^Z
+sed -i 's/\r//'                   -- "${files[@]}"  # CRLF to LF
+sed -i 's/[ \t]*$//'              -- "${files[@]}"  # trailing blanks
+sed -i ':a;/^\n*$/{$d;N;ba;}'     -- "${files[@]}"  # EOF blank lines
+inplace unexpand -t4 --first-only -- "${files[@]}"  # indentations
+
+mv {m,M}akefile
