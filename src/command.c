@@ -203,14 +203,14 @@ execcom()
 			else
 				after = FALSE;
 		when 'D': after = FALSE; discovered();
-		when CTRL(T):
+		when CTRL('T'):
 			after = FALSE;
 			msg((expert ^= 1)
 				? "Ok, I'll be brief"
 				: "Goodie, I can use big words again!");
 		when 'F': after = FALSE; do_macro(macro, MACROSZ);
-		when CTRL(F): after = FALSE; typeahead = macro;
-		when CTRL(R): after = FALSE; msg(huh);
+		when CTRL('F'): after = FALSE; typeahead = macro;
+		when CTRL('R'): after = FALSE; msg(huh);
 		when 'v':
 			after = FALSE;
 			if (strcmp(whoami,"The Grand Beeking") == 0)
@@ -232,7 +232,7 @@ execcom()
 						tr_name(flat(lookat.y, lookat.x) & F_TMASK));
 			}
 		when 'o': after = FALSE; msg("i don't have any options, oh my!");
-		when CTRL(L):
+		when CTRL('L'):
 			after = FALSE;
 			msg("the screen looks fine to me (jll was here)");
 #ifdef WIZARD

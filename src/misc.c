@@ -821,7 +821,7 @@ do_macro(buf,sz)
 	msg("F9 was %s, enter new macro: ",buf);
 	if (getinfo(prbuf,sz-1) != ESCAPE)
 		do {
-			if (*cp != CTRL(F))
+			if (*cp != CTRL('F'))
 				*buf++ = *cp;
 		} while (*cp++) ;
 	msg("");
