@@ -9,6 +9,9 @@
 #	To disbale stack overflow checking (thus getting a smidge more
 #	speed.  Don't load in csav.o
 #
+TARGET=rogue
+CFLAGS=-Wall
+
 OBJS=armor.o new_leve.o command.o mach_dep.o croot.o main.o rip.o save.o \
 	chase.o curses.o daemon.o daemons.o env.o extern.o fakedos.o fight.o \
 	init.o io.o list.o maze.o misc.o monsters.o move.o pack.o passages.o \
@@ -16,6 +19,13 @@ OBJS=armor.o new_leve.o command.o mach_dep.o croot.o main.o rip.o save.o \
 	weapons.o wizard.o dos.o begin.o fio.o csav.o slime.o sbrk.o load.o \
 	protect.o
 
-CFLAGS=-Wall
+all: default
 
-rogue: $(OBJS)
+default: $(TARGET)
+
+$(TARGET): $(OBJS)
+
+clean:
+	rm -f $(TARGET) *.o
+
+.PHONY: all default clean
