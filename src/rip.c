@@ -290,7 +290,7 @@ register char monst;
 	move(LINES-2,0);
 #endif //DEMO
 	wclose(0);
-	exit();
+	exit(0);
 }
 
 /*
