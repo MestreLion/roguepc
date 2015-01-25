@@ -15,9 +15,10 @@ CFLAGS=-Wall
 OBJS=armor.o new_leve.o command.o mach_dep.o croot.o main.o rip.o save.o \
 	chase.o curses.o daemon.o daemons.o env.o extern.o fakedos.o fight.o \
 	init.o io.o list.o maze.o misc.o monsters.o move.o pack.o passages.o \
-	potions.o rings.o rooms.o scrolls.o sticks.o strings.o zoom.o things.o \
-	weapons.o wizard.o dos.o begin.o fio.o csav.o slime.o sbrk.o load.o \
-	protect.o
+	potions.o rings.o rooms.o scrolls.o sticks.o strings.o things.o \
+	weapons.o wizard.o slime.o load.o protect.o
+
+ASMS=zoom.o dos.o begin.o fio.o sbrk.o csav.o
 
 all: default
 
