@@ -1,4 +1,9 @@
 
+// Get size_t and NULL
+#include <stddef.h>
+
+// From <string.h>
+size_t strlen(const char *s);
 
 extern char ctp_[];
 
