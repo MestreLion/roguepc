@@ -84,9 +84,9 @@ extern int cksum;
 THING *moat();
 
 char	*brk(), *charge_str(), *ctime(), *getenv(), *inv_name(),
-	*killname(), *malloc(), *nothing(), *num(), *ring_num(),
+	*killname(), *nothing(), *num(), *ring_num(),
 	*sbrk(), *strcat(), *strcpy(), *tr_name(),
-	*unctrl(), *vowelstr(), *calloc();
+	*unctrl(), *vowelstr();
 
 int	auto_save(), doctor(), endit(), leave(), nohaste(), quit(),
 	rollwand(), runners(), sight(), stomach(), swander(), tstp(),
