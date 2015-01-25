@@ -196,14 +196,14 @@ char *savefile;
 		addstr(errbuf);
 	}
 	close(fd);
-	exit(0);
+	exit(EXIT_FAILURE);
 
 rok:
 	regs = oregs;
 	if (revno != oldrev || verno != oldver)
 	{
 		close(fd);
-		exit(0);
+		exit(EXIT_FAILURE);
 	}
 
 	oldcols = COLS;

@@ -290,7 +290,7 @@ register char monst;
 	move(LINES-2,0);
 #endif //DEMO
 	wclose(0);
-	exit(0);
+	exit(EXIT_SUCCESS);
 }
 
 /*
@@ -418,7 +418,7 @@ total_winner()
 	printw("   %5u  Gold Pieces          ", oldpurse);
 	score(purse, 2);
 #endif //DEMO
-	exit(0);
+	exit(EXIT_SUCCESS);
 }
 
 /*
@@ -533,6 +533,6 @@ demo(endtype)
 		return;
 	move(LINES-2,0);
 	wclose(0);
-	exit(0);
+	exit(EXIT_SUCCESS);
 }
 #endif //DEMO

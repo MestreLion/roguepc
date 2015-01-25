@@ -101,6 +101,12 @@ int	sprintf(char *str, const char *format, ...);
 // From <string.h>
 size_t	strlen(const char *s);
 
+// From <stdlib.h>
+#define	EXIT_FAILURE	1	/* Failing exit status.  */
+#define	EXIT_SUCCESS	0	/* Successful exit status.  */
+void	exit(int status);
+
+
 #ifdef LOG
 extern int captains_log;
 #endif //LOG
