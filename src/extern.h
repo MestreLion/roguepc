@@ -85,12 +85,15 @@ THING *moat();
 
 char	*brk(), *charge_str(), *ctime(), *getenv(), *inv_name(),
 	*killname(), *malloc(), *nothing(), *num(), *ring_num(),
-	*sbrk(), *sprintf(), *strcat(), *strcpy(), *tr_name(),
+	*sbrk(), *strcat(), *strcpy(), *tr_name(),
 	*unctrl(), *vowelstr(), *calloc();
 
 int	auto_save(), doctor(), endit(), leave(), nohaste(), quit(),
 	rollwand(), runners(), sight(), stomach(), swander(), tstp(),
 	turn_see(), unconfuse(), unsee();
+
+// From <stdio.h>
+int	sprintf(char *str, const char *format, ...);
 
 
 #ifdef LOG
