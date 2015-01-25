@@ -11,6 +11,8 @@
  *  The two basic functions here will be "save" and "restor".
  */
 
+#include <errno.h>
+
 #include "rogue.h"
 #include "curses.h"
 
@@ -18,7 +20,6 @@
  * we need to know location of screen being saved
  */
 extern char *savewin;
-extern int errno;
 extern char _lowmem;			/* Adresss of first save-able memory */
 extern char _Uend;				/* Address of end of user data space */
 extern char do_force;
