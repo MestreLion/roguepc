@@ -38,7 +38,7 @@ new_level()
 	/*
 	 * Clean things off from last level
 	 */
-	wsetmem(_level, ((MAXLINES-3)*MAXCOLS) >> 1,'  ');
+	setmem(_level, ((MAXLINES-3)*MAXCOLS),' ');
 	setmem(_flags, (MAXLINES-3)*MAXCOLS, F_REAL);
 	/*
 	 * Free up the monsters on the last level
