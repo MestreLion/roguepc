@@ -99,7 +99,7 @@ int	auto_save(), doctor(), endit(), leave(), nohaste(), quit(),
 int	sprintf(char *str, const char *format, ...);
 
 // From <string.h>
-size_t strlen(const char *s);
+size_t	strlen(const char *s);
 
 #ifdef LOG
 extern int captains_log;

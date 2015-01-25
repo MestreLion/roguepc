@@ -2,6 +2,9 @@
  * Modified from the MANX croot to fit the rogue requirements
  */
 
+extern void _exit(int status);  // From <stdlib.h> and begin.asm
+void exit(int code);            // implemented at end of file
+
 static char **Argv;
 static int Argc;
 
@@ -45,7 +48,7 @@ register char *cp;
 	exit(0);
 }
 
-exit(code)
+void exit(code)
 {
 	(*cls_)();
 #ifdef SDEBUG
