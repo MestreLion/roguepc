@@ -92,6 +92,9 @@ int	auto_save(), doctor(), endit(), leave(), nohaste(), quit(),
 	rollwand(), runners(), sight(), stomach(), swander(), tstp(),
 	turn_see(), unconfuse(), unsee();
 
+// Get size_t and NULL
+#include <stddef.h>
+
 // From <stdio.h>
 int	sprintf(char *str, const char *format, ...);
 

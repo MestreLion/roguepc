@@ -3,7 +3,6 @@
  */
 
 #define abs(x) ((x)<0?-(x):(x))
-#define NULL	0
 #define TRUE 	1
 #define	FALSE	0
 
