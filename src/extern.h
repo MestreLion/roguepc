@@ -106,6 +106,9 @@ size_t	strlen(const char *s);
 #define	EXIT_SUCCESS	0	/* Successful exit status.  */
 void	exit(int status);
 
+// From <strings.h>
+char	*index(const char *s, int c);
+
 
 #ifdef LOG
 extern int captains_log;

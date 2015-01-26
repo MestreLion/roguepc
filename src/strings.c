@@ -5,6 +5,9 @@
 // From <string.h>
 size_t strlen(const char *s);
 
+// From <strings.h>
+char	*index(const char *s, int c);
+
 extern char ctp_[];
 
 isalpha(x) {	return  x > 128 ? 0 : (ctp_[(x)+1]&0x03); }
