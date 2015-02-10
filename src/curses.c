@@ -369,6 +369,7 @@ winit(drive)
 		 */
 		case 1:
 			at_table = color_attr;
+			/* no break */
 		case 0:
 			COLS = 40;
 			break;
@@ -378,6 +379,7 @@ winit(drive)
 		 */
 		case 3:
 			at_table = color_attr;
+			/* no break */
 		case 2:
 			break;
 		case 7:
@@ -396,6 +398,7 @@ winit(drive)
 		default:
 			move(24,0);
 			fatal("Unknown screen type (%d)",regs->ax);
+			break;
 	}
 	/*
 	 * Read current cursor position

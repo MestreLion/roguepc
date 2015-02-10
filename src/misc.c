@@ -184,6 +184,7 @@ bool wakeup;
 				when 'b':
 					if ((y - x) - diffhero <= -1)
 						continue;
+					break;
 				}
 				switch (ch) {
 				case DOOR:
@@ -541,6 +542,7 @@ register THING *obj;
 		case S_CREATE:
 		case S_AGGR:
 			ch = BMAGIC;
+			break;
 		}
 	when POTION:
 		switch (obj->o_which) {
@@ -549,12 +551,14 @@ register THING *obj;
 		case P_POISON:
 		case P_BLIND:
 			ch = BMAGIC;
+			break;
 		}
 	when STICK:
 		switch (obj->o_which) {
 		when WS_HASTE_M:
 		case WS_TELTO:
 			ch = BMAGIC;
+			break;
 		}
 	when RING:
 		switch (obj->o_which) {
@@ -567,7 +571,9 @@ register THING *obj;
 		when R_AGGR:
 		case R_TELEPORT:
 			ch = BMAGIC;
+			break;
 		}
+		break;
 	}
 	return ch;
 }

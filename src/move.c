@@ -181,7 +181,8 @@ move_stuff:
 				enter_room(&nh);
 			bcopy(hero,nh);
 		}
-	}
+	break;
+}
 }
 
 /*
@@ -275,6 +276,7 @@ register coord *tc;
 			msg("a dart just hit you in the shoulder");
 		} else
 			msg("a dart whizzes by your ear and vanishes");
+		break;
 	}
 	flush_type();
 	return tr;

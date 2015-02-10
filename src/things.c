@@ -133,6 +133,7 @@ bool drop;
 		debug("Picked up someting bizzare %s", unctrl(obj->o_type));
 		sprintf(pb, "Something bizarre %c(%d)", obj->o_type, obj->o_type);
 #endif
+		break;
 	}
 	if (obj == cur_armor)
 		strcat(pb, " (being worn)");
@@ -340,6 +341,7 @@ new_thing()
 		when R_AGGR:
 		case R_TELEPORT:
 			cur->o_flags |= ISCURSED;
+			break;
 		}
 	when 6:
 		cur->o_type = STICK;
@@ -350,6 +352,7 @@ new_thing()
 		debug("Picked a bad kind of object");
 		wait_for(' ');
 #endif
+		break;
 	}
 	return cur;
 }

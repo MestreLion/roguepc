@@ -51,20 +51,21 @@ char monst;
 		if (noscore || (amount == 0))
 			return;
 		str_attr("No scorefile: %Create %Retry %Abort");
-		reread:
+reread:
 		switch(response = readchar())
 		{
-			case 'c':
-			case 'C':
-				close(creat(s_score, 0666));
+		case 'c':
+		case 'C':
+			close(creat(s_score, 0666));
+			break;
 		case 'r':
 		case 'R':
-		break;
+			break;
 		case 'a':
 		case 'A':
-		return;
+			return;
 		default:
-		goto reread;
+			goto reread;
 	}
 	}
 	printw("\n");
@@ -180,6 +181,7 @@ pr_scores(newrank,top10)
 					break;
 				default:
 					strcpy(dthstr," wierded out");
+					break;
 		}
 	if ((strlen(top10->sc_name) + 10 +
 		strlen(he_man[top10->sc_rank-1])) < COLS)

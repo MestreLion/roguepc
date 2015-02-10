@@ -61,6 +61,7 @@ scr_load()
 	case 2:
 	case 5:
 		burst = 1;
+		/* no break */
 	case 0:
 	case 3:
 		palette = 1;

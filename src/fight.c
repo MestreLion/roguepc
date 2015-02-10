@@ -450,6 +450,7 @@ register char *er, *ee;
 	 when 1: s = " hit ";
 	 when 2: s = (er == 0 ? " have injured " : " has injured ");
 	 when 3: s = (er == 0 ? " swing and hit " : " swings and hits ");
+	 break;
 	}
 	msg("%s%s",s,prname(ee, FALSE));
 }
@@ -471,6 +472,7 @@ register char *er, *ee;
 	when 1: s = (er == 0 ? " miss" : " misses");
 	when 2: s = (er == 0 ? " barely miss" : " barely misses");
 	when 3: s = (er == 0 ? " don't hit" : " doesn't hit");
+	break;
 	}
 	msg("%s %s",s,prname(ee, FALSE));
 }

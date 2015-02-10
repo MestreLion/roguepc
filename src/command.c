@@ -42,6 +42,7 @@ command()
 				when R_TELEPORT:
 					if (rnd(50) == 17)
 						teleport();
+					break;
 				}
 	}
 }
@@ -60,6 +61,7 @@ com_char()
 		when '\b': ch = 'h';
 		when '+': ch = 't';
 		when '-': ch = 'z';
+		break;
 	}
 	if (mpos && !running)
 		msg("");
@@ -132,6 +134,7 @@ get_prefix()
 			}
 			retch = toupper(retch);
 		}
+		/* no break */
 	case 'H': case 'J': case 'K': case 'L':
 	case 'Y': case 'U': case 'B': case 'N':
 	case 'q': case 'r': case 's': case 'z':
@@ -142,6 +145,7 @@ get_prefix()
 		break;
 	default:
 		count = 0;
+		break;
 	}
 	if (count || lastcount)
 		show_count();
