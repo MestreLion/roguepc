@@ -220,7 +220,7 @@ register coord *cp;
 	register THING *tp;
 
 	rp = proom = roomin(cp);
-	if (bailout || (rp->r_flags & ISGONE && (rp->r_flags & ISMAZE) == 0)) {
+	if (bailout || ((rp->r_flags & ISGONE) && (rp->r_flags & ISMAZE) == 0)) {
 #ifdef DEBUG
 		msg("in a gone room");
 #endif //DEBUG

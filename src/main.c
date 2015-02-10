@@ -288,5 +288,5 @@ fatal(msg,arg)
 {
 	endwin();
 	printw(msg, arg);
-	exit(EXIT_FAILURE);
+	exit(EXIT_SUCCESS);
 }

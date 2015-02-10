@@ -87,7 +87,7 @@ bool drop;
 		sprintf(pb, "%s", w_names[which]);
 		if (obj->o_count > 1)
 		strcat(pb, "s");
-		if (obj->o_enemy && obj->o_flags & ISREVEAL)
+		if (obj->o_enemy && (obj->o_flags & ISREVEAL))
 		{
 		strcat(pb, " of ");
 		strcat(pb, monsters[obj->o_enemy-'A'].m_name);
