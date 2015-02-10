@@ -288,7 +288,8 @@ register coord *cp;
 						break;
 					} else
 						moat(y, x)->t_oldch = '@';
-					addch(floor);
+				addch(floor);
+				break;
 			}
-			door_open(rp);
+	door_open(rp);
 }

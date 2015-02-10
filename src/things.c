@@ -116,7 +116,7 @@ bool drop;
 		else
 		sprintf(pb = &prbuf[2], "%s %s", ws_made[which],
 			ws_type[which]);
-		when RING:
+	when RING:
 		if (r_know[which])
 			chopmsg(pb, "A%s ring of %s", "A%s ring of %s(%s)", ring_num(obj),
 				r_magic[which].mi_name, r_stones[which]);

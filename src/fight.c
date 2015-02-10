@@ -659,7 +659,6 @@ bool pr;
 		player.t_flags &= ~ISHELD;
 		f_restor();
 	when 'L':
-	{
 		register THING *gold;
 
 		if ((gold = new_item()) == NULL)
@@ -669,7 +668,7 @@ bool pr;
 		if (save(VS_MAGIC))
 			gold->o_goldval += GOLDCALC + GOLDCALC + GOLDCALC + GOLDCALC;
 		attach(tp->t_pack, gold);
-	}
+		break;
 	}
 	/*
 	 * Get rid of the monster.

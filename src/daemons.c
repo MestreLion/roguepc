@@ -127,41 +127,41 @@ stomach()
 
 	if (food_left <= 0)
 	{
-	if (food_left-- < -STARVETIME)
-		death('s');
-	/*
-	 * the hero is fainting
-	 */
-	if (no_command || rnd(5) != 0)
-		return;
-	no_command += rnd(8) + 4;
-	player.t_flags &= ~ISRUN;
-	running = FALSE;
-	count = 0;
-	hungry_state = 3;
-	msg("%syou faint from lack of food",noterse("you feel very weak. "));
+		if (food_left-- < -STARVETIME)
+			death('s');
+		/*
+		 * the hero is fainting
+		 */
+		if (no_command || rnd(5) != 0)
+			return;
+		no_command += rnd(8) + 4;
+		player.t_flags &= ~ISRUN;
+		running = FALSE;
+		count = 0;
+		hungry_state = 3;
+		msg("%syou faint from lack of food",noterse("you feel very weak. "));
 	}
 	else
 	{
-	oldfood = food_left;
-	/*
-	 * If you are in 40 column mode use food twice as fast
-	 * (e.g. 3-(80/40) = 1, 3-(40/40) = 2 : pretty gross huh?)
-	 */
-	deltafood = ring_eat(LEFT) + ring_eat(RIGHT) + 1;
-	if (terse)
-		deltafood *= 2;
-	food_left -= deltafood;
+		oldfood = food_left;
+		/*
+		 * If you are in 40 column mode use food twice as fast
+		 * (e.g. 3-(80/40) = 1, 3-(40/40) = 2 : pretty gross huh?)
+		 */
+		deltafood = ring_eat(LEFT) + ring_eat(RIGHT) + 1;
+		if (terse)
+			deltafood *= 2;
+		food_left -= deltafood;
 
-	if (food_left < MORETIME && oldfood >= MORETIME)
-	{
-		hungry_state = 2;
-		msg("you are starting to feel weak");
-	}
-	else if (food_left < 2 * MORETIME && oldfood >= 2 * MORETIME)
-	{
-		hungry_state = 1;
-		msg("you are starting to get hungry");
-	}
+		if (food_left < MORETIME && oldfood >= MORETIME)
+		{
+			hungry_state = 2;
+			msg("you are starting to feel weak");
+		}
+		else if (food_left < 2 * MORETIME && oldfood >= 2 * MORETIME)
+		{
+			hungry_state = 1;
+			msg("you are starting to get hungry");
+		}
 	}
 }

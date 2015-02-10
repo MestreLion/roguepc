@@ -141,7 +141,7 @@ getrc(rp,cp)
 }
 
 real_rc(pn, rp,cp)
-	int *rp, *cp;
+	int pn, *rp, *cp;
 {
 	/*
 	 * pc bios: read current cursor position
