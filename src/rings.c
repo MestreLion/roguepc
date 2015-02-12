@@ -123,6 +123,7 @@ gethand()
 			return RIGHT;
 		msg("please type L or R");
 	}
+	return -1;
 }
 
 /*

@@ -8,7 +8,6 @@
 #include	"curses.h"
 #include	"extern.h"
 
-extern char *stccpy(), *stpchr();
 extern int scr_type;
 extern unsigned tick;
 
@@ -445,6 +444,7 @@ getinfo(str,size)
 				*str++ = ch;
 				if ((ch & 0x80) == 0)
 					break;
+				/* no break */
 			case '\n':
 			case '\r':
 				*str = 0;

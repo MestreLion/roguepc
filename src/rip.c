@@ -344,71 +344,74 @@ total_winner()
 	switch (obj->o_type)
 	{
 		when FOOD:
-		worth = 2 * obj->o_count;
+			worth = 2 * obj->o_count;
 		when WEAPON:
-		switch (obj->o_which)
-		{
-			when MACE: worth = 8;
-			when SWORD: worth = 15;
-			when CROSSBOW: worth = 30;
-			when ARROW: worth = 1;
-			when DAGGER: worth = 2;
-			when TWOSWORD: worth = 75;
-			when DART: worth = 1;
-			when BOW: worth = 15;
-			when BOLT: worth = 1;
-			when SPEAR: worth = 5;
-		}
-		worth *= 3 * (obj->o_hplus + obj->o_dplus) + obj->o_count;
-		obj->o_flags |= ISKNOW;
+			switch (obj->o_which)
+			{
+				when MACE: worth = 8;
+				when SWORD: worth = 15;
+				when CROSSBOW: worth = 30;
+				when ARROW: worth = 1;
+				when DAGGER: worth = 2;
+				when TWOSWORD: worth = 75;
+				when DART: worth = 1;
+				when BOW: worth = 15;
+				when BOLT: worth = 1;
+				when SPEAR: worth = 5;
+				break;
+			}
+			worth *= 3 * (obj->o_hplus + obj->o_dplus) + obj->o_count;
+			obj->o_flags |= ISKNOW;
 		when ARMOR:
-		switch (obj->o_which)
-		{
-			when LEATHER: worth = 20;
-			when RING_MAIL: worth = 25;
-			when STUDDED_LEATHER: worth = 20;
-			when SCALE_MAIL: worth = 30;
-			when CHAIN_MAIL: worth = 75;
-			when SPLINT_MAIL: worth = 80;
-			when BANDED_MAIL: worth = 90;
-			when PLATE_MAIL: worth = 150;
-		}
-		worth += (9 - obj->o_ac) * 100;
-		worth += (10 * (a_class[obj->o_which] - obj->o_ac));
-		obj->o_flags |= ISKNOW;
+			switch (obj->o_which)
+			{
+				when LEATHER: worth = 20;
+				when RING_MAIL: worth = 25;
+				when STUDDED_LEATHER: worth = 20;
+				when SCALE_MAIL: worth = 30;
+				when CHAIN_MAIL: worth = 75;
+				when SPLINT_MAIL: worth = 80;
+				when BANDED_MAIL: worth = 90;
+				when PLATE_MAIL: worth = 150;
+				break;
+			}
+			worth += (9 - obj->o_ac) * 100;
+			worth += (10 * (a_class[obj->o_which] - obj->o_ac));
+			obj->o_flags |= ISKNOW;
 		when SCROLL:
-		worth = s_magic[obj->o_which].mi_worth;
-		worth *= obj->o_count;
-		if (!s_know[obj->o_which])
-			worth /= 2;
-		s_know[obj->o_which] = TRUE;
+			worth = s_magic[obj->o_which].mi_worth;
+			worth *= obj->o_count;
+			if (!s_know[obj->o_which])
+				worth /= 2;
+			s_know[obj->o_which] = TRUE;
 		when POTION:
-		worth = p_magic[obj->o_which].mi_worth;
-		worth *= obj->o_count;
-		if (!p_know[obj->o_which])
-			worth /= 2;
-		p_know[obj->o_which] = TRUE;
+			worth = p_magic[obj->o_which].mi_worth;
+			worth *= obj->o_count;
+			if (!p_know[obj->o_which])
+				worth /= 2;
+			p_know[obj->o_which] = TRUE;
 		when RING:
-		worth = r_magic[obj->o_which].mi_worth;
-		if (obj->o_which == R_ADDSTR || obj->o_which == R_ADDDAM ||
-			obj->o_which == R_PROTECT || obj->o_which == R_ADDHIT)
-			if (obj->o_ac > 0)
-				worth += obj->o_ac * 100;
-			else
-				worth = 10;
-		if (!(obj->o_flags & ISKNOW))
-			worth /= 2;
-		obj->o_flags |= ISKNOW;
-		r_know[obj->o_which] = TRUE;
+			worth = r_magic[obj->o_which].mi_worth;
+			if (obj->o_which == R_ADDSTR || obj->o_which == R_ADDDAM ||
+				obj->o_which == R_PROTECT || obj->o_which == R_ADDHIT)
+				if (obj->o_ac > 0)
+					worth += obj->o_ac * 100;
+				else
+					worth = 10;
+			if (!(obj->o_flags & ISKNOW))
+				worth /= 2;
+			obj->o_flags |= ISKNOW;
+			r_know[obj->o_which] = TRUE;
 		when STICK:
-		worth = ws_magic[obj->o_which].mi_worth;
-		worth += 20 * obj->o_charges;
-		if (!(obj->o_flags & ISKNOW))
-			worth /= 2;
-		obj->o_flags |= ISKNOW;
-		ws_know[obj->o_which] = TRUE;
-		when AMULET:
-		worth = 1000;
+			worth = ws_magic[obj->o_which].mi_worth;
+			worth += 20 * obj->o_charges;
+			if (!(obj->o_flags & ISKNOW))
+				worth /= 2;
+			obj->o_flags |= ISKNOW;
+			ws_know[obj->o_which] = TRUE;
+			when AMULET:
+			worth = 1000;
+			break;
 	}
 	if (worth < 0)
 		worth = 0;

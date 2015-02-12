@@ -137,6 +137,7 @@ setenv(envfile)
 	 */
 	lcase(s_menu);
 	lcase(s_screen);
+	return 0;
 }
 
 /*

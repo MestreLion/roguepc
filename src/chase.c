@@ -147,31 +147,32 @@ over:
 	oroom = th->t_room;
 	if (!ce(ch_ret, th->t_pos))
 	{
-	if ((th->t_room = roomin(&ch_ret)) == NULL) {
-		th->t_room	= oroom;
-		return;
-	}
-	if (oroom != th->t_room)
-		th->t_dest	= find_dest(th);
-	th->t_pos = ch_ret;
+		if ((th->t_room = roomin(&ch_ret)) == NULL) {
+			th->t_room	= oroom;
+			return;
+		}
+		if (oroom != th->t_room)
+			th->t_dest	= find_dest(th);
+		th->t_pos = ch_ret;
 	}
 
 	if (see_monst(th)) {
-	if (flat(ch_ret.y,ch_ret.x) & F_PASS)
-		standout();
-	th->t_oldch = mvinch(ch_ret.y, ch_ret.x);
-	mvaddch(ch_ret.y, ch_ret.x, th->t_disguise);
+		if (flat(ch_ret.y,ch_ret.x) & F_PASS)
+			standout();
+		th->t_oldch = mvinch(ch_ret.y, ch_ret.x);
+		mvaddch(ch_ret.y, ch_ret.x, th->t_disguise);
 	}
 	else if (on(player,	SEEMONST))
 	{
-	standout();
-	th->t_oldch = mvinch(ch_ret.y, ch_ret.x);
-	mvaddch(ch_ret.y, ch_ret.x, th->t_type);
+		standout();
+		th->t_oldch = mvinch(ch_ret.y, ch_ret.x);
+		mvaddch(ch_ret.y, ch_ret.x, th->t_type);
 	}
 	else
 		th->t_oldch = '@';
-	if (th->t_oldch == FLOOR &&	oroom->r_flags & ISDARK)
-	th->t_oldch = ' ';
+
+	if (th->t_oldch == FLOOR && (oroom->r_flags & ISDARK))
+		th->t_oldch = ' ';
 	standend();
 }
 

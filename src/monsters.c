@@ -83,6 +83,7 @@ coord *cp;
 		when 6: tp->t_disguise = RING;
 		when 7: tp->t_disguise = STICK;
 		when 8: tp->t_disguise = AMULET;
+		break;
 	}
 }
 

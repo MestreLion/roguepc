@@ -243,6 +243,7 @@ register int y, x;
 #else
 	/* NOTREACHED */
 #endif
+	return NULL;
 }
 
 /*
