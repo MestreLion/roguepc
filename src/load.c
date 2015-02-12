@@ -6,34 +6,84 @@
 
 #include	"rogue.h"
 
-#define MODESAVE  0x65
-#define MODEREG   0x3d8
-#define BWENABLE  0x4
-#define COLREG	  0x3d9
-#define HIGHENABLE 0x10
-#define PALETTEBIT 0x20
+/*@
+ * References for 3D8h and 3D9h:
+ * http://www.scribd.com/doc/251557562/CGA-IBM-Color-Graphics-Monitor-Adapter
+ * http://www.seasip.info/VintagePC/cga.html
+ */
 
+/*@
+ * 3D8h = CGA Select Mode port, 6-bits, write only:
+ * Bit 0 - 0=40x25, 1=80x25 (for text mode, ignored if bit 1=0)
+ * Bit 1 - 0=Text,  1=320x200 Graphics
+ * Bit 2 - 0=Color, 1=Mono, or "burst color" for 3rd palette when in 320x200 **
+ * Bit 3 - 1=(re-)enables video signal, which is disabled when mode changes
+ * Bit 4 - 1=640x200 mono graphics mode
+ * Bit 5 - 1=Enable blink attribute for text modes
+ *
+ * * When in 320x200 mode, Bit 2 acts as "burst color" bit that activates
+ *   an undocumented 3d palette (Default/Cyan/Red/Magenta)
+ */
+#define MODEREG    0x3d8  //@ CGA Select Mode port address
+#define BWENABLE   0x004  //@ Bit 2 mask, for BW mode / 3rd palette burst bit
+#define MODESAVE   0x065  //@ Offset for current mode value in BIOS Data 40h
+
+/*@
+ * 3D9h = CGA Select Color port, 6-bits, write only. For mode 4 (320x200x4):
+ * Bit 0 - Blue background component
+ * Bit 1 - Green background component
+ * Bit 2 - Red background component
+ * Bit 3 - Intensified background color
+ * Bit 4 - Alternate, intensified set of colors (the "i" palette variation)
+ * Bit 5 - Active color set (Palette 0 or 1)
+ *         Palette 0: Defaut, Red, Green, Yellow
+ *         Palette 1: Default, Cyan, Magenta, White
+ */
+#define COLREG     0x3d9  //@ CGA Select Color port address
+#define HIGHENABLE 0x010  //@ Bit 4 mask, for intensified palette
+#define PALETTEBIT 0x020  //@ Bit 5 mask, unused
+
+//@ temp buffer to hold image file bytes
 static char *store;
+
+/*@
+ * block size used when reading image file
+ * A packed CGA 320x200x2bit image (4 colors) requires 16000 bytes + headers
+ * initial block size, 0x4000 = 16384, is enough to read file in 1 pass
+ */
 static int blksize = 0x4000, lfd;
 
+/*@
+ * Display the Rogue Enyx title image
+ * - Set video mode to 320x200, 4 colors (CGA),
+ * - Load 'rogue.pic' and display it for about 5 minutes
+ *   or until a key is pressed,
+ * - Return to previous video mode
+ */
 epyx_yuck()
 {
+	//@ clock rate is 65536/3600 per hour, about 18.2 ticks per second
 	extern unsigned int tick;
 	register int type = get_mode();
 	char *sbrk();
 
+	//@ 07h = Monochromatic (80x25 text) in MDA, Hercules, EGA, VGA
 	if (type == 7 || (lfd = open("rogue.pic", 0)) < 0)
 		return;
+	//@ Allocate the largest possible block size for the store buffer,
+	//@ halving the requested amount in each attempt
 	while ((int) (store = sbrk(blksize)) == -1)
 		blksize /= 2;
+	//@ 04h = Graphics mode 320x200 4 colors in CGA,PCjr,EGA,MCGA,VGA
 	video_mode(4);
+
 	scr_load();
 	tick = 0;
 #ifdef LOGFILE
 	while (tick < 18 * 10)
 		;
 #else
-	while(no_char() && tick < 18 * 60 * 5)
+	while(no_char() && tick < 18 * 60 * 5)  //@ ~5 minutes
 		;
 	if (!no_char())
 		readchar();
@@ -43,18 +93,70 @@ epyx_yuck()
 	tick = 0;
 }
 
+/*@
+ * Load the file bytes to video memory
+ * and adjust the video flags
+ *
+ * PIC/BSAVE format documentation
+ * http://www.fileformat.info/format/pictor/egff.htm#PICTOR-DMYID.3.1.2
+ * http://www.shikadi.net/moddingwiki/PIC_Format
+ * http://www.shikadi.net/moddingwiki/Raw_CGA_Data#Interlaced_CGA_Data
+ * http://en.wikipedia.org/wiki/BSAVE_%28bitmap_format%29#Graphics
+ *
+ * 'ROGUE.PIC' contains:
+ * - BSAVE header
+ * - CGA Interlaced data, 2 blocks, even lines and odd lines. Each block is:
+ *   - 8000 bytes of image
+ *   -  192 bytes of padding
+ *
+ * 7-byte header, ignored by bload()
+ *  BYTE Marker         Data type                  FDh = unpacked data
+ *  WORD ScreenSegment  PC screen memory segment B800h = CGA video address
+ *  WORD ScreenOffset   PC screen memory offset  0000h = no offset
+ *  WORD DataSize       Size of screen data      4000h = 16384, 320x200x2bit
+ *
+ * 8000 bytes of image data for even rows
+ *   BYTE ColorsX4      4 pixels per byte, each a 2-bit color. In palette 1i:
+ *     00 Default (may select one out of 16 CGA colors, Black by default)
+ *     01 Cyan
+ *     02 Magenta
+ *     11 White
+ *
+ * 192 bytes of padding
+ *   ?                  Signature                 'PCPaint V1.0'
+ *   BYTE PaletteID     Current Palette number    05h = Palette 1i ?
+ *   BYTE BackColor     Color for index 00        00h = Black
+ *   *    Padding       Padding                   55h
+ *
+ * 8000 bytes of image data for odd rows
+ *   Same format as even rows
+ *
+ * 192 bytes of padding
+ *   *    Padding       Padding                   55h
+*/
 scr_load()
 {
 	int palette, background;
 	int mode, burst;
 
+	//@ 0xb800 = Video memory address for CGA mode 04h
 	bload(0xb800);
 
-	palette = peekb(8012,0xB800);
-	background = peekb(8013,0xB800);
+	//@ read image palette and bgcolor from CGA memory, written inside padding
+	palette = peekb(8012,0xB800);     //@ 5 = CGA palette 1i
+	background = peekb(8013,0xB800);  //@ 0
 
+	//@ Intensified palette, enable bit 4 for the COLREG write
 	if (palette >= 3)
 		background |= HIGHENABLE;
+
+	/*@
+	 * Not sure why all this switch cases and palette remapping
+	 * if in the end palette is not used any more, and mode is read
+	 * from BIOS. In any case, modifications to the corresponding
+	 * bytes in ROGUE.PIC does not seem to have any effect on display
+	 * in Epyx v1.49, so this code might have changed there.
+	 */
 	burst   = 0;
 	switch(palette)
 	{
@@ -64,22 +166,28 @@ scr_load()
 		/* no break */
 	case 0:
 	case 3:
-		palette = 1;
+		palette = 1;  //@ ignored
 		break;
 	case 1:
 	case 4:
-		palette = 0;
+		palette = 0;  //@ ignored
 		break;
 	}
 
+	//@ Set background color and palette intensity
 	out (COLREG,background);
+
+	//@ Read current video mode from BIOS Data Area, sans the burst bit
 	mode = peekb(MODESAVE,0x40) & (~BWENABLE);
 	if (burst == 1)
 		mode = mode | BWENABLE;
-	pokeb(MODESAVE,0x40,mode);
-	out(MODEREG,mode);
+	pokeb(MODESAVE,0x40,mode); //@ write mode to BIOS
+	out(MODEREG,mode);         //@ write mode to CGA 6845 controller
 }
 
+/*@
+ * Load the file bytes into a memory segment using DMA
+ */
 bload(segment)
 	unsigned segment;
 {

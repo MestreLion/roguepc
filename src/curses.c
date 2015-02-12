@@ -706,14 +706,34 @@ switch_page(pn)
 }
 
 get_mode(type)
+/*@
+ * Get current video mode using software interrupt 10h, AH=0Fh
+ *
+ * Response is:
+ * AL = Video Mode, AH = number of character columns, BH = active page
+ * https://en.wikipedia.org/wiki/INT_10H
+ * http://www.ctyme.com/intr/rb-0108.htm
+ *
+ * Return only AL, the low A byte representing Video Mode, as a 16-bit int
+ * For EGA text, AL is 03h for color or 07h for monochrome
+ */
 {
 	struct sw_regs regs;
 
-	regs.ax = 0xF00;
+	regs.ax = 0xF00;  //@ AH = 0Fh
 	swint(SW_SCR,&regs);
 	return 0xff & regs.ax;
 }
 
+/*@
+ * Set current video mode using software interrupt 10h, AH=00h
+ *
+ * Response is:
+ * AL = Video Mode or CRT controller
+ * http://www.ctyme.com/intr/rb-0069.htm
+ *
+ * Return AL
+ */
 video_mode(type)
 {
 	struct sw_regs regs;
