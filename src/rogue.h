@@ -523,7 +523,7 @@ coord	*find_dest();
 void	command(), show_count(), execcom();
 
 //@ daemon.c
-void	do_daemons(), do_fuses();
+void	daemon(), do_daemons(), fuse(), lengthen(), extinguish(), do_fuses();
 
 //@ io.c
 void	msg();

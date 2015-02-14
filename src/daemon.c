@@ -19,6 +19,7 @@ struct delayed_action {
 	int d_time;
 } d_list[MAXDAEMONS];
 
+//@ No need to declare in rogue.h
 /*
  * d_slot:
  *	Find an empty slot in the daemon/fuse list
@@ -37,6 +38,7 @@ d_slot()
 	return NULL;
 }
 
+//@ No need to declare in rogue.h
 /*
  * find_slot:
  *	Find a particular slot in the table
@@ -57,6 +59,7 @@ int (*func)();
  * daemon:
  *	Start a daemon, takes a function.
  */
+void
 daemon(func, arg)
 int (*func)(), arg;
 {
@@ -72,6 +75,7 @@ int (*func)(), arg;
  * do_daemons:
  *	Run all the daemons, passing the argument to the function.
  */
+void
 do_daemons()
 {
 	register struct delayed_action *dev;
@@ -91,6 +95,7 @@ do_daemons()
  * fuse:
  *	Start a fuse to go off in a certain number of turns
  */
+void
 fuse(func, arg, time)
 int (*func)(), arg, time;
 {
@@ -106,6 +111,7 @@ int (*func)(), arg, time;
  * lengthen:
  *	Increase the time until a fuse goes off
  */
+void
 lengthen(func, xtime)
 int (*func)();
 int xtime;
@@ -113,7 +119,7 @@ int xtime;
 	register struct delayed_action *wire;
 
 	if ((wire = find_slot(func)) == NULL)
-	return;
+		return;
 	wire->d_time += xtime;
 }
 
@@ -121,13 +127,14 @@ int xtime;
  * extinguish:
  *	Put out a fuse
  */
+void
 extinguish(func)
 int (*func)();
 {
 	register struct delayed_action *wire;
 
 	if ((wire = find_slot(func)) == NULL)
-	return;
+		return;
 	wire->d_func = EMPTY;
 }
 
@@ -135,6 +142,7 @@ int (*func)();
  * do_fuses:
  *	Decrement counters and start needed fuses
  */
+void
 do_fuses()
 {
 	register struct delayed_action *wire;
