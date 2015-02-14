@@ -15,6 +15,7 @@ coord ch_ret;			/* Where chasing takes	you */
  * runners:
  *	Make all the running monsters move.
  */
+void
 runners()
 {
 	register THING *tp;
@@ -39,11 +40,11 @@ runners()
  * do_chase:
  *	Make one thing chase another.
  */
+void
 do_chase(th)
 THING *th;
 {
 	int	mindist	= 32767, i, dist;
-	byte sch;
 	bool door;
 	register THING *obj;
 	struct room	*oroom;
@@ -180,26 +181,27 @@ over:
  * see_monst:
  *	Return TRUE if the hero can see the monster
  */
+bool
 see_monst(mp)
 register THING *mp;
 {
 	if (on(player, ISBLIND))
-	return	FALSE;
+		return	FALSE;
 	if (on(*mp,	ISINVIS) && !on(player,	CANSEE))
-	return	FALSE;
+		return	FALSE;
 	if (DISTANCE(mp->t_pos.y, mp->t_pos.x, hero.y, hero.x) >= LAMPDIST &&
-	((mp->t_room != proom || (mp->t_room->r_flags & ISDARK) ||
-		(mp->t_room->r_flags & ISMAZE))))
+	  ((mp->t_room != proom || (mp->t_room->r_flags & ISDARK) ||
+	  (mp->t_room->r_flags & ISMAZE))))
 		return FALSE;
 	/*
 	 * If we are seeing	the enemy of a vorpally	enchanted weapon for the first
 	 * time, give the player a hint as to what that weapon is good for.
 	 */
 	if (cur_weapon != NULL && mp->t_type == cur_weapon->o_enemy
-	&& ((cur_weapon->o_flags & DIDFLASH) == 0))
+	  && ((cur_weapon->o_flags & DIDFLASH) == 0))
 	{
-	cur_weapon->o_flags |=	DIDFLASH;
-	msg(flash, w_names[cur_weapon->o_which], terse	|| expert ? "" : intense);
+		cur_weapon->o_flags |=	DIDFLASH;
+		msg(flash, w_names[cur_weapon->o_which], terse	|| expert ? "" : intense);
 	}
 	return TRUE;
 }
@@ -209,6 +211,7 @@ register THING *mp;
  *	Set a monster running after something or stop it from running
  *	(for	when it	dies)
  */
+void
 start_run(runner)
 register coord *runner;
 {
@@ -237,7 +240,10 @@ register coord *runner;
  *	Find	the spot for the chaser(er) to move closer to the
  *	chasee(ee).	Returns	TRUE if	we want	to keep	on chasing later
  *	FALSE if we reach the goal.
+ *
+ *	@@ Wrong documentation: function is actually a void, there is no return
  */
+void
 chase(tp, ee)
 THING *tp;
 coord *ee;
@@ -258,16 +264,16 @@ coord *ee;
 	if ((on(*tp, ISHUH)	&& rnd(5) != 0)	|| (tp->t_type == 'P' && rnd(5)	== 0)
 		|| (tp->t_type	== 'B' && rnd(2) == 0))
 	{
-	/*
-	 * get	a valid	random move
-	 */
-	rndmove(tp,&ch_ret);
-	dist =	DISTANCE(ch_ret.y, ch_ret.x, ee->y, ee->x);
-	/*
-	 * Small chance that it will become un-confused
-	 */
-	if (rnd(30) ==	17)
-		tp->t_flags &= ~ISHUH;
+		/*
+		 * get	a valid	random move
+		 */
+		rndmove(tp,&ch_ret);
+		dist =	DISTANCE(ch_ret.y, ch_ret.x, ee->y, ee->x);
+		/*
+		 * Small chance that it will become un-confused
+		 */
+		if (rnd(30) ==	17)
+			tp->t_flags &= ~ISHUH;
 	}
 	/*
 	 * Otherwise, find the empty spot next to the chaser that is
@@ -275,62 +281,62 @@ coord *ee;
 	 */
 	else
 	{
-	register int ey, ex;
-	/*
-	 * This will eventually hold where we move to get closer
-	 * If we can't	find an	empty spot, we stay where we are.
-	 */
-	dist =	DISTANCE(er->y,	er->x, ee->y, ee->x);
-	ch_ret	= *er;
+		register int ey, ex;
+		/*
+		 * This will eventually hold where we move to get closer
+		 * If we can't	find an	empty spot, we stay where we are.
+		 */
+		dist =	DISTANCE(er->y,	er->x, ee->y, ee->x);
+		ch_ret	= *er;
 
-	ey = er->y + 1;
-	ex = er->x + 1;
-	for (x	= er->x	- 1; x <= ex; x++)
-	{
-		for (y = er->y - 1; y <= ey; y++)
+		ey = er->y + 1;
+		ex = er->x + 1;
+		for (x	= er->x	- 1; x <= ex; x++)
 		{
-		coord	tryp;
+			for (y = er->y - 1; y <= ey; y++)
+			{
+				coord	tryp;
 
-		tryp.x = x;
-		tryp.y = y;
-		if (offmap(y,	x) || !diag_ok(er, &tryp))
-			continue;
-		ch = winat(y,	x);
-		if (step_ok(ch))
-		{
-			/*
-			 * If it is a scroll, it might be	a scare	monster	scroll
-			 * so we need to look it up to see what type it is.
-			 */
-			if (ch ==	SCROLL)
-			{
-			for (obj = lvl_obj; obj != NULL; obj	= next(obj))
-			{
-				if (y ==	obj->o_pos.y &&	x == obj->o_pos.x)
-				break;
-			}
-			if (obj != NULL && obj->o_which == S_SCARE)
-				continue;
-			}
-			/*
-			 * If we didn't find any scrolls at this place or	it
-			 * wasn't	a scare	scroll,	then this place	counts
-			 */
-			thisdist = DISTANCE(y, x,	ee->y, ee->x);
-			if (thisdist < dist)
-			{
-			plcnt = 1;
-			ch_ret = tryp;
-			dist	= thisdist;
-			}
-			else if (thisdist	== dist	&& rnd(++plcnt)	== 0)
-			{
-			ch_ret = tryp;
-			dist	= thisdist;
+				tryp.x = x;
+				tryp.y = y;
+				if (offmap(y,	x) || !diag_ok(er, &tryp))
+					continue;
+				ch = winat(y,	x);
+				if (step_ok(ch))
+				{
+					/*
+					 * If it is a scroll, it might be	a scare	monster	scroll
+					 * so we need to look it up to see what type it is.
+					 */
+					if (ch ==	SCROLL)
+					{
+						for (obj = lvl_obj; obj != NULL; obj	= next(obj))
+						{
+							if (y ==	obj->o_pos.y &&	x == obj->o_pos.x)
+								break;
+						}
+						if (obj != NULL && obj->o_which == S_SCARE)
+							continue;
+					}
+					/*
+					 * If we didn't find any scrolls at this place or	it
+					 * wasn't	a scare	scroll,	then this place	counts
+					 */
+					thisdist = DISTANCE(y, x,	ee->y, ee->x);
+					if (thisdist < dist)
+					{
+						plcnt = 1;
+						ch_ret = tryp;
+						dist	= thisdist;
+					}
+					else if (thisdist	== dist	&& rnd(++plcnt)	== 0)
+					{
+						ch_ret = tryp;
+						dist	= thisdist;
+					}
+				}
 			}
 		}
-		}
-	}
 	}
 }
 
@@ -364,6 +370,7 @@ register coord *cp;
  * diag_ok:
  *	Check to see	if the move is legal if	it is diagonal
  */
+bool
 diag_ok(sp, ep)
 register coord *sp, *ep;
 {
@@ -376,6 +383,7 @@ register coord *sp, *ep;
  * cansee:
  *	Returns true	if the hero can	see a certain coordinate.
  */
+bool
 cansee(y, x)
 register int y,	x;
 {

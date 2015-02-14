@@ -513,6 +513,12 @@ extern struct magic_item	p_magic[], r_magic[], s_magic[],
 //@ armor.c
 void	wear(), take_off(), waste_time();
 
+//@ chase.c
+void	runners(), do_chase(), chase(), start_run();
+bool	see_monst(), diag_ok(), cansee();
+struct room	*roomin();
+coord	*find_dest();
+
 //@ daemon.c
 void	do_daemons(), do_fuses();
 
@@ -527,11 +533,8 @@ byte	pack_char();
 bool	can_drop();
 
 
-coord	*find_dest();
-
 THING	*find_mons(), *find_obj(), *get_item(), *new_item(),
 	*new_thing(), *wake_monster();
-struct room	*roomin();
 
 #include "extern.h"
 #include "swint.h"

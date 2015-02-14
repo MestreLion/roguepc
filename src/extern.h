@@ -89,7 +89,7 @@ char	*brk(), *charge_str(), *ctime(), *getenv(), *inv_name(),
 	*unctrl(), *vowelstr();
 
 int	auto_save(), doctor(), endit(), leave(), nohaste(), quit(),
-	rollwand(), runners(), sight(), stomach(), swander(), tstp(),
+	rollwand(), sight(), stomach(), swander(), tstp(),
 	turn_see(), unconfuse(), unsee();
 
 //@ Get size_t and NULL
