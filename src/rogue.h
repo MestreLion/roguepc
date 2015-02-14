@@ -533,6 +533,10 @@ void	doctor(), swander(), rollwand(), unconfuse(), unsee(), sight(),
 int	setenv(), peekc();
 void	putenv();
 
+//@ fakedos.c
+void	fakedos();
+int	dodos();
+
 //@ io.c
 void	msg();
 char	*noterse();

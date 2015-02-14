@@ -7,6 +7,7 @@
 
 char *stpblk();
 
+void
 fakedos()
 {
 	char comline[132];
@@ -32,6 +33,7 @@ fakedos()
 /*
  * execute a dos like command
  */
+int
 dodos(com)
 	char *com;
 {
