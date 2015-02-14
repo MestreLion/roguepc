@@ -658,7 +658,7 @@ bool pr;
 	when 'F':
 		player.t_flags &= ~ISHELD;
 		f_restor();
-	when 'L':
+	when 'L':;
 		register THING *gold;
 
 		if ((gold = new_item()) == NULL)
