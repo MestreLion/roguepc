@@ -11,6 +11,7 @@
  * fight:
  *	The player attacks the monster.
  */
+bool
 fight(mp, mn, weap, thrown)
 register coord *mp;
 char mn;
@@ -87,6 +88,7 @@ bool thrown;
  * attack:
  *	The monster attacks the player
  */
+void
 attack(mp)
 THING *mp;
 {
@@ -260,6 +262,7 @@ THING *mp;
  * swing:
  *	Returns true if the swing hits
  */
+bool
 swing(at_lvl, op_arm, wplus)
 int at_lvl, op_arm, wplus;
 {
@@ -273,6 +276,7 @@ int at_lvl, op_arm, wplus;
  * check_level:
  *	Check to see if the guy has gone up a level.
  */
+void
 check_level()
 {
 	register int i, add, olevel;
@@ -285,11 +289,11 @@ check_level()
 	pstats.s_lvl = i;
 	if (i > olevel)
 	{
-	add = roll(i - olevel, 10);
-	max_hp += add;
-	if ((pstats.s_hpt += add) > max_hp)
-		pstats.s_hpt = max_hp;
-		msg("and achieve the rank of \"%s\"", he_man[i-1]);
+		add = roll(i - olevel, 10);
+		max_hp += add;
+		if ((pstats.s_hpt += add) > max_hp)
+			pstats.s_hpt = max_hp;
+			msg("and achieve the rank of \"%s\"", he_man[i-1]);
 	}
 }
 
@@ -297,6 +301,7 @@ check_level()
  * roll_em:
  *	Roll several attacks
  */
+bool
 roll_em(thatt, thdef, weap, hurl)
 THING *thatt, *thdef, *weap;
 bool hurl;
@@ -313,103 +318,104 @@ bool hurl;
 	def = &thdef->t_stats;
 	if (weap == NULL)
 	{
-	cp = att->s_dmg;
-	dplus = 0;
-	hplus = 0;
+		cp = att->s_dmg;
+		dplus = 0;
+		hplus = 0;
 	}
 	else
 	{
-	hplus = weap->o_hplus;
-	dplus = weap->o_dplus;
-	/*
-	 * Check for vorpally enchanted weapon
-	 */
-	if (thdef->t_type == weap->o_enemy)
-	{
-		hplus += 4;
-		dplus += 4;
-	}
-	if (weap == cur_weapon)
-	{
-		if (ISRING(LEFT, R_ADDDAM))
-			dplus += cur_ring[LEFT]->o_ac;
-		else if (ISRING(LEFT, R_ADDHIT))
-			hplus += cur_ring[LEFT]->o_ac;
-		if (ISRING(RIGHT, R_ADDDAM))
-			dplus += cur_ring[RIGHT]->o_ac;
-		else if (ISRING(RIGHT, R_ADDHIT))
-			hplus += cur_ring[RIGHT]->o_ac;
-	}
-	cp = weap->o_damage;
-	if (hurl && (weap->o_flags&ISMISL) && cur_weapon != NULL &&
-		  cur_weapon->o_which == weap->o_launch)
-	{
-		cp = weap->o_hurldmg;
-		hplus += cur_weapon->o_hplus;
-		dplus += cur_weapon->o_dplus;
-	}
-	/*
-	 * Drain a staff of striking
-	 */
-	if (weap->o_type == STICK && weap->o_which == WS_HIT
-		&& --weap->o_charges < 0)
-	{
-		cp = weap->o_damage = "0d0";
-		weap->o_hplus = weap->o_dplus = 0;
-		weap->o_charges = 0;
-	}
+		hplus = weap->o_hplus;
+		dplus = weap->o_dplus;
+		/*
+		 * Check for vorpally enchanted weapon
+		 */
+		if (thdef->t_type == weap->o_enemy)
+		{
+			hplus += 4;
+			dplus += 4;
+		}
+		if (weap == cur_weapon)
+		{
+			if (ISRING(LEFT, R_ADDDAM))
+				dplus += cur_ring[LEFT]->o_ac;
+			else if (ISRING(LEFT, R_ADDHIT))
+				hplus += cur_ring[LEFT]->o_ac;
+			if (ISRING(RIGHT, R_ADDDAM))
+				dplus += cur_ring[RIGHT]->o_ac;
+			else if (ISRING(RIGHT, R_ADDHIT))
+				hplus += cur_ring[RIGHT]->o_ac;
+		}
+		cp = weap->o_damage;
+		if (hurl && (weap->o_flags&ISMISL) && cur_weapon != NULL &&
+			  cur_weapon->o_which == weap->o_launch)
+		{
+			cp = weap->o_hurldmg;
+			hplus += cur_weapon->o_hplus;
+			dplus += cur_weapon->o_dplus;
+		}
+		/*
+		 * Drain a staff of striking
+		 */
+		if (weap->o_type == STICK && weap->o_which == WS_HIT
+			&& --weap->o_charges < 0)
+		{
+			cp = weap->o_damage = "0d0";
+			weap->o_hplus = weap->o_dplus = 0;
+			weap->o_charges = 0;
+		}
 	}
 	/*
 	 * If the creature being attacked is not running (alseep or held)
 	 * then the attacker gets a plus four bonus to hit.
 	 */
 	if (!on(*thdef, ISRUN))
-	hplus += 4;
+		hplus += 4;
 	def_arm = def->s_arm;
 	if (def == &pstats)
 	{
-	if (cur_armor != NULL)
-		def_arm = cur_armor->o_ac;
-	if (ISRING(LEFT, R_PROTECT))
-		def_arm -= cur_ring[LEFT]->o_ac;
-	if (ISRING(RIGHT, R_PROTECT))
-		def_arm -= cur_ring[RIGHT]->o_ac;
+		if (cur_armor != NULL)
+			def_arm = cur_armor->o_ac;
+		if (ISRING(LEFT, R_PROTECT))
+			def_arm -= cur_ring[LEFT]->o_ac;
+		if (ISRING(RIGHT, R_PROTECT))
+			def_arm -= cur_ring[RIGHT]->o_ac;
 	}
 	for (;;)
 	{
-	ndice = atoi(cp);
-	if ((cp = stpchr(cp, 'd')) == NULL)
-		break;
-	nsides = atoi(++cp);
-	if (swing(att->s_lvl, def_arm, hplus + str_plus(att->s_str)))
-	{
-		register int proll;
+		ndice = atoi(cp);
+		if ((cp = stpchr(cp, 'd')) == NULL)
+			break;
+		nsides = atoi(++cp);
+		if (swing(att->s_lvl, def_arm, hplus + str_plus(att->s_str)))
+		{
+			register int proll;
 
-		proll = roll(ndice, nsides);
-		damage = dplus + proll + add_dam(att->s_str);
-		/*
-		 * special goodies for the commercial version of rogue
-		 */
-			if (thdef == &player && max_level == 1)
-			 /*
-			  * make it easier on level one
-			  */
-					damage = (damage+1) / 2;
+			proll = roll(ndice, nsides);
+			damage = dplus + proll + add_dam(att->s_str);
 			/*
-			 * copy protection goodies
+			 * special goodies for the commercial version of rogue
 			 */
-			if (thdef == &player)
-				damage *= hit_mul;
-		def->s_hpt -= max(0, damage);
-		did_hit = TRUE;
-	}
-	if ((cp = stpchr(cp, '/')) == NULL)
-		break;
-	cp++;
+				if (thdef == &player && max_level == 1)
+				 /*
+				  * make it easier on level one
+				  */
+						damage = (damage+1) / 2;
+				/*
+				 * copy protection goodies
+				 */
+				if (thdef == &player)
+					damage *= hit_mul;
+			def->s_hpt -= max(0, damage);
+			did_hit = TRUE;
+		}
+		if ((cp = stpchr(cp, '/')) == NULL)
+			break;
+		cp++;
 	}
 	return did_hit;
 }
 
+//@ No need to declare in rogue.h
 /*
  * prname:
  *	The print name of a combatant
@@ -421,16 +427,16 @@ bool upper;
 {
 	*tbuf = '\0';
 	if (who == 0)
-	strcpy(tbuf, you);
+		strcpy(tbuf, you);
 	else if (on(player, ISBLIND))
-	strcpy(tbuf, it);
+		strcpy(tbuf, it);
 	else
 	{
-	strcpy(tbuf, "the ");
-	strcat(tbuf, who);
+		strcpy(tbuf, "the ");
+		strcat(tbuf, who);
 	}
 	if (upper)
-	*tbuf = toupper(*tbuf);
+		*tbuf = toupper(*tbuf);
 	return tbuf;
 }
 
@@ -438,6 +444,7 @@ bool upper;
  * hit:
  *	Print a message to indicate a succesful hit
  */
+void
 hit(er, ee)
 register char *er, *ee;
 {
@@ -446,11 +453,11 @@ register char *er, *ee;
 	addmsg(prname(er, TRUE));
 	switch ((terse || expert) ? 1 : rnd(4))
 	{
-	 when 0: s = " scored an excellent hit on ";
-	 when 1: s = " hit ";
-	 when 2: s = (er == 0 ? " have injured " : " has injured ");
-	 when 3: s = (er == 0 ? " swing and hit " : " swings and hits ");
-	 break;
+		when 0: s = " scored an excellent hit on ";
+		when 1: s = " hit ";
+		when 2: s = (er == 0 ? " have injured " : " has injured ");
+		when 3: s = (er == 0 ? " swing and hit " : " swings and hits ");
+		break;
 	}
 	msg("%s%s",s,prname(ee, FALSE));
 }
@@ -459,6 +466,7 @@ register char *er, *ee;
  * miss:
  *	Print a message to indicate a poor swing
  */
+void
 miss(er, ee)
 register char *er, *ee;
 {
@@ -468,11 +476,11 @@ register char *er, *ee;
 	addmsg(prname(er, TRUE));
 	switch ((terse || expert) ? 1 : rnd(4))
 	{
-	when 0: s = (er == 0 ? " swing and miss" : " swings and misses");
-	when 1: s = (er == 0 ? " miss" : " misses");
-	when 2: s = (er == 0 ? " barely miss" : " barely misses");
-	when 3: s = (er == 0 ? " don't hit" : " doesn't hit");
-	break;
+		when 0: s = (er == 0 ? " swing and miss" : " swings and misses");
+		when 1: s = (er == 0 ? " miss" : " misses");
+		when 2: s = (er == 0 ? " barely miss" : " barely misses");
+		when 3: s = (er == 0 ? " don't hit" : " doesn't hit");
+		break;
 	}
 	msg("%s %s",s,prname(ee, FALSE));
 }
@@ -481,6 +489,7 @@ register char *er, *ee;
  * save_throw:
  *	See if a creature save against something
  */
+bool
 save_throw(which, tp)
 int which;
 THING *tp;
@@ -495,6 +504,7 @@ THING *tp;
  * save:
  *	See if he saves against various nasty things
  */
+bool
 save(which)
 register int which;
 {
@@ -511,6 +521,7 @@ register int which;
  * str_plus:
  *	Compute bonus/penalties for strength on the "to hit" roll
  */
+int
 str_plus(str)
 register str_t str;
 {
@@ -521,11 +532,11 @@ register str_t str;
 	if (str < 31)
 		add--;
 	if (str < 21)
-	add--;
+		add--;
 	if (str < 19)
 		add--;
 	if (str < 17)
-	add--;
+		add--;
 	return add;
 }
 
@@ -533,25 +544,26 @@ register str_t str;
  * add_dam:
  *	Compute additional damage done for exceptionally high or low strength
  */
- add_dam(str)
- register str_t str;
- {
+int
+add_dam(str)
+register str_t str;
+{
 	int add = 6;
 
 	if (str < 8)
-	return str - 7;
+		return str - 7;
 	if (str < 31)
-	add--;
+		add--;
 	if (str < 22)
-	add--;
+		add--;
 	if (str < 20)
-	add--;
+		add--;
 	if (str < 18)
-	add--;
+		add--;
 	if (str < 17)
-	add--;
+		add--;
 	if (str < 16)
-	add--;
+		add--;
 	return add;
 }
 
@@ -559,6 +571,7 @@ register str_t str;
  * raise_level:
  *	The guy just magically went up a level.
  */
+void
 raise_level()
 {
 	pstats.s_exp = e_levels[pstats.s_lvl-1] + 1L;
@@ -569,6 +582,7 @@ raise_level()
  * thunk:
  *	A missile hit or missed a monster
  */
+void
 thunk(weap, mname, does, did)
 register THING *weap;
 register char *mname, *does, *did;
@@ -583,10 +597,15 @@ register char *mname, *does, *did;
 		msg("the %s", mname);
 }
 
+/*@
+ * the unfortunate name remove() prevents inclusion of <stdio.h>
+ * thankfully this function is only used in this file
+ */
 /*
  * remove:
  *	Remove a monster from the screen
  */
+void
 remove(mp, tp, waskill)
 register coord *mp;
 THING *tp;
@@ -599,13 +618,13 @@ bool waskill;
 
 	for (obj = tp->t_pack; obj != NULL; obj = nexti)
 	{
-	nexti = next(obj);
-	bcopy(obj->o_pos,tp->t_pos);
-	detach(tp->t_pack, obj);
-	if (waskill)
-		fall(obj, FALSE);
-	else
-		discard(obj);
+		nexti = next(obj);
+		bcopy(obj->o_pos,tp->t_pos);
+		detach(tp->t_pack, obj);
+		if (waskill)
+			fall(obj, FALSE);
+		else
+			discard(obj);
 	}
 	if (_level[INDEX(mp->y,mp->x)] == PASSAGE)
 		standout();
@@ -622,6 +641,7 @@ bool waskill;
  * is_magic:
  *	Returns true if an object radiates magic
  */
+bool
 is_magic(obj)
 register THING *obj;
 {
@@ -645,6 +665,7 @@ register THING *obj;
  * killed:
  *	Called to put a monster to death
  */
+void
 killed(tp, pr)
 THING *tp;
 bool pr;

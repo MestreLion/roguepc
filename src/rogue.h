@@ -537,6 +537,13 @@ void	putenv();
 void	fakedos();
 int	dodos();
 
+//@ fight.c
+bool	fight(), swing(), roll_em(), save_throw(), save(), is_magic();
+void	attack(), check_level(), hit(), miss(), raise_level(), thunk(),
+		remove(), killed();
+int	strplus(), add_dam();
+
+
 //@ io.c
 void	msg();
 char	*noterse();
