@@ -213,6 +213,7 @@ drop()
  * can_drop:
  *	Do special checks for dropping or unweilding|unwearing|unringing
  */
+bool
 can_drop(op)
 register THING *op;
 {

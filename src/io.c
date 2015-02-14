@@ -32,6 +32,7 @@ int a1,a2,a3,a4,a5;
 		msg(fmt,a1,a2,a3,a4,a5);
 }
 
+void
 msg(fmt, a1, a2, a3, a4, a5)
 char *fmt;
 int a1,a2,a3,a4,a5;
@@ -700,6 +701,7 @@ SIG2()
 	move(x, y);
 }
 
+char *
 noterse(str)
 	char *str;
 {

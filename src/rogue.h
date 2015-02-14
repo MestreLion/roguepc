@@ -510,6 +510,23 @@ extern struct magic_item	p_magic[], r_magic[], s_magic[],
  * Function types
  */
 
+//@ armor.c
+void	wear(), take_off(), waste_time();
+
+//@ daemon.c
+void	do_daemons(), do_fuses();
+
+//@ io.c
+void	msg();
+char	*noterse();
+
+//@ pack.c
+byte	pack_char();
+
+//@ things.c
+bool	can_drop();
+
+
 coord	*find_dest();
 
 THING	*find_mons(), *find_obj(), *get_item(), *new_item(),

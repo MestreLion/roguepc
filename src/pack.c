@@ -372,6 +372,7 @@ int type;
  * pack_char:
  *	Return which character would address a pack object
  */
+byte
 pack_char(obj)
 register THING *obj;
 {
