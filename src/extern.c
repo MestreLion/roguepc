@@ -365,18 +365,18 @@ struct room *oldrp;			/* Roomin(&oldpos) */
 struct room rooms[MAXROOMS];		/* One for each room -- A level */
 struct room passages[MAXPASS] =		/* One for each passage */
 {
-	{ {0, 0}, {0, 0}, {0, 0}, 0, ISGONE|ISDARK, 0, 0 },
-	{ {0, 0}, {0, 0}, {0, 0}, 0, ISGONE|ISDARK, 0, 0 },
-	{ {0, 0}, {0, 0}, {0, 0}, 0, ISGONE|ISDARK, 0, 0 },
-	{ {0, 0}, {0, 0}, {0, 0}, 0, ISGONE|ISDARK, 0, 0 },
-	{ {0, 0}, {0, 0}, {0, 0}, 0, ISGONE|ISDARK, 0, 0 },
-	{ {0, 0}, {0, 0}, {0, 0}, 0, ISGONE|ISDARK, 0, 0 },
-	{ {0, 0}, {0, 0}, {0, 0}, 0, ISGONE|ISDARK, 0, 0 },
-	{ {0, 0}, {0, 0}, {0, 0}, 0, ISGONE|ISDARK, 0, 0 },
-	{ {0, 0}, {0, 0}, {0, 0}, 0, ISGONE|ISDARK, 0, 0 },
-	{ {0, 0}, {0, 0}, {0, 0}, 0, ISGONE|ISDARK, 0, 0 },
-	{ {0, 0}, {0, 0}, {0, 0}, 0, ISGONE|ISDARK, 0, 0 },
-	{ {0, 0}, {0, 0}, {0, 0}, 0, ISGONE|ISDARK, 0, 0 }
+	{ {0, 0}, {0, 0}, {0, 0}, 0, ISGONE|ISDARK, 0, {} },
+	{ {0, 0}, {0, 0}, {0, 0}, 0, ISGONE|ISDARK, 0, {} },
+	{ {0, 0}, {0, 0}, {0, 0}, 0, ISGONE|ISDARK, 0, {} },
+	{ {0, 0}, {0, 0}, {0, 0}, 0, ISGONE|ISDARK, 0, {} },
+	{ {0, 0}, {0, 0}, {0, 0}, 0, ISGONE|ISDARK, 0, {} },
+	{ {0, 0}, {0, 0}, {0, 0}, 0, ISGONE|ISDARK, 0, {} },
+	{ {0, 0}, {0, 0}, {0, 0}, 0, ISGONE|ISDARK, 0, {} },
+	{ {0, 0}, {0, 0}, {0, 0}, 0, ISGONE|ISDARK, 0, {} },
+	{ {0, 0}, {0, 0}, {0, 0}, 0, ISGONE|ISDARK, 0, {} },
+	{ {0, 0}, {0, 0}, {0, 0}, 0, ISGONE|ISDARK, 0, {} },
+	{ {0, 0}, {0, 0}, {0, 0}, 0, ISGONE|ISDARK, 0, {} },
+	{ {0, 0}, {0, 0}, {0, 0}, 0, ISGONE|ISDARK, 0, {} }
 };
 
 #define INIT_STATS { 16, 0, 1, 10, 12, "1d4", 12 }
