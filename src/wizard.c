@@ -48,6 +48,7 @@ whatis()
 			r_know[obj->o_which] = TRUE;
 			obj->o_flags |= ISKNOW;
 			*r_guess[obj->o_which] = NULL;
+			break;
 		}
 		/*
 		 * If it is vorpally enchanted, then reveal what type of monster it is

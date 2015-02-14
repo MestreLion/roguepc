@@ -174,6 +174,7 @@ bool pr;
 		return;
 	case 2:
 		pr = 0;
+		break;
 	}
 	if (pr)
 		msg("the %s vanishes%s.", short_name(obj),
@@ -214,9 +215,9 @@ register int y, x;
 THING *obj;
 {
 	static coord mp;
-	register THING *mo;
+	register THING *mo = moat(y, x);
 
-	if (mo = moat(y, x)) {
+	if (mo) {
 		mp.y = y;
 		mp.x = x;
 		return fight(&mp, mo->t_type, obj, TRUE);

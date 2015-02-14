@@ -380,10 +380,10 @@ register THING *obj;
 
 	c = 'a';
 	for (item = pack; item != NULL; item = next(item))
-	if (item == obj)
-		return c;
-	else
-		c++;
+		if (item == obj)
+			return c;
+		else
+			c++;
 	return '?';
 }
 
@@ -402,6 +402,6 @@ register int value;
 	chat(hero.y, hero.x) = floor;
 	if (value > 0)
 	{
-	msg("you found %d gold pieces", value);
+		msg("you found %d gold pieces", value);
 	}
 }

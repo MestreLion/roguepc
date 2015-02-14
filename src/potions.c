@@ -286,6 +286,7 @@ register THING *obj, *tp;
 		tp->t_stats.s_lvl++;
 	when P_HASTE:
 		tp->t_flags |= ISHASTE;
+		break;
 	}
 	msg("the flask shatters.");
 }

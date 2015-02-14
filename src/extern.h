@@ -92,21 +92,21 @@ int	auto_save(), doctor(), endit(), leave(), nohaste(), quit(),
 	rollwand(), runners(), sight(), stomach(), swander(), tstp(),
 	turn_see(), unconfuse(), unsee();
 
-// Get size_t and NULL
+//@ Get size_t and NULL
 #include <stddef.h>
 
-// From <stdio.h>
+//@ From <stdio.h>
 int	sprintf(char *str, const char *format, ...);
 
-// From <string.h>
+//@ From <string.h>
 size_t	strlen(const char *s);
 
-// From <stdlib.h>
+//@ From <stdlib.h>
 #define	EXIT_FAILURE	1	/* Failing exit status.  */
 #define	EXIT_SUCCESS	0	/* Successful exit status.  */
 void	exit(int status);
 
-// From <strings.h>
+//@ From <strings.h>
 char	*index(const char *s, int c);
 
 

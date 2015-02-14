@@ -30,6 +30,7 @@ register THING *cur;
 		cur->o_damage = "1d8";
 	when WS_LIGHT:
 		cur->o_charges = 10 + rnd(10);
+		break;
 	}
 }
 
@@ -277,6 +278,7 @@ do_zap()
 	otherwise:
 		msg("what a bizarre schtick!");
 #endif
+		break;
 	}
 	if (--obj->o_charges < 0)
 		obj->o_charges = 0;
@@ -359,9 +361,10 @@ char *name;
 	bolt.o_dplus = 0;
 	w_names[FLAME] = name;
 	switch (dir->y + dir->x) {
-	when 0: dirch = '/';
-	when 1: case -1: dirch = (dir->y == 0 ? '-' : '|');
-	when 2: case -2: dirch = '\\';
+		when 0: dirch = '/';
+		when 1: case -1: dirch = (dir->y == 0 ? '-' : '|');
+		when 2: case -2: dirch = '\\';
+		break;
 	}
 	pos = *start;
 	hit_hero = (start != &hero);
@@ -439,6 +442,7 @@ char *name;
 			tick_pause();
 			mvaddch(pos.y, pos.x, dirch);
 			standend();
+			break;
 		}
 	}
 	for (j = 0; j < i; j++) {

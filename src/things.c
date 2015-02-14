@@ -171,32 +171,32 @@ drop()
 	ch = chat(hero.y, hero.x);
 	if (ch != FLOOR && ch != PASSAGE)
 	{
-	msg("there is something there already");
-	return;
+		msg("there is something there already");
+		return;
 	}
 	if ((op = get_item("drop", 0)) == NULL)
-	return;
+		return;
 	if (!can_drop(op))
-	return;
+		return;
 	/*
 	 * Take it out of the pack
 	 */
 	if (op->o_count >= 2 && op->o_type != WEAPON)
 	{
-	if ((nobj = new_item()) == NULL)
-	{
-		msg("%sit appears to be stuck in your pack!",noterse("can't drop it, "));
-		return;
-	}
-	op->o_count--;
-	bcopy(*nobj,*op);
-	nobj->o_count = 1;
-	op = nobj;
-	if (op->o_group != 0)
-		inpack++;
+		if ((nobj = new_item()) == NULL)
+		{
+			msg("%sit appears to be stuck in your pack!",noterse("can't drop it, "));
+			return;
+		}
+		op->o_count--;
+		bcopy(*nobj,*op);
+		nobj->o_count = 1;
+		op = nobj;
+		if (op->o_group != 0)
+			inpack++;
 	}
 	else
-	detach(pack, op);
+		detach(pack, op);
 	inpack--;
 	/*
 	 * Link it into the level object list
@@ -205,7 +205,7 @@ drop()
 	chat(hero.y, hero.x) = op->o_type;
 	bcopy(op->o_pos,hero);
 	if (op->o_type == AMULET)
-	amulet = FALSE;
+		amulet = FALSE;
 	msg("dropped %s", inv_name(op, TRUE));
 }
 
@@ -569,6 +569,7 @@ register byte type;
 		when SCROLL: tystr = "scroll";
 		when RING: tystr = "ring";
 		when STICK: tystr = "stick";
+		break;
 	}
 	sprintf(sp, " about any %ss", tystr);
 	return prbuf;

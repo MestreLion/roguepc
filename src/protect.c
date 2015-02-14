@@ -93,7 +93,7 @@ protect(drive)
 			if (memcmp(&buf1[0],&buf2[0x8c],32) == 0)
 				goodchk = 0xD0D;
 			no_step = 0;
-			return ;
+			return;
 		}
 	}
 	no_step = 0;

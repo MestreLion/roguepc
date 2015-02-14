@@ -6,7 +6,6 @@
 
 #include	"rogue.h"
 #include	"curses.h"
-#include	"extern.h"
 
 extern int scr_type;
 extern unsigned tick;
@@ -42,10 +41,10 @@ int a1,a2,a3,a4,a5;
 	 */
 	if (*fmt == '\0')
 	{
-	move(0, 0);
-	clrtoeol();
-	mpos = 0;
-	return;
+		move(0, 0);
+		clrtoeol();
+		mpos = 0;
+		return;
 	}
 	/*
 	 * otherwise add to the message and flush it out

@@ -20,21 +20,21 @@ doctor()
 	quiet++;
 	if (lv < 8)
 	{
-	if (quiet + (lv << 1) > 20)
-		pstats.s_hpt++;
+		if (quiet + (lv << 1) > 20)
+			pstats.s_hpt++;
 	}
 	else
 	if (quiet >= 3)
 		pstats.s_hpt += rnd(lv - 7) + 1;
 	if (ISRING(LEFT, R_REGEN))
-	pstats.s_hpt++;
+		pstats.s_hpt++;
 	if (ISRING(RIGHT, R_REGEN))
-	pstats.s_hpt++;
+		pstats.s_hpt++;
 	if (ohp != pstats.s_hpt)
 	{
-	if (pstats.s_hpt > max_hp)
-		pstats.s_hpt = max_hp;
-	quiet = 0;
+		if (pstats.s_hpt > max_hp)
+			pstats.s_hpt = max_hp;
+		quiet = 0;
 	}
 }
 
@@ -99,11 +99,11 @@ sight()
 {
 	if (on(player, ISBLIND))
 	{
-	extinguish(sight);
-	player.t_flags &= ~ISBLIND;
-	if (!(proom->r_flags & ISGONE))
-		enter_room(&hero);
-	msg("the veil of darkness lifts");
+		extinguish(sight);
+		player.t_flags &= ~ISBLIND;
+		if (!(proom->r_flags & ISGONE))
+			enter_room(&hero);
+		msg("the veil of darkness lifts");
 	}
 }
 

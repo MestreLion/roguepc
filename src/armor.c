@@ -18,7 +18,7 @@ wear()
 
 	if (cur_armor != NULL) {
 		msg("you are already wearing some%s.",
-		noterse(".  You'll have to take it off first"));
+			noterse(".  You'll have to take it off first"));
 		after = FALSE;
 		return;
 	}

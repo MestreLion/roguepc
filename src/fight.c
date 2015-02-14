@@ -574,13 +574,13 @@ register THING *weap;
 register char *mname, *does, *did;
 {
 	if (weap->o_type == WEAPON)
-	addmsg("the %s %s ", w_names[weap->o_which], does);
+		addmsg("the %s %s ", w_names[weap->o_which], does);
 	else
-	addmsg("you %s ", did);
+		addmsg("you %s ", did);
 	if (on(player, ISBLIND))
-	msg(it);
+		msg(it);
 	else
-	msg("the %s", mname);
+		msg("the %s", mname);
 }
 
 /*
