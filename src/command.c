@@ -10,6 +10,7 @@
 static int lastcount;
 static byte lastch, do_take, lasttake;
 
+void
 command()
 {
 	register int ntimes;
@@ -47,9 +48,12 @@ command()
 	}
 }
 
+//@ No need to declare in rogue.h
+byte
 com_char()
 {
-	register int same, ch;
+	register bool same;
+	register byte ch;
 
 	same = (fastmode == faststate);
 	ch = readchar();
@@ -68,14 +72,16 @@ com_char()
 	return ch;
 }
 
+//@ No need to declare in rogue.h
 /*
  * Read a command, setting thing up according to prefix like devices
  * Return the command character to be executed.
  */
-
+byte
 get_prefix()
 {
-	register int retch, ch, junk;
+	register int junk;
+	register byte retch, ch;
 
 	after = TRUE;
 	fastmode = faststate;
@@ -155,6 +161,7 @@ get_prefix()
 	return retch;
 }
 
+void
 show_count()
 {
 	move(LINES-2, COLS-4);
@@ -164,6 +171,7 @@ show_count()
 		addstr("    ");
 }
 
+void
 execcom()
 {
 	coord mv;

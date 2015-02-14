@@ -519,6 +519,9 @@ bool	see_monst(), diag_ok(), cansee();
 struct room	*roomin();
 coord	*find_dest();
 
+//@ command.c
+void	command(), show_count(), execcom();
+
 //@ daemon.c
 void	do_daemons(), do_fuses();
 
