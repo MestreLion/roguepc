@@ -88,9 +88,7 @@ char	*brk(), *charge_str(), *ctime(), *getenv(), *inv_name(),
 	*sbrk(), *strcat(), *strcpy(), *tr_name(),
 	*unctrl(), *vowelstr();
 
-int	auto_save(), doctor(), endit(), leave(), nohaste(), quit(),
-	rollwand(), sight(), stomach(), swander(), tstp(),
-	turn_see(), unconfuse(), unsee();
+int	auto_save(), endit(), leave(), quit(), tstp(), turn_see();
 
 //@ Get size_t and NULL
 #include <stddef.h>

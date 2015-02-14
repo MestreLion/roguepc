@@ -11,6 +11,7 @@
  * doctor:
  *	A healing daemon that restores hit points after rest
  */
+void
 doctor()
 {
 	register int lv, ohp;
@@ -42,6 +43,7 @@ doctor()
  * Swander:
  *	Called when it is time to start rolling for wandering monsters
  */
+void
 swander()
 {
 	daemon(rollwand, 0);
@@ -51,18 +53,19 @@ swander()
  * rollwand:
  *	Called to roll to see if a wandering monster starts up
  */
+void
 rollwand()
 {
 	static int between = 0;
 
 	if (++between >= 3 + rnd(3))
 	{
-	if (roll(1, 6) == 4)
-	{
-		wanderer();
-		extinguish(rollwand);
-		fuse(swander, 0, WANDERTIME);
-	}
+		if (roll(1, 6) == 4)
+		{
+			wanderer();
+			extinguish(rollwand);
+			fuse(swander, 0, WANDERTIME);
+		}
 	between = 0;
 	}
 }
@@ -71,6 +74,7 @@ rollwand()
  * unconfuse:
  *	Release the poor player from his confusion
  */
+void
 unconfuse()
 {
 	player.t_flags &= ~ISHUH;
@@ -81,6 +85,7 @@ unconfuse()
  * unsee:
  *	Turn off the ability to see invisible
  */
+void
 unsee()
 {
 	register THING *th;
@@ -95,6 +100,7 @@ unsee()
  * sight:
  *	He gets his sight back
  */
+void
 sight()
 {
 	if (on(player, ISBLIND))
@@ -111,6 +117,7 @@ sight()
  * nohaste:
  *	End the hasting
  */
+void
 nohaste()
 {
 	player.t_flags &= ~ISHASTE;
@@ -121,6 +128,7 @@ nohaste()
  * stomach:
  *	Digest the hero's food
  */
+void
 stomach()
 {
 	register int oldfood, deltafood;

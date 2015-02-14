@@ -525,6 +525,10 @@ void	command(), show_count(), execcom();
 //@ daemon.c
 void	daemon(), do_daemons(), fuse(), lengthen(), extinguish(), do_fuses();
 
+//@ daemons.c
+void	doctor(), swander(), rollwand(), unconfuse(), unsee(), sight(),
+		nohaste(), stomach();
+
 //@ io.c
 void	msg();
 char	*noterse();
