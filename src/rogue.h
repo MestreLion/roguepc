@@ -529,6 +529,10 @@ void	daemon(), do_daemons(), fuse(), lengthen(), extinguish(), do_fuses();
 void	doctor(), swander(), rollwand(), unconfuse(), unsee(), sight(),
 		nohaste(), stomach();
 
+//@ env.h
+int	setenv(), peekc();
+void	putenv();
+
 //@ io.c
 void	msg();
 char	*noterse();

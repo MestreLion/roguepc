@@ -3,9 +3,14 @@
  *          Jon Lane  -  10/31/83
  */
 
+/*@
+ * setenv() and putenv() are different from their counterparts at <stdlib.h>:
+ * "Environment" is read from a text file and manipulated in a custom struct
+ */
+
+#include "rogue.h"  //@
 
 #define ERROR   -1
-#define NULL	0
 #define MATCH    0
 #define MAXEP	 8
 #define FOREVER	 1
@@ -33,15 +38,15 @@ struct environment {
 	char *e_string;
 	int  strlen;
 } element[MAXEP] = {
-	 l_name,	whoami,		23,
-	 l_score,	s_score,	14,
-	 l_save,	s_save,		14,
-	 l_macro,	macro,		40,
-	 l_fruit,	fruit,		23,
-	 l_drive,	s_drive,	 1,
-	 l_menu,	s_menu,		 3,
-	 l_screen,	s_screen,	 7,
-} ;
+	{l_name,	whoami,		23},
+	{l_score,	s_score,	14},
+	{l_save,	s_save,		14},
+	{l_macro,	macro,		40},
+	{l_fruit,	fruit,		23},
+	{l_drive,	s_drive,	 1},
+	{l_menu,	s_menu,		 3},
+	{l_screen,	s_screen,	 7},
+};
 
 
 static int fd;
@@ -60,6 +65,7 @@ static char *plabel, *pstring;
  *                  to expand the environment
  *
  */
+int
 setenv(envfile)
 	char *envfile;
 {
@@ -151,6 +157,7 @@ setenv(envfile)
  *  way I can avoid checking for premature eof
  *  every time a character is read.
  */
+int
 peekc()
 {
 	ch = 0;
@@ -177,6 +184,7 @@ peekc()
 	return(ch);
 }
 
+//@ used only by the unused is_set(), so safe to remove
 /*
  * Getenv: UNIX compatable call
  *
@@ -209,6 +217,7 @@ getenv(label)
  *	  No meaningful return codes to save data space
  *	  Just ingnores strange labels
  */
+void
 putenv(label,string)
 	char *label, *string;
 {
@@ -222,6 +231,7 @@ putenv(label,string)
 }
 
 #ifdef LUXURY
+//@ unused, safe to remove
 is_set(label,string)
 	char *label,*string;
 {

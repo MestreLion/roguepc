@@ -38,7 +38,6 @@ extern int is_me;
 extern int iguess;
 extern int bailout;
 
-extern char *l_menu, *l_name, *l_fruit, *l_score, *l_save, *l_macro, *l_drive;
 extern char s_menu[], s_name[], s_fruit[], s_score[], s_save[], s_macro[];
 extern char s_drive[], s_screen[];
 extern char nullstr[], *it, *tbuf, *you, *no_mem;
@@ -65,7 +64,7 @@ extern byte *_level, *_flags;
 
 
 extern int	a_chances[], a_class[], count, dnum, food_left,
-		fung_hit, fd, group, hungry_state, inpack, lastscore,
+		fung_hit, group, hungry_state, inpack, lastscore,
 		level, max_level, mpos, no_command, no_food, no_move,
 		ntraps, purse, quiet, total;
 
