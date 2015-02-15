@@ -5,6 +5,7 @@
  */
 
 #include	"rogue.h"
+#include	"curses.h"
 
 /*@
  * References for 3D8h and 3D9h:
@@ -60,6 +61,7 @@ static int blksize = 0x4000, lfd;
  *   or until a key is pressed,
  * - Return to previous video mode
  */
+void
 epyx_yuck()
 {
 	//@ clock rate is 65536/3600 per hour, about 18.2 ticks per second
@@ -134,6 +136,7 @@ epyx_yuck()
  * 192 bytes of padding
  *   *    Padding       Padding                   55h
 */
+void
 scr_load()
 {
 	int palette, background;
@@ -188,6 +191,7 @@ scr_load()
 /*@
  * Load the file bytes into a memory segment using DMA
  */
+void
 bload(segment)
 	unsigned segment;
 {
@@ -202,6 +206,7 @@ bload(segment)
 	}
 }
 
+int
 find_drive()
 {
 	int drive = bdos(0x19);

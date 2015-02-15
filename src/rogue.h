@@ -560,12 +560,15 @@ THING	*new_item();
 void	*talloc(), _detach(), _attach(), _free_list();
 int	discard();
 
+//@ load.c
+void	epyx_yuck(), scr_load(), bload();
+int	find_drive();
+
 //@ pack.c
 byte	pack_char();
 
 //@ things.c
 bool	can_drop();
-
 
 THING	*find_mons(), *find_obj(), *get_item(), *new_thing(), *wake_monster();
 
