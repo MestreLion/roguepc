@@ -13,6 +13,7 @@
  * do_rooms:
  *	Create rooms and corridors with a connectivity graph
  */
+void
 do_rooms()
 {
 	register int i, rm;
@@ -22,12 +23,10 @@ do_rooms()
 	coord top;
 	coord bsze;
 	coord mp;
-	int old_lev;
 	int endline;
 
 	endline = maxrow + 1;
 
-	old_lev = level;
 	/*
 	 * bsze is the maximum room size
 	 */
@@ -144,8 +143,9 @@ do_rooms()
  * draw_room:
  *	Draw a box around a room and lay down the floor
  */
+void
 draw_room(rp)
-struct room *rp;
+	struct room *rp;
 {
 	register int y, x;
 
@@ -172,9 +172,10 @@ struct room *rp;
  * vert:
  *	Draw a vertical line
  */
+void
 vert(rp, startx)
-register struct room *rp;
-register int startx;
+	register struct room *rp;
+	register int startx;
 {
 	register int y;
 
@@ -186,9 +187,10 @@ register int startx;
  * horiz:
  *	Draw a horizontal line
  */
+void
 horiz(rp, starty)
-struct room *rp;
-int starty;
+	struct room *rp;
+	int starty;
 {
 	register int x;
 
@@ -200,9 +202,10 @@ int starty;
  * rnd_pos:
  *	Pick a random spot in a room
  */
+void
 rnd_pos(rp, cp)
-register struct room *rp;
-register coord *cp;
+	register struct room *rp;
+	register coord *cp;
 {
 	cp->x = rp->r_pos.x + rnd(rp->r_max.x - 2) + 1;
 	cp->y = rp->r_pos.y + rnd(rp->r_max.y - 2) + 1;
@@ -212,8 +215,9 @@ register coord *cp;
  * enter_room:
  *	Code that is executed whenver you appear in a room
  */
+void
 enter_room(cp)
-register coord *cp;
+	register coord *cp;
 {
 	register struct room *rp;
 	register int y, x;
@@ -250,8 +254,9 @@ register coord *cp;
  * leave_room:
  *	Code for when we exit a room
  */
+void
 leave_room(cp)
-register coord *cp;
+	register coord *cp;
 {
 	register int y, x;
 	register struct room *rp;
