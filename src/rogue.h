@@ -523,7 +523,8 @@ coord	*find_dest();
 void	command(), show_count(), execcom();
 
 //@ daemon.c
-void	daemon(), do_daemons(), fuse(), lengthen(), extinguish(), do_fuses();
+void	daemon(), do_daemons(), fuse(), lengthen(), extinguish(),
+		do_fuses();
 
 //@ daemons.c
 void	doctor(), swander(), rollwand(), unconfuse(), unsee(), sight(),
@@ -684,7 +685,10 @@ bool	passwd();
 #endif //UNIX
 #endif //WIZARD
 
-THING	*find_mons();
+/*@ functions declared but not found
+ * int	auto_save(), tstp();
+ * THING	*find_mons();
+ */
 
 #include "extern.h"
 #include "swint.h"

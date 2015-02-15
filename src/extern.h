@@ -80,9 +80,7 @@ extern int cksum;
  * Function types
  */
 
-char	*brk(), *ctime(), *getenv(), *num(), *sbrk(), *strcat(), *strcpy();
-
-int	auto_save(), tstp();
+char	*brk(), *ctime(), *getenv(), *sbrk(), *strcat(), *strcpy();
 
 //@ Get size_t and NULL
 #include <stddef.h>
