@@ -655,10 +655,19 @@ void read_scroll();
 void	slime_split();
 bool	new_slime(), plop_monster();
 
-//@ things.c
-bool	can_drop();
+//@ sticks.c
+void	fix_stick(), do_zap(), drain(), fire_bolt();
+char	*charge_str();
 
-THING	*find_mons(), *find_obj(), *get_item(), *new_thing(), *wake_monster();
+//@ things.c
+char	*inv_name(), *nothing();
+void	chopmsg(), drop(), discovered(), print_disc(), set_order();
+bool	can_drop();
+THING	*new_thing();
+byte	add_line(), end_line();
+int	pick_one();
+
+THING	*find_mons();
 
 #include "extern.h"
 #include "swint.h"

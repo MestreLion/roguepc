@@ -80,8 +80,7 @@ extern int cksum;
  * Function types
  */
 
-char	*brk(), *charge_str(), *ctime(), *getenv(), *inv_name(),
-		*nothing(), *num(), *sbrk(), *strcat(), *strcpy();
+char	*brk(), *ctime(), *getenv(), *num(), *sbrk(), *strcat(), *strcpy();
 
 int	auto_save(), tstp();
 
