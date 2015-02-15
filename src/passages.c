@@ -11,12 +11,13 @@
  * conn:
  *	Draw a corridor from a room in a certain direction.
  */
+void
 conn(r1, r2)
-int r1, r2;
+	int r1, r2;
 {
 	struct room *rpf, *rpt;
 	register int rmt, rm;
-	int distance, turn_spot, turn_distance, index;
+	int distance, turn_spot, turn_distance;
 	int direc;
 	coord del, curr, turn_delta, spos, epos;
 
@@ -103,13 +104,13 @@ int r1, r2;
 	 * if the rooms are gone.
 	 */
 	if (!(rpf->r_flags & ISGONE))
-	door(rpf, &spos);
+		door(rpf, &spos);
 	else
-	psplat(spos.y, spos.x);
+		psplat(spos.y, spos.x);
 	if (!(rpt->r_flags & ISGONE))
-	door(rpt, &epos);
+		door(rpt, &epos);
 	else
-	psplat(epos.y, epos.x);
+		psplat(epos.y, epos.x);
 	/*
 	 * Get ready to move...
 	 */
@@ -153,6 +154,7 @@ int r1, r2;
  * do_passages:
  *	Draw all the passages on a level.
  */
+void
 do_passages()
 {
 	register int i, j;
@@ -263,38 +265,41 @@ do_passages()
  *	Add a door or possibly a secret door.  Also enters the door in
  *	the exits array of the room.
  */
+void
 door(rm, cp)
-struct room *rm;
-coord *cp;
+	struct room *rm;
+	coord *cp;
 {
 	register int index, xit;
 
 	index = INDEX(cp->y, cp->x);
 	if (rnd(10) + 1 < level && rnd(5) == 0)
 	{
-	_level[index] = (cp->y == rm->r_pos.y || cp->y == rm->r_pos.y + rm->r_max.y - 1) ? HWALL : VWALL;
-	_flags[index] &= ~F_REAL;
+		_level[index] = (cp->y == rm->r_pos.y || cp->y == rm->r_pos.y + rm->r_max.y - 1) ? HWALL : VWALL;
+		_flags[index] &= ~F_REAL;
 	}
 	else
-	_level[index] = DOOR;
+		_level[index] = DOOR;
 	xit = rm->r_nexits++;
 	rm->r_exit[xit].y = cp->y;
 	rm->r_exit[xit].x = cp->x;
 }
 
+//@ Unused function
 #ifdef WIZARD
 /*
  * add_pass:
  *	Add the passages to the current window (wizard command)
  */
+void
 add_pass()
 {
 	register int y, x, ch;
 
 	for (y = 1; y < maxrow; y++)
-	for (x = 0; x < COLS; x++)
-		if ((ch = chat(y, x)) == DOOR || ch == PASSAGE)
-		mvaddch(y, x, ch);
+		for (x = 0; x < COLS; x++)
+			if ((ch = chat(y, x)) == DOOR || ch == PASSAGE)
+				mvaddch(y, x, ch);
 }
 #endif
 
@@ -305,6 +310,7 @@ add_pass()
 static int pnum;
 static byte newpnum;
 
+void
 passnum()
 {
 	register struct room *rp;
@@ -313,20 +319,21 @@ passnum()
 	pnum = 0;
 	newpnum = FALSE;
 	for (rp = passages; rp < &passages[MAXPASS]; rp++)
-	rp->r_nexits = 0;
+		rp->r_nexits = 0;
 	for (rp = rooms; rp < &rooms[MAXROOMS]; rp++)
-	for (i = 0; i < rp->r_nexits; i++)
-	{
-		newpnum++;
-		numpass(rp->r_exit[i].y, rp->r_exit[i].x);
-	}
+		for (i = 0; i < rp->r_nexits; i++)
+		{
+			newpnum++;
+			numpass(rp->r_exit[i].y, rp->r_exit[i].x);
+		}
 }
 /*
  * numpass:
  *	Number a passageway square and its brethren
  */
+void
 numpass(y, x)
-int y, x;
+	int y, x;
 {
 	register byte *fp;
 	register struct room *rp;
@@ -361,8 +368,9 @@ int y, x;
 	numpass(y, x - 1);
 }
 
+void
 psplat(y, x)
-shint y, x;
+	shint y, x;
 {
 	register int idx;
 

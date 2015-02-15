@@ -616,6 +616,9 @@ THING	*pack_obj(), *get_item();
 void	add_pack(), pick_up(), money();
 bool	inventory(), pack_char();
 
+//@ passages.c
+void	conn(), do_passages(), door(), passnum(), numpass(), psplat();
+
 //@ things.c
 bool	can_drop();
 
