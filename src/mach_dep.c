@@ -18,6 +18,7 @@ static int ocb;
  * setup:
  *	Get starting setup for all games
  */
+void
 setup()
 {
 	terse = FALSE;
@@ -34,9 +35,11 @@ setup()
 	ocb = set_ctrlb(0);
 }
 
+void
 clock_on()
 {
-	extern int _csval, clock(), (*cls_)(), no_clock();
+	extern int _csval, clock();  //@ begin.asm, dos.asm
+	extern void (*cls_)();
 	int new_vec[2];
 
 	new_vec[0] = clock;
@@ -46,6 +49,7 @@ clock_on()
 	cls_ = no_clock;
 }
 
+void
 no_clock()
 {
 	dmaout(clk_vec, 2, 0, TICK_ADDR);
@@ -54,6 +58,7 @@ no_clock()
 /*
  * returns a seed for a random number generator
  */
+int
 srand()
 {
 #ifdef DEBUG
@@ -72,6 +77,7 @@ srand()
  * flush_type:
  *	Flush typeahead for traps, etc.
  */
+void
 flush_type()
 {
 #ifdef CRASH_MACHINE
@@ -82,6 +88,7 @@ flush_type()
 	typeahead = "";
 }
 
+void
 credits()
 {
 	int i;
@@ -158,17 +165,34 @@ credits()
 static struct xlate {
 	byte keycode, keyis;
 } xtab[] = {
-	C_HOME,	'y', C_UP,	'k', C_PGUP,	'u', C_LEFT,	'h',       C_RIGHT,	'l',
-	C_END,	'b', C_DOWN,	'j', C_PGDN,	'n', C_INS,	'>',       C_DEL,	's',
-	C_F1,	'?', C_F2,	'/', C_F3,	'a', C_F4,	CTRL('R'), C_F5,	'c',
-	C_F6,	'D', C_F7,	'i', C_F8,	'^', C_F9,	CTRL('F'), C_F10,	'!',
-	ALT_F9,	'F'
+	{C_HOME,	'y'},
+	{C_UP,		'k'},
+	{C_PGUP,	'u'},
+	{C_LEFT,	'h'},
+	{C_RIGHT,	'l'},
+	{C_END,		'b'},
+	{C_DOWN,	'j'},
+	{C_PGDN,	'n'},
+	{C_INS,		'>'},
+	{C_DEL,		's'},
+	{C_F1,		'?'},
+	{C_F2,		'/'},
+	{C_F3,		'a'},
+	{C_F4,		CTRL('R')},
+	{C_F5,		'c'},
+	{C_F6,		'D'},
+	{C_F7,		'i'},
+	{C_F8,		'^'},
+	{C_F9,		CTRL('F')},
+	{C_F10,		'!'},
+	{ALT_F9,	'F'}
 };
 
 /*
  * readchar:
  *	Return the next input character, from the macro or from the keyboard.
  */
+byte
 readchar()
 {
 	register struct xlate *x;
@@ -199,6 +223,7 @@ readchar()
 	return ch;
 }
 
+int
 bdos(fnum, dxval)
 	int fnum, dxval;
 {
@@ -217,6 +242,7 @@ bdos(fnum, dxval)
  *  newmem - memory allocater
  *         - motto: allocate or die trying
  */
+char *
 newmem(nbytes,clrflag)
 	unsigned nbytes;
 	int clrflag;
@@ -237,6 +263,7 @@ newmem(nbytes,clrflag)
 #define JR  0xfd
 #define AT	0xfc
 
+bool
 isjr()
 {
 	static int machine = 0;
@@ -248,9 +275,10 @@ isjr()
 	return machine == JR;
 }
 
+int
 swint(intno, rp)
-int intno;
-struct sw_regs *rp;
+	int intno;
+	struct sw_regs *rp;
 {
 	extern int _dsval;
 
@@ -259,6 +287,7 @@ struct sw_regs *rp;
 	return rp->ax;
 }
 
+int
 set_ctrlb(state)
 {
 	struct sw_regs rg;
@@ -275,11 +304,13 @@ set_ctrlb(state)
 	return retcode;
 }
 
+void
 unsetup()
 {
 	set_ctrlb(ocb);
 }
 
+void
 one_tick()
 {
 	extern int tick;

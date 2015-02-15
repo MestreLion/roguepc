@@ -10,8 +10,6 @@
 THING *_things;
 int   *_t_alloc;
 
-char *newmem();
-
 /*
  * init_player:
  *	Roll up the rogue
