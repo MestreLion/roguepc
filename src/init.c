@@ -16,6 +16,7 @@ char *newmem();
  * init_player:
  *	Roll up the rogue
  */
+void
 init_player()
 {
 	register THING *obj;
@@ -232,36 +233,38 @@ static char *metal[] = {
  * init_things
  *	Initialize the probabilities for types of things
  */
+void
 init_things()
 {
 	register struct magic_item *mp;
 
 	for (mp = &things[1]; mp <= &things[NUMTHINGS-1]; mp++)
-	mp->mi_prob += (mp-1)->mi_prob;
+		mp->mi_prob += (mp-1)->mi_prob;
 }
 
 /*
  * init_colors:
  *	Initialize the potion color scheme for this time
  */
+void
 init_colors()
 {
 	register int i, j;
 	bool used[NCOLORS];
 
 	for (i = 0; i < NCOLORS; i++)
-	used[i] = FALSE;
+		used[i] = FALSE;
 	for (i = 0; i < MAXPOTIONS; i++)
 	{
-	do
-		j = rnd(NCOLORS);
-	while (used[j]);
-	used[j] = TRUE;
-	p_colors[i] = rainbow[j];
-	p_know[i] = FALSE;
-	p_guess[i] = (char *)&_guesses[iguess++];
-	if (i > 0)
-		p_magic[i].mi_prob += p_magic[i-1].mi_prob;
+		do
+			j = rnd(NCOLORS);
+		while (used[j]);
+		used[j] = TRUE;
+		p_colors[i] = rainbow[j];
+		p_know[i] = FALSE;
+		p_guess[i] = (char *)&_guesses[iguess++];
+		if (i > 0)
+			p_magic[i].mi_prob += p_magic[i-1].mi_prob;
 	}
 }
 
@@ -269,7 +272,7 @@ init_colors()
  * init_names:
  *	Generate the names of the various scrolls
  */
-
+void
 init_names()
 {
 	 int nsyl;
@@ -313,6 +316,7 @@ init_names()
  * getsyl()
  *   -- generate a random sylable
  */
+char*
 getsyl()
 {
 	static char _tsyl[4];
@@ -328,6 +332,7 @@ getsyl()
  * rchr()
  *    return random character in given string
  */
+char
 rchr(string)
 	char *string;
 {
@@ -338,24 +343,26 @@ rchr(string)
  * init_stones:
  *	Initialize the ring stone setting scheme for this time
  */
+void
 init_stones()
 {
 	register int i, j;
 	bool used[NSTONES];
 
 	for (i = 0; i < NSTONES; i++)
-	used[i] = FALSE;
+		used[i] = FALSE;
 	for (i = 0; i < MAXRINGS; i++)
-	{	do
-		j = rnd(NSTONES);
-	while (used[j]);
-	used[j] = TRUE;
-	r_stones[i] = stones[j].st_name;
-	r_know[i] = FALSE;
-	r_guess[i] = (char *)&_guesses[iguess++];
-	if (i > 0)
-		r_magic[i].mi_prob += r_magic[i-1].mi_prob;
-	r_magic[i].mi_worth += stones[j].st_value;
+	{
+		do
+			j = rnd(NSTONES);
+		while (used[j]);
+		used[j] = TRUE;
+		r_stones[i] = stones[j].st_name;
+		r_know[i] = FALSE;
+		r_guess[i] = (char *)&_guesses[iguess++];
+		if (i > 0)
+			r_magic[i].mi_prob += r_magic[i-1].mi_prob;
+		r_magic[i].mi_worth += stones[j].st_value;
 	}
 }
 
@@ -363,6 +370,7 @@ init_stones()
  * init_materials:
  *	Initialize the construction materials for wands and staffs
  */
+void
 init_materials()
 {
 	register int i, j;
@@ -370,39 +378,39 @@ init_materials()
 	bool metused[NMETAL], woodused[NWOOD];
 
 	for (i = 0; i < NWOOD; i++)
-	woodused[i] = FALSE;
+		woodused[i] = FALSE;
 	for (i = 0; i < NMETAL; i++)
-	metused[i] = FALSE;
+		metused[i] = FALSE;
 	for (i = 0; i < MAXSTICKS; i++)
 	{
-	for (;;)
-		if (rnd(2) == 0)
-		{
-		j = rnd(NMETAL);
-		if (!metused[j])
-		{
-			ws_type[i] = "wand";
-			str = metal[j];
-			metused[j] = TRUE;
-			break;
-		}
-		}
-		else
-		{
-		j = rnd(NWOOD);
-		if (!woodused[j])
-		{
-			ws_type[i] = "staff";
-			str = wood[j];
-			woodused[j] = TRUE;
-			break;
-		}
-		}
-	ws_made[i] = str;
-	ws_know[i] = FALSE;
-	ws_guess[i] = (char *)&_guesses[iguess++];
-	if (i > 0)
-		ws_magic[i].mi_prob += ws_magic[i-1].mi_prob;
+		for (;;)
+			if (rnd(2) == 0)
+			{
+				j = rnd(NMETAL);
+				if (!metused[j])
+				{
+					ws_type[i] = "wand";
+					str = metal[j];
+					metused[j] = TRUE;
+					break;
+				}
+			}
+			else
+			{
+				j = rnd(NWOOD);
+				if (!woodused[j])
+				{
+					ws_type[i] = "staff";
+					str = wood[j];
+					woodused[j] = TRUE;
+					break;
+				}
+			}
+		ws_made[i] = str;
+		ws_know[i] = FALSE;
+		ws_guess[i] = (char *)&_guesses[iguess++];
+		if (i > 0)
+			ws_magic[i].mi_prob += ws_magic[i-1].mi_prob;
 	}
 }
 
@@ -410,7 +418,7 @@ init_materials()
  * Declarations for allocated things
  */
 long *e_levels;		/* Pointer to array of experience level */
-char *tbuf;		/* Temp buffer used in fighting */
+char *tbuf;			/* Temp buffer used in fighting */
 char *msgbuf;		/* Message buffer for msg() */
 char *prbuf;		/* Printing buffer used everywhere */
 char *end_mem;		/* Pointer to end of memory */
@@ -428,6 +436,7 @@ byte *_flags;
  * init_ds()
  *   Allocate things data space
  */
+void
 init_ds(clrflag)
 	int clrflag;
 {

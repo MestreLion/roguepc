@@ -543,6 +543,11 @@ void	attack(), check_level(), hit(), miss(), raise_level(), thunk(),
 		remove(), killed();
 int	strplus(), add_dam();
 
+//@ init.c
+void	init_player(), init_things(), init_colors(), init_materials(),
+		init_ds();
+char	*getsyl(), rchr();
+
 
 //@ io.c
 void	msg();
