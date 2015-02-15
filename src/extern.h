@@ -86,7 +86,7 @@ char	*brk(), *charge_str(), *ctime(), *getenv(), *inv_name(),
 	*killname(), *nothing(), *num(), *ring_num(),
 	*sbrk(), *strcat(), *strcpy(), *tr_name(), *vowelstr();
 
-int	auto_save(), endit(), leave(), quit(), tstp(), turn_see();
+int	auto_save(), tstp(), turn_see();
 
 //@ Get size_t and NULL
 #include <stddef.h>

@@ -572,6 +572,11 @@ char	*newmem();
 byte	readchar();
 bool	isjr();
 
+//@ main.c
+void	endit(), playit(), quit(), leave(), fatal();
+int	rnd(), roll();
+
+
 //@ pack.c
 byte	pack_char();
 

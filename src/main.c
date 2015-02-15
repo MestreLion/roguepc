@@ -35,10 +35,10 @@ struct sw_regs *regs;
  * main:
  *	The main program, of course
  */
-
+int
 main(argc, argv)
-int argc;
-char **argv;
+	int argc;
+	char **argv;
 {
 	register char *curarg, *savfile=0;
 	struct sw_regs _treg;
@@ -61,8 +61,8 @@ char **argv;
 	if (strncmp(s_screen, "bw", 2) == 0)
 		bwflag = TRUE;
 	if ((sl = strlen(s_screen)) >= 4
-		 && strncmp(&s_screen[sl - 4], "fast", 4) == 0)
-			do_force = TRUE;
+	  && strncmp(&s_screen[sl - 4], "fast", 4) == 0)
+		do_force = TRUE;
 	dnum = 0;
 #ifdef PROTECTED
 	while (--argc && goodchk == 0xD0D) {
@@ -132,18 +132,22 @@ char **argv;
 		raise_curtain();
 	}
 	playit(savfile);
+	return 0;
 }
 
 /*
  * endit:
  *	Exit the program abnormally.
  */
+void
 endit()
 {
 	fatal("Ok, if you want to exit that badly, I'll have to allow it\n");
 }
 
-#define RN		(((seed = seed*11109L+13849L) >> 16) & 0xffff)
+#define RN		(((seed = seed*11109L+13849L) >> 16) & 0xffff)  //@ unused
+
+//@ no need to declare in rogue.h
 /*
  * Random number generator -
  * adapted from the FORTRAN version
@@ -162,8 +166,13 @@ ran()
  * rnd:
  *	Pick a very random number.
  */
+int
 rnd(range)
-register int range;
+	/*@
+	 * range size was expected to be 16 bit
+	 * function will return the seed itself if range value is >= 2^31 - 1
+	 */
+	register int range;
 {
 	return range < 1 ? 0 : ((ran() + ran())&0x7fffffffl) % range;
 }
@@ -172,8 +181,9 @@ register int range;
  * roll:
  *	Roll a number of dice
  */
+int
 roll(number, sides)
-register int number, sides;
+	register int number, sides;
 {
 	register int dtotal = 0;
 
@@ -187,13 +197,13 @@ register int number, sides;
  *	The main loop of the program.  Loop until the game is over,
  *	refreshing things and looking at the proper times.
  */
+void
 playit(sname,bw)
 	char *sname;
 	int bw;
 {
 	if (sname) {
 		extern int iscuron;
-		int ov, oc;
 
 		restore(sname);
 		if (bwflag)
@@ -220,11 +230,12 @@ playit(sname,bw)
  * quit:
  *	Have player make certain, then exit.
  */
+void
 quit()
 {
 	int oy, ox;
 	register byte answer;
-	static qstate = FALSE;
+	static bool qstate = FALSE;
 
 	/*
 	 * if they try to interupt with a control C while in
@@ -268,6 +279,7 @@ quit()
  * leave:
  *	Leave quickly, but courteously
  */
+void
 leave()
 {
 	look(FALSE);
@@ -282,6 +294,7 @@ leave()
 /*
  *  fatal: exit with a message
  */
+void
 fatal(msg,arg)
 	char *msg;
 	int arg;
