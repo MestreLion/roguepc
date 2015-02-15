@@ -15,11 +15,6 @@
 
 
 /*
- * procedure declarations
- */
-char *balloc();
-
-/*
  * Now all the global variables
  */
 extern int maxitems;
@@ -129,7 +124,7 @@ size_t	strlen(const char *s);
 char	*index(const char *s, int c);
 
 
-char	*ctime(), *getenv(), *strcat(), *strcpy();
+char	*strcat(), *strcpy();
 
 #ifdef LOG
 extern int captains_log;

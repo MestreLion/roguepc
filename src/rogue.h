@@ -545,11 +545,11 @@ int	dodos();
 bool	fight(), swing(), roll_em(), save_throw(), save(), is_magic();
 void	attack(), check_level(), hit(), miss(), raise_level(), thunk(),
 		remove(), killed();
-int	strplus(), add_dam();
+int	str_plus(), add_dam();
 
 //@ init.c
-void	init_player(), init_things(), init_colors(), init_materials(),
-		init_ds();
+void	init_player(), init_things(), init_colors(), init_names(),
+		init_stones(), init_materials(), init_ds();
 char	*getsyl(), rchr();
 
 //@ io.c
@@ -603,7 +603,7 @@ bool	istest();
 
 //@ monsters.c
 char	randmonster(), pick_mons();
-void	new_monster(), f_restor(), give_pack();
+void	new_monster(), f_restor(), wanderer(), give_pack();
 THING	*wake_monster(), *moat();
 int	exp_add();
 
@@ -692,10 +692,13 @@ bool	passwd();
 #endif //UNIX
 #endif //WIZARD
 
+
 /*@ functions declared but not found
- * int	auto_save(), tstp();
- * THING	*find_mons();
- */
+int	auto_save(), tstp();
+THING	*find_mons();
+char	*balloc();
+*/
+
 
 #include "extern.h"
 #include "swint.h"
