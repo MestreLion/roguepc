@@ -405,6 +405,12 @@ show_win(scr, message)
 }
 
 
+/*@
+ * Possible return values:
+ * - ESCAPE, if user canceled input
+ * - '\n' or '\r' for successful input
+ * Callers currently only test for ESCAPE
+ */
 /*
  * This routine reads information from the keyboard
  * It should do all the strange processing that is
@@ -415,7 +421,8 @@ getinfo(str,size)
 	char *str;
 	int size;
 {
-	register char *retstr, ch;
+	register char *retstr;
+	register byte ch;
 	int readcnt = 0;
 	int wason, ret = 1;
 	char buf[160];
@@ -457,7 +464,7 @@ getinfo(str,size)
 			case '\r':
 				*str = 0;
 				cursor(wason);
-				ret = ch;
+				ret = ch;  //@ any value different than ESCAPE or 1 would do.
 				break;
 		}
 	dmaout(buf, 80, scr_ds, 0);

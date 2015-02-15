@@ -20,7 +20,6 @@
 char *balloc();
 char *stpbrk();
 char *stpblk();
-char *sbrk();
 
 /*
  * Now all the global variables
@@ -79,8 +78,37 @@ extern int cksum;
 /*
  * Function types
  */
+/*@
+ * For the assembly files only. C functions were moved to rogue.h
+ * Function signature was inferred from their standard counterparts, if any,
+ * and their usage in rogue. This is just a stub for now, not an accurate
+ * documentation on signature and sizes.
+ */
 
-char	*brk(), *ctime(), *getenv(), *sbrk(), *strcat(), *strcpy();
+//@ begin.asm
+//@ no symbols directly referenced by C code other than croot.c.
+
+//@ csav.asm
+//@ it seems no symbols are directly referenced by any C code.
+
+//@ dos.asm
+void	dmain(), dmaout(), COFF(), beep(), out(), pokeb(), wsetmem(),
+		_halt();
+byte	getch();
+bool	no_char();  //@ actually return only 0 or 1, so a "true" bool
+int	peekb(), clock(), getds(), csum();
+
+//@ sbrk.asm
+char *brk(), *sbrk();
+
+//@ zoom.asm
+void	move(), putchr();
+int	curch();
+
+
+/*@
+ * Functions and constants from libc
+ */
 
 //@ Get size_t and NULL
 #include <stddef.h>
@@ -99,6 +127,8 @@ size_t	strlen(const char *s);
 //@ From <strings.h>
 char	*index(const char *s, int c);
 
+
+char	*ctime(), *getenv(), *strcat(), *strcpy();
 
 #ifdef LOG
 extern int captains_log;
