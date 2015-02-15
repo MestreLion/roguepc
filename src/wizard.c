@@ -13,6 +13,7 @@
  * whatis:
  *	What a certin object is
  */
+void
 whatis()
 {
 	register THING *obj;
@@ -64,6 +65,7 @@ whatis()
  * create_obj:
  *	Wizard command for getting anything he wants
  */
+void
 create_obj()
 {
 	THING *obj;
@@ -95,51 +97,51 @@ create_obj()
 	mpos = 0;
 	if (obj->o_type == WEAPON || obj->o_type == ARMOR)
 	{
-	msg("blessing? (+,-,n)");
-	bless = readchar();
-	mpos = 0;
-	if (bless == '-')
-		obj->o_flags |= ISCURSED;
-	if (obj->o_type == WEAPON)
-	{
-		init_weapon(obj, obj->o_which);
-		if (bless == '-')
-		obj->o_hplus -= rnd(3)+1;
-		if (bless == '+')
-		obj->o_hplus += rnd(3)+1;
-	}
-	else
-	{
-		obj->o_ac = a_class[obj->o_which];
-		if (bless == '-')
-		obj->o_ac += rnd(3)+1;
-		if (bless == '+')
-		obj->o_ac -= rnd(3)+1;
-	}
-	}
-	else if (obj->o_type == RING)
-	switch (obj->o_which)
-	{
-		case R_PROTECT:
-		case R_ADDSTR:
-		case R_ADDHIT:
-		case R_ADDDAM:
 		msg("blessing? (+,-,n)");
 		bless = readchar();
 		mpos = 0;
 		if (bless == '-')
 			obj->o_flags |= ISCURSED;
-		obj->o_ac = (bless == '-' ? -1 : rnd(2) + 1);
+		if (obj->o_type == WEAPON)
+		{
+			init_weapon(obj, obj->o_which);
+			if (bless == '-')
+				obj->o_hplus -= rnd(3)+1;
+			if (bless == '+')
+				obj->o_hplus += rnd(3)+1;
+		}
+		else
+		{
+			obj->o_ac = a_class[obj->o_which];
+			if (bless == '-')
+				obj->o_ac += rnd(3)+1;
+			if (bless == '+')
+				obj->o_ac -= rnd(3)+1;
+		}
+	}
+	else if (obj->o_type == RING)
+		switch (obj->o_which)
+		{
+		case R_PROTECT:
+		case R_ADDSTR:
+		case R_ADDHIT:
+		case R_ADDDAM:
+			msg("blessing? (+,-,n)");
+			bless = readchar();
+			mpos = 0;
+			if (bless == '-')
+				obj->o_flags |= ISCURSED;
+			obj->o_ac = (bless == '-' ? -1 : rnd(2) + 1);
 		when R_AGGR:
 		case R_TELEPORT:
-		obj->o_flags |= ISCURSED;
-	}
+			obj->o_flags |= ISCURSED;
+		}
 	else if (obj->o_type == STICK)
-	fix_stick(obj);
+		fix_stick(obj);
 	else if (obj->o_type == GOLD)
 	{
-	msg("how much?");
-	get_num(&obj->o_goldval, stdscr);
+		msg("how much?");
+		get_num(&obj->o_goldval, stdscr);
 	}
 	add_pack(obj, FALSE);
 }
@@ -149,6 +151,7 @@ create_obj()
  * telport:
  *	Bamf the hero someplace else
  */
+int
 teleport()
 {
 	register int rm;
@@ -157,19 +160,19 @@ teleport()
 	mvaddch(hero.y, hero.x, chat(hero.y, hero.x));
 	do
 	{
-	rm = rnd_room();
-	rnd_pos(&rooms[rm], &c);
+		rm = rnd_room();
+		rnd_pos(&rooms[rm], &c);
 	} while (!(step_ok(winat(c.y, c.x))));
 	if (&rooms[rm] != proom)
 	{
-	leave_room(&hero);
-	bcopy(hero,c);
-	enter_room(&hero);
+		leave_room(&hero);
+		bcopy(hero,c);
+		enter_room(&hero);
 	}
 	else
 	{
-	bcopy(hero,c);
-	look(TRUE);
+		bcopy(hero,c);
+		look(TRUE);
 	}
 	mvaddch(hero.y, hero.x, PLAYER);
 	/*
@@ -177,8 +180,8 @@ teleport()
 	 * a Fungi
 	 */
 	if (on(player, ISHELD)) {
-	player.t_flags &= ~ISHELD;
-	f_restor();
+		player.t_flags &= ~ISHELD;
+		f_restor();
 	}
 	no_move = 0;
 	count = 0;
@@ -209,6 +212,7 @@ teleport()
  * passwd:
  *	See if user knows password
  */
+bool
 passwd()
 {
 	register char *sp, c;
@@ -218,14 +222,14 @@ passwd()
 	mpos = 0;
 	sp = buf;
 	while ((c = getchar()) != '\n' && c != '\r' && c != ESCAPE)
-	if (c == _tty.sg_kill)
-		sp = buf;
-	else if (c == _tty.sg_erase && sp > buf)
-		sp--;
-	else
-		*sp++ = c;
+		if (c == _tty.sg_kill)
+			sp = buf;
+		else if (c == _tty.sg_erase && sp > buf)
+			sp--;
+		else
+			*sp++ = c;
 	if (sp == buf)
-	return FALSE;
+		return FALSE;
 	*sp = '\0';
 	return (strcmp(PASSWD, crypt(buf, "mT")) == 0);
 }
@@ -238,6 +242,7 @@ passwd()
  * show_map:
  *	Print out the map for the wizard
  */
+void
 show_map()
 {
 	register int y, x, real;

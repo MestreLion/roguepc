@@ -674,6 +674,15 @@ char	*short_name(), *num();
 bool	hit_monster();
 int	fallpos();
 
+//@ wizard.c
+void	whatis();
+int	teleport();
+#ifdef WIZARD
+void	create_obj(), show_map();
+#ifdef UNIX
+bool	passwd();
+#endif //UNIX
+#endif //WIZARD
 
 THING	*find_mons();
 
