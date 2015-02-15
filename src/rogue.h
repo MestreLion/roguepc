@@ -648,6 +648,9 @@ void	do_rooms(), draw_room(), vert(), horiz(), rnd_pos(), enter_room(),
 void	save_game(), restore();
 int	save_ds();
 
+//@ scrolls.c
+void read_scroll();
+
 //@ things.c
 bool	can_drop();
 

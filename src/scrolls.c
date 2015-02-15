@@ -13,6 +13,7 @@ char *in_dist = " in the distance";
  * read_scroll:
  *	Read a scroll from the pack and do the appropriate thing
  */
+void
 read_scroll()
 {
 	register THING *obj;
@@ -46,7 +47,8 @@ read_scroll()
 		if (cur_armor != NULL) {
 			cur_armor->o_ac--;
 			cur_armor->o_flags &= ~ISCURSED;
-			ifterse0("your armor glows faintly","your armor glows faintly for a moment");
+			ifterse0("your armor glows faintly",
+				"your armor glows faintly for a moment");
 		}
 	when S_HOLD:
 		/*
