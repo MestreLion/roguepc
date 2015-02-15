@@ -12,6 +12,7 @@
  * ring_on:
  *	Put a ring on a hand
  */
+void
 ring_on()
 {
 	register THING *obj;
@@ -61,7 +62,8 @@ ring_on()
 		break;
 	}
 
-	msg("%swearing %s (%c)", noterse("you are now "), inv_name(obj, TRUE), pack_char(obj));
+	msg("%swearing %s (%c)", noterse("you are now "),
+		inv_name(obj, TRUE), pack_char(obj));
 	return ;
 
 no_ring:
@@ -73,6 +75,7 @@ no_ring:
  * ring_off:
  *	Take off a ring
  */
+void
 ring_off()
 {
 	register int ring;
@@ -106,6 +109,7 @@ ring_off()
  * gethand:
  *	Which hand is the hero interested in?
  */
+int
 gethand()
 {
 	register int c;
@@ -130,8 +134,9 @@ gethand()
  * ring_eat:
  *	How much food does this ring use up?
  */
+int
 ring_eat(hand)
-register int hand;
+	register int hand;
 {
 	if (cur_ring[hand] == NULL)
 		return 0;
@@ -164,7 +169,7 @@ register int hand;
  */
 char *
 ring_num(obj)
-register THING *obj;
+	register THING *obj;
 {
 	extern char *ring_buf;
 

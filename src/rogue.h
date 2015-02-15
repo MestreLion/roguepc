@@ -626,6 +626,12 @@ bool	turn_see();
 //@ protect.c
 void	protect();
 
+//@ rings.c
+void	ring_on(), ring_off();
+char	*ring_num();
+int	gethand(), ring_eat();
+
+
 //@ things.c
 bool	can_drop();
 
