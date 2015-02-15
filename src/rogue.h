@@ -651,6 +651,10 @@ int	save_ds();
 //@ scrolls.c
 void read_scroll();
 
+//@ slime.c
+void	slime_split();
+bool	new_slime(), plop_monster();
+
 //@ things.c
 bool	can_drop();
 
