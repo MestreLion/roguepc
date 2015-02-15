@@ -13,12 +13,12 @@
 #define MINTREAS 2	/* minimum number of treasures in a treasure room */
 
 
+void
 new_level()
 {
 	register int rm, i;
 	THING *tp;
 	byte *fp;
-	THING **mp;
 	int index;
 	coord stairs;
 
@@ -124,6 +124,7 @@ new_level()
  * rnd_room:
  *	Pick a room that is really there
  */
+int
 rnd_room()
 {
 	register int rm;
@@ -138,6 +139,7 @@ rnd_room()
  * put_things:
  *	Put potions and scrolls on this level
  */
+void
 put_things()
 {
 	register int i = 0;
@@ -212,6 +214,7 @@ put_things()
  */
 #define MAXTRIES 10	/* max number of tries to put down a monster */
 
+void
 treas_room()
 {
 	int nm, index;
@@ -223,19 +226,19 @@ treas_room()
 	rp = &rooms[rnd_room()];
 	spots = (rp->r_max.y - 2) * (rp->r_max.x - 2) - MINTREAS;
 	if (spots > (MAXTREAS - MINTREAS))
-	spots = (MAXTREAS - MINTREAS);
+		spots = (MAXTREAS - MINTREAS);
 	num_monst = nm = rnd(spots) + MINTREAS;
 	while (nm-- && total < MAXITEMS)
 	{
-	do
-	{
-		rnd_pos(rp, &mp);
-		index = INDEX(mp.y, mp.x);
-	} while (!isfloor(_level[index]));
-	tp = new_thing();
-	bcopy(tp->o_pos,mp);
-	attach(lvl_obj, tp);
-	_level[index] = tp->o_type;
+		do
+		{
+			rnd_pos(rp, &mp);
+			index = INDEX(mp.y, mp.x);
+		} while (!isfloor(_level[index]));
+		tp = new_thing();
+		bcopy(tp->o_pos,mp);
+		attach(lvl_obj, tp);
+		_level[index] = tp->o_type;
 	}
 
 	/*
@@ -243,33 +246,33 @@ treas_room()
 	 */
 
 	if ((nm = rnd(spots) + MINTREAS) < num_monst + 2)
-	nm = num_monst + 2;
+		nm = num_monst + 2;
 	spots = (rp->r_max.y - 2) * (rp->r_max.x - 2);
 	if (nm > spots)
-	nm = spots;
+		nm = spots;
 	level++;
 	while (nm--)
 	{
-	for (spots = 0; spots < MAXTRIES; spots++)
-	{
-		rnd_pos(rp, &mp);
-		index = INDEX(mp.y, mp.x);
-		if (isfloor(_level[index]) && moat(mp.y, mp.x) == NULL)
-			break;
-	}
-	if (spots != MAXTRIES)
-	{
-		if ((tp = new_item()) != NULL)
+		for (spots = 0; spots < MAXTRIES; spots++)
 		{
-			new_monster(tp, randmonster(FALSE), &mp);
-#ifdef TEST
-			if (bailout && me())
-				msg("treasure rm bailout");
-#endif //TEST
-			tp->t_flags |= ISMEAN;	/* no sloughers in THIS room */
-			give_pack(tp);
+			rnd_pos(rp, &mp);
+			index = INDEX(mp.y, mp.x);
+			if (isfloor(_level[index]) && moat(mp.y, mp.x) == NULL)
+				break;
 		}
-	}
+		if (spots != MAXTRIES)
+		{
+			if ((tp = new_item()) != NULL)
+			{
+				new_monster(tp, randmonster(FALSE), &mp);
+	#ifdef TEST
+				if (bailout && me())
+					msg("treasure rm bailout");
+	#endif //TEST
+				tp->t_flags |= ISMEAN;	/* no sloughers in THIS room */
+				give_pack(tp);
+			}
+		}
 	}
 	level--;
 }

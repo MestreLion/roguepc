@@ -607,6 +607,10 @@ int	exp_add();
 void	do_run(), do_move(), door_open(), descend(), rndmove();
 byte	be_trapped();
 
+//@ new_leve.c
+void	new_level(), put_things(), treas_room();
+int	rnd_room();
+
 //@ pack.c
 byte	pack_char();
 
