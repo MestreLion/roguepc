@@ -187,7 +187,7 @@ putmsg(msgline,msg)
 			more(" Cont ");
 			lastmsg = curmsg;
 			do {
-				tmpmsg = stpbrk(curmsg," ");
+				tmpmsg = strpbrk(curmsg," ");
 				/*
 				 * If there are no blanks in line
 				 */

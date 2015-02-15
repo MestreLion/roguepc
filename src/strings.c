@@ -1,4 +1,4 @@
-#include <string.h>   //@ strlen(), strchr()
+#include <string.h>   //@ strlen()
 #include <ctype.h>    //@ is...() and to...() family
 
 //@ extern char ctp_[]; //@ not needed anymore
@@ -65,20 +65,6 @@ stpblk(str)
 		str++;
 	return(str);
 }
-
-/*@
- * Return a pointer to the first occurrence in str
- * of any char in brk. Seems identical to strpbrk()
- */
-char *
-stpbrk(str,brk)
-	char *str,*brk;
-{
-	while(*str && !strchr(brk,*str))
-		str++;
-	return(*str ? str : 0);
-}
-
 
 /*
  * remove trailing whitespace from the end of a line

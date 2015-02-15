@@ -106,25 +106,22 @@ int	curch();
 //@ is{alpha,digit,upper,...}() and to{ascii,upper,lower}() families
 #include <ctype.h>
 
-//@ Get size_t and NULL
-#include <stddef.h>
+//@ str{len,cat,cpy,cmp,chr}() and possibly others
+#include <string.h>
+#define bcopy(a,b)	memmove(&(b),&(a),sizeof(a))
+#define stpchr	strchr
+
+//@ From <stddef.h>
+#define NULL	((void *)0)
 
 //@ From <stdio.h>
 int	sprintf(char *str, const char *format, ...);
 
-//@ From <string.h>
-size_t	strlen(const char *s);
-
 //@ From <stdlib.h>
-#define	EXIT_FAILURE	1	/* Failing exit status.  */
-#define	EXIT_SUCCESS	0	/* Successful exit status.  */
+#define EXIT_FAILURE	1	/* Failing exit status.  */
+#define EXIT_SUCCESS	0	/* Successful exit status.  */
 //@ void	exit(int status); //@ (pretend to) use croot's exit() for now
 
-//@ From <strings.h>
-char	*index(const char *s, int c);
-
-
-char	*strcat(), *strcpy();
 
 #ifdef LOG
 extern int captains_log;

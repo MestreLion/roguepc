@@ -56,8 +56,6 @@
 /*
  *  MANX C compiler funnies
  */
-#define	bcopy(a,b)	movmem(&(b),&(a),sizeof(a))
-#define stpchr index
 typedef unsigned char byte;
 typedef unsigned char bool;
 
@@ -664,7 +662,7 @@ void	fix_stick(), do_zap(), drain(), fire_bolt();
 char	*charge_str();
 
 //@ strings.c
-char	*stccpy(), *stpblk(), *stpbrk(), *endblk();
+char	*stccpy(), *stpblk(), *endblk();
 void	lcase();
 
 //@ things.c

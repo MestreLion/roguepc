@@ -304,7 +304,7 @@ init_names()
 	prbuf[MAXNAME] = 0;
 	s_know[i] = FALSE;
 	s_guess[i] = (char *)&_guesses[iguess++];
-	strcpy(&s_names[i], prbuf);
+	strcpy((char *)(&s_names[i]), prbuf);
 	if (i > 0)
 		s_magic[i].mi_prob += s_magic[i-1].mi_prob;
 	}

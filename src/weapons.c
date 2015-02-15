@@ -139,7 +139,7 @@ short_name(obj)
 		case AMULET:
 		case STICK:
 		case RING:
-			return index(inv_name(obj, TRUE), ' ') + 1;
+			return strchr(inv_name(obj, TRUE), ' ') + 1;
 		default:
 			return "bizzare thing";
 	}
