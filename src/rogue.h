@@ -619,6 +619,11 @@ bool	inventory(), pack_char();
 //@ passages.c
 void	conn(), do_passages(), door(), passnum(), numpass(), psplat();
 
+//@ potions.c
+void	quaff(), invis_on(), th_effect();
+bool	turn_see();
+
+
 //@ things.c
 bool	can_drop();
 

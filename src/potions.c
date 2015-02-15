@@ -11,6 +11,7 @@
  * quaff:
  *	Quaff a potion from the pack
  */
+void
 quaff()
 {
 	register THING *obj, *th;
@@ -23,11 +24,11 @@ quaff()
 	 */
 	if (obj->o_type != POTION)
 	{
-	msg("yuk! Why would you want to drink that?");
-	return;
+		msg("yuk! Why would you want to drink that?");
+		return;
 	}
 	if (obj == cur_weapon)
-	cur_weapon = NULL;
+		cur_weapon = NULL;
 
 	/*
 	 * Calculate the effect it has on the poor guy.
@@ -37,13 +38,13 @@ quaff()
 	when P_CONFUSE:
 		p_know[P_CONFUSE] = TRUE;
 		if (!on(player, ISHUH))
-		{
-		if (on(player, ISHUH))
-			lengthen(unconfuse, rnd(8)+HUHDURATION);
-		else
-			fuse(unconfuse, 0, rnd(8)+HUHDURATION);
-		player.t_flags |= ISHUH;
-		msg("wait, what's going on? Huh? What? Who?");
+			{
+			if (on(player, ISHUH))
+				lengthen(unconfuse, rnd(8)+HUHDURATION);
+			else
+				fuse(unconfuse, 0, rnd(8)+HUHDURATION);
+			player.t_flags |= ISHUH;
+			msg("wait, what's going on? Huh? What? Who?");
 		}
 	when P_POISON:
 		{
@@ -61,7 +62,7 @@ quaff()
 	when P_HEALING:
 		p_know[P_HEALING] = TRUE;
 		if ((pstats.s_hpt += roll(pstats.s_lvl, 4)) > max_hp)
-		pstats.s_hpt = ++max_hp;
+			pstats.s_hpt = ++max_hp;
 		sight();
 		msg("you begin to feel better");
 	when P_STRENGTH:
@@ -72,8 +73,8 @@ quaff()
 #ifndef DEMO
 		fuse(turn_see, TRUE, HUHDURATION);
 		if (mlist == NULL)
-		msg("you have a strange feeling%s.",
-			noterse(" for a moment"));
+			msg("you have a strange feeling%s.",
+				noterse(" for a moment"));
 		else
 		{
 				p_know[P_MFIND] |= turn_see(FALSE);
@@ -96,36 +97,36 @@ quaff()
 		 */
 		if (lvl_obj != NULL)
 		{
-		register THING *tp;
-		register bool show;
+			register THING *tp;
+			register bool show;
 
-		show = FALSE;
-		for (tp = lvl_obj; tp != NULL; tp = next(tp))
-		{
-			if (is_magic(tp))
+			show = FALSE;
+			for (tp = lvl_obj; tp != NULL; tp = next(tp))
 			{
-			show = TRUE;
-			mvwaddch(hw, tp->o_pos.y, tp->o_pos.x, goodch(tp));
-			p_know[P_TFIND] = TRUE;
+				if (is_magic(tp))
+				{
+					show = TRUE;
+					mvwaddch(hw, tp->o_pos.y, tp->o_pos.x, goodch(tp));
+					p_know[P_TFIND] = TRUE;
+				}
 			}
-		}
-		for (th = mlist; th != NULL; th = next(th))
-		{
-			for (tp = th->t_pack; tp != NULL; tp = next(tp))
+			for (th = mlist; th != NULL; th = next(th))
 			{
-			if (is_magic(tp))
+				for (tp = th->t_pack; tp != NULL; tp = next(tp))
+				{
+					if (is_magic(tp))
+					{
+						show = TRUE;
+						mvwaddch(hw, th->t_pos.y, th->t_pos.x, MAGIC);
+						p_know[P_TFIND] = TRUE;
+					}
+				}
+			}
+			if (show)
 			{
-				show = TRUE;
-				mvwaddch(hw, th->t_pos.y, th->t_pos.x, MAGIC);
-				p_know[P_TFIND] = TRUE;
+				msg("You sense the presence of magic.");
+				break;
 			}
-			}
-		}
-		if (show)
-		{
-			msg("You sense the presence of magic.");
-			break;
-		}
 		}
 		msg("you have a strange feeling for a moment%s.",
 				noterse(", then it passes"));
@@ -150,16 +151,16 @@ quaff()
 		p_know[P_XHEAL] = TRUE;
 		if ((pstats.s_hpt += roll(pstats.s_lvl, 8)) > max_hp)
 		{
-		if (pstats.s_hpt > max_hp + pstats.s_lvl + 1)
-			++max_hp;
-		pstats.s_hpt = ++max_hp;
+			if (pstats.s_hpt > max_hp + pstats.s_lvl + 1)
+				++max_hp;
+			pstats.s_hpt = ++max_hp;
 		}
 		sight();
 		msg("you begin to feel much better");
 	when P_HASTE:
 		p_know[P_HASTE] = TRUE;
 		if (add_haste(TRUE))
-		msg("you feel yourself moving much faster");
+			msg("you feel yourself moving much faster");
 	when P_RESTORE:
 		if (ISRING(LEFT, R_ADDSTR))
 			add_str(&pstats.s_str, -cur_ring[LEFT]->o_ac);
@@ -172,14 +173,14 @@ quaff()
 		if (ISRING(RIGHT, R_ADDSTR))
 			add_str(&pstats.s_str, cur_ring[RIGHT]->o_ac);
 		msg("%syou feel warm all over",
-				noterse("hey, this tastes great.  It makes "));
+			noterse("hey, this tastes great.  It makes "));
 	when P_BLIND:
 		p_know[P_BLIND] = TRUE;
 		if (!on(player, ISBLIND))
 		{
-		player.t_flags |= ISBLIND;
-		fuse(sight, 0, SEEDURATION);
-		look(FALSE);
+			player.t_flags |= ISBLIND;
+			fuse(sight, 0, SEEDURATION);
+			look(FALSE);
 		}
 		msg("a cloak of darkness falls around you");
 	when P_NOP:
@@ -194,23 +195,24 @@ quaff()
 	 */
 	inpack--;
 	if (obj->o_count > 1)
-	obj->o_count--;
+		obj->o_count--;
 	else
 	{
-	detach(pack, obj);
+		detach(pack, obj);
 		discardit = TRUE;
 	}
 
 	call_it(p_know[obj->o_which], &p_guess[obj->o_which]);
 
 	if (discardit)
-	discard(obj);
+		discard(obj);
 }
 
 /*
  * invis_on:
  *	Turn on the ability to see invisible
  */
+void
 invis_on()
 {
 	register THING *th;
@@ -227,8 +229,9 @@ invis_on()
  * turn_see:
  *	Put on or off seeing monsters on this level
  */
+bool
 turn_see(turn_off)
-register bool turn_off;
+	register bool turn_off;
 {
 	register THING *mp;
 	register bool can_see, add_new;
@@ -238,20 +241,20 @@ register bool turn_off;
 	for (mp = mlist; mp != NULL; mp = next(mp)) {
 		move(mp->t_pos.y, mp->t_pos.x);
 		can_see = (see_monst(mp) || (was_there = inch()) == mp->t_type);
-			if (turn_off) {
-				if (!see_monst(mp) && mp->t_oldch != '@')
-					addch(mp->t_oldch);
-			} else {
-				if (!can_see) {
-					standout();
-					mp->t_oldch = was_there;
-				}
-				addch(mp->t_type);
-				if (!can_see) {
-					standend();
-					add_new++;
-				}
+		if (turn_off) {
+			if (!see_monst(mp) && mp->t_oldch != '@')
+				addch(mp->t_oldch);
+		} else {
+			if (!can_see) {
+				standout();
+				mp->t_oldch = was_there;
 			}
+			addch(mp->t_type);
+			if (!can_see) {
+				standend();
+				add_new = TRUE;
+			}
+		}
 	}
 	player.t_flags |= SEEMONST;
 	if (turn_off)
@@ -263,9 +266,9 @@ register bool turn_off;
  * th_effect:
  *	Compute the effect of this potion hitting a monster.
  */
-
+void
 th_effect(obj, tp)
-register THING *obj, *tp;
+	register THING *obj, *tp;
 {
 	switch (obj->o_which)
 	{
