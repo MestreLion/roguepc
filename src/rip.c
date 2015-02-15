@@ -19,16 +19,15 @@ extern int scr_type;
  *	Figure score and post it.
  */
 /* VARARGS2 */
-
-
+void
 score(amount, flags, monst)
-int amount, flags;
-char monst;
+	int amount, flags;
+	char monst;
 {
 #ifndef DEMO
 #ifndef WIZARD
 	struct sc_ent his_score, top_ten[TOPSCORES];
-	register int newfile = FALSE, rank=0;
+	register int rank=0;
 	char response = ' ';
 
 
@@ -94,6 +93,7 @@ reread:
 
 #ifndef DEMO
 #ifndef WIZARD
+void
 get_scores(top10)
 	struct sc_ent *top10;
 {
@@ -107,7 +107,7 @@ get_scores(top10)
 	}
 }
 
-
+void
 put_scores(top10)
 	struct sc_ent *top10;
 {
@@ -115,11 +115,12 @@ put_scores(top10)
 
 	for (i=0;(i<TOPSCORES) && top10->sc_gold;i++,top10++)
 	{
-	if (write(sc_fd,top10,sizeof(struct sc_ent)) <= 0)
+		if (write(sc_fd,top10,sizeof(struct sc_ent)) <= 0)
 			return;
 	}
 }
 
+void
 pr_scores(newrank,top10)
 	int newrank;
 	struct sc_ent *top10;
@@ -201,6 +202,7 @@ pr_scores(newrank,top10)
 		addstr("\n\n\n\n");
 }
 
+int
 add_scores(newscore,oldlist)
 	struct sc_ent *newscore, *oldlist;
 {
@@ -208,18 +210,19 @@ add_scores(newscore,oldlist)
 	int retcode = TOPSCORES+1;
 
 	for(sentry=&oldlist[TOPSCORES-1];sentry>=oldlist;sentry--) {
-	if ((unsigned)newscore->sc_gold > (unsigned)sentry->sc_gold) {
-		insert = sentry;
-		retcode--;
-		if ((insert < &oldlist[TOPSCORES-1]) && sentry->sc_gold)
-			sentry[1] = *sentry;
-	} else
-		break;
-   }
-   if (retcode == 11)
-	return 0;
-   *insert = *newscore;
-   return retcode;
+		if ((unsigned)newscore->sc_gold > (unsigned)sentry->sc_gold) {
+			insert = sentry;
+			retcode--;
+			if ((insert < &oldlist[TOPSCORES-1]) && sentry->sc_gold)
+				sentry[1] = *sentry;
+		}
+		else
+			break;
+	}
+	if (retcode == 11)
+		return 0;
+	*insert = *newscore;
+	return retcode;
 }
 #endif //WIZARD
 #endif //DEMO
@@ -228,9 +231,15 @@ add_scores(newscore,oldlist)
  * death:
  *	Do something really fun when he dies
  */
+void
 death(monst)
-register char monst;
+	register char monst;
 {
+	/*@
+	 * killer *seems* to be used only in DEMO mode, but since there is
+	 * copy protection involved (see kild_by in clock() @ dos.asm),
+	 * better be careful with changes.
+	 */
 	register char *killer;
 	char buf[MAXSTR];
 	register int year;
@@ -299,6 +308,7 @@ register char monst;
  * total_winner:
  *	Code for a winner
  */
+void
 total_winner()
 {
 #ifndef DEMO
@@ -432,8 +442,8 @@ total_winner()
  */
 char *
 killname(monst, doart)
-register char monst;
-bool doart;
+	register char monst;
+	bool doart;
 {
 	register char *sp;
 	register bool article;
@@ -476,6 +486,7 @@ bool doart;
  * Print out a message when the game ends telling them how
  * order the game.
  */
+void
 demo(endtype)
 	int endtype;
 {

@@ -631,6 +631,14 @@ void	ring_on(), ring_off();
 char	*ring_num();
 int	gethand(), ring_eat();
 
+//@ rip.c
+void	score(), get_scores(), put_scores(), pr_scores(), death(),
+		total_winner();
+char *killname();
+int	add_scores();
+#ifdef DEMO
+void	demo();
+#endif //DEMO
 
 //@ things.c
 bool	can_drop();

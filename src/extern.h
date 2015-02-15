@@ -81,8 +81,7 @@ extern int cksum;
  */
 
 char	*brk(), *charge_str(), *ctime(), *getenv(), *inv_name(),
-	*killname(), *nothing(), *num(),
-	*sbrk(), *strcat(), *strcpy();
+		*nothing(), *num(), *sbrk(), *strcat(), *strcpy();
 
 int	auto_save(), tstp();
 
