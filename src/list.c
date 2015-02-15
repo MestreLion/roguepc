@@ -15,11 +15,12 @@ extern int   *_t_alloc;
  * detach:
  *	Takes an item out of whatever linked list it might be in
  */
+void
 _detach(list, item)
-register THING **list, *item;
+	register THING **list, *item;
 {
 	if (*list == item)
-	*list = next(item);
+		*list = next(item);
 	if (prev(item) != NULL) item->l_prev->l_next = next(item);
 	if (next(item) != NULL) item->l_next->l_prev = prev(item);
 	item->l_next = NULL;
@@ -30,19 +31,20 @@ register THING **list, *item;
  * _attach:
  *	add an item to the head of a list
  */
+void
 _attach(list, item)
-register THING **list, *item;
+	register THING **list, *item;
 {
 	if (*list != NULL)
 	{
-	item->l_next = *list;
-	(*list)->l_prev = item;
-	item->l_prev = NULL;
+		item->l_next = *list;
+		(*list)->l_prev = item;
+		item->l_prev = NULL;
 	}
 	else
 	{
-	item->l_next = NULL;
-	item->l_prev = NULL;
+		item->l_next = NULL;
+		item->l_prev = NULL;
 	}
 	*list = item;
 }
@@ -51,8 +53,9 @@ register THING **list, *item;
  * _free_list:
  *	Throw the whole blamed thing away
  */
+void
 _free_list(ptr)
-register THING **ptr;
+	register THING **ptr;
 {
 	register THING *item;
 
@@ -87,6 +90,7 @@ new_item()
 /*
  * talloc: simple allocation of a THING
  */
+void *  //@ maybe should be THING*, as this is a specialized malloc()
 talloc()
 {
 	register int i;
@@ -109,8 +113,9 @@ talloc()
  * discard:
  *	Free up an item
  */
+int
 discard(item)
-register THING *item;
+	register THING *item;
 {
 	register int i;
 
@@ -123,5 +128,5 @@ register THING *item;
 			return 1;
 		}
 	}
-	return NULL;
+	return 0;
 }

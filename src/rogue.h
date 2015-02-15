@@ -555,6 +555,11 @@ void	ifterse(), msg(), addmsg(), endmsg(), more(), doadd(), putmsg(),
 char	*unctrl(), *noterse();
 int	getinfo();
 
+//@ list.c
+THING	*new_item();
+void	*talloc(), _detach(), _attach(), _free_list();
+int	discard();
+
 //@ pack.c
 byte	pack_char();
 
@@ -562,8 +567,7 @@ byte	pack_char();
 bool	can_drop();
 
 
-THING	*find_mons(), *find_obj(), *get_item(), *new_item(),
-	*new_thing(), *wake_monster();
+THING	*find_mons(), *find_obj(), *get_item(), *new_thing(), *wake_monster();
 
 #include "extern.h"
 #include "swint.h"
