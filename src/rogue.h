@@ -612,7 +612,9 @@ void	new_level(), put_things(), treas_room();
 int	rnd_room();
 
 //@ pack.c
-byte	pack_char();
+THING	*pack_obj(), *get_item();
+void	add_pack(), pick_up(), money();
+bool	inventory(), pack_char();
 
 //@ things.c
 bool	can_drop();

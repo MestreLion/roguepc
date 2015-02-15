@@ -9,7 +9,7 @@
 
 THING *
 pack_obj(ch, chp)
-byte ch, *chp;
+	byte ch, *chp;
 {
 	register THING *obj;
 	register byte och;
@@ -27,9 +27,10 @@ byte ch, *chp;
  *	non-null use it as the linked_list pointer instead of gettting
  *	it off the ground.
  */
+void
 add_pack(obj, silent)
-register THING *obj;
-bool silent;
+	register THING *obj;
+	bool silent;
 {
 	register THING *op, *lp;
 	register bool exact, from_floor;
@@ -37,12 +38,12 @@ bool silent;
 
 	if (obj == NULL)
 	{
-	from_floor = TRUE;
-	if ((obj = find_obj(hero.y, hero.x)) == NULL)
-		return;
+		from_floor = TRUE;
+		if ((obj = find_obj(hero.y, hero.x)) == NULL)
+			return;
 	}
 	else
-	from_floor = FALSE;
+		from_floor = FALSE;
 	/*
 	 * Link it into the pack.  Search the pack for a object of similar type
 	 * if there isn't one, stuff it at the beginning, if there is, look for one
@@ -55,125 +56,127 @@ bool silent;
 	floor = (proom->r_flags & ISGONE) ? PASSAGE : FLOOR;
 	if (obj->o_group)
 	{
-	for (op = pack; op != NULL; op = next(op))
-	{
-		if (op->o_group == obj->o_group)
+		for (op = pack; op != NULL; op = next(op))
 		{
-		/*
-		 * Put it in the pack and notify the user
-		 */
-		op->o_count += obj->o_count;
-		if (from_floor)
-		{
-			detach(lvl_obj, obj);
-			mvaddch(hero.y, hero.x, floor);
-			chat(hero.y, hero.x) = floor;
+			if (op->o_group == obj->o_group)
+			{
+			/*
+			 * Put it in the pack and notify the user
+			 */
+				op->o_count += obj->o_count;
+				if (from_floor)
+				{
+					detach(lvl_obj, obj);
+					mvaddch(hero.y, hero.x, floor);
+					chat(hero.y, hero.x) = floor;
+				}
+				discard(obj);
+				obj = op;
+				goto picked_up;
+			}
 		}
-		discard(obj);
-		obj = op;
-		goto picked_up;
-		}
-	}
 	}
 	/*
 	 * Check if there is room
 	 */
 	if (inpack >= MAXPACK-1)
 	{
-	msg("you can't carry anything else");
-	return;
+		msg("you can't carry anything else");
+		return;
 	}
 	/*
 	 * Check for and deal with scare monster scrolls
 	 */
 	if (obj->o_type == SCROLL && obj->o_which == S_SCARE)
-	if (obj->o_flags & ISFOUND)
 	{
-		detach(lvl_obj, obj);
-		mvaddch(hero.y, hero.x, floor);
-		chat(hero.y, hero.x) = floor;
-		msg("the scroll turns to dust%s.", noterse(" as you pick it up"));
-		return;
+		if (obj->o_flags & ISFOUND)
+		{
+			detach(lvl_obj, obj);
+			mvaddch(hero.y, hero.x, floor);
+			chat(hero.y, hero.x) = floor;
+			msg("the scroll turns to dust%s.", noterse(" as you pick it up"));
+			return;
+		}
+		else
+			obj->o_flags |= ISFOUND;
 	}
-	else
-		obj->o_flags |= ISFOUND;
 
 	inpack++;
 	if (from_floor)
 	{
-	detach(lvl_obj, obj);
-	mvaddch(hero.y, hero.x, floor);
-	chat(hero.y, hero.x) = floor;
+		detach(lvl_obj, obj);
+		mvaddch(hero.y, hero.x, floor);
+		chat(hero.y, hero.x) = floor;
 	}
 	/*
 	 * Search for an object of the same type
 	 */
 	exact = FALSE;
 	for (op = pack; op != NULL; op = next(op))
-	if (obj->o_type == op->o_type)
-		break;
+		if (obj->o_type == op->o_type)
+			break;
 	if (op == NULL)
 	{
-	/*
-	 * Put it at the end of the pack since it is a new type
-	 */
-	for (op = pack; op != NULL; op = next(op))
-	{
-		if (op->o_type != FOOD)
-		break;
-		lp = op;
-	}
-	}
-	else
-	{
-	/*
-	 * Search for an object which is exactly the same
-	 */
-	while (op->o_type == obj->o_type)
-	{
-		if (op->o_which == obj->o_which)
+		/*
+		 * Put it at the end of the pack since it is a new type
+		 */
+		for (op = pack; op != NULL; op = next(op))
 		{
-		exact = TRUE;
-		break;
+			if (op->o_type != FOOD)
+			break;
+			lp = op;
 		}
-		lp = op;
-		if ((op = next(op)) == NULL)
-		break;
 	}
+	else
+	{
+		/*
+		 * Search for an object which is exactly the same
+		 */
+		while (op->o_type == obj->o_type)
+		{
+			if (op->o_which == obj->o_which)
+			{
+				exact = TRUE;
+				break;
+			}
+			lp = op;
+			if ((op = next(op)) == NULL)
+				break;
+		}
 	}
 	if (op == NULL)
 	{
-	/*
-	 * Didn't find an exact match, just stick it here
-	 */
-	if (pack == NULL)
-		pack = obj;
+		/*
+		 * Didn't find an exact match, just stick it here
+		 */
+		if (pack == NULL)
+			pack = obj;
+		else
+		{
+			lp->l_next = obj;
+			obj->l_prev = lp;
+			obj->l_next = NULL;
+		}
+	}
 	else
 	{
-		lp->l_next = obj;
-		obj->l_prev = lp;
-		obj->l_next = NULL;
-	}
-	}
-	else
-	{
-	/*
-	 * If we found an exact match.  If it is a potion, food, or a
-	 * scroll, increase the count, otherwise put it with its clones.
-	 */
-	if (exact && ISMULT(obj->o_type))
-	{
-		op->o_count++;
-		discard(obj);
-		obj = op;
-		goto picked_up;
-	}
-	if ((obj->l_prev = prev(op)) != NULL)
-		obj->l_prev->l_next = obj;
-	else
-		pack = obj;
-	obj->l_next = op;
-	op->l_prev = obj;
+		/*
+		 * If we found an exact match.  If it is a potion, food, or a
+		 * scroll, increase the count, otherwise put it with its clones.
+		 */
+		if (exact && ISMULT(obj->o_type))
+		{
+			op->o_count++;
+			discard(obj);
+			obj = op;
+			goto picked_up;
+		}
+		if ((obj->l_prev = prev(op)) != NULL)
+			obj->l_prev->l_next = obj;
+		else
+			pack = obj;
+		obj->l_next = op;
+		op->l_prev = obj;
 	}
 picked_up:
 	/*
@@ -181,40 +184,41 @@ picked_up:
 	 * get mad and run at the hero
 	 */
 	for (op = mlist; op != NULL; op = next(op))
-	/*
-	 *  compiler bug: jll : 2-7-83
-	 *		It is stupid because it thinks the obj... is not an lvalue
-	 *		this may be true since there is no structure assignments,
-	 *		but still it should let you have the address??!!
-	 *
-	if (&obj->_o._o_pos == op->t_dest)
-	 *
-	 *  the following should do the same
-	 */
-	if ((op->t_dest->x == obj->o_pos.x) && (op->t_dest->y == obj->o_pos.y))
-		op->t_dest = &hero;
+		/*
+		 *  compiler bug: jll : 2-7-83
+		 *		It is stupid because it thinks the obj... is not an lvalue
+		 *		this may be true since there is no structure assignments,
+		 *		but still it should let you have the address??!!
+		 *
+		if (&obj->_o._o_pos == op->t_dest)
+		 *
+		 *  the following should do the same
+		 */
+		if ((op->t_dest->x == obj->o_pos.x) && (op->t_dest->y == obj->o_pos.y))
+			op->t_dest = &hero;
 
 	if (obj->o_type == AMULET)
 	{
-	amulet = TRUE;
-	saw_amulet = TRUE;
+		amulet = TRUE;
+		saw_amulet = TRUE;
 	}
 	/*
 	 * Notify the user
 	 */
 	if (!silent)
-	msg("%s%s (%c)",noterse("you now have "),
-		inv_name(obj, TRUE), pack_char(obj));
+		msg("%s%s (%c)",noterse("you now have "),
+			inv_name(obj, TRUE), pack_char(obj));
 }
 
 /*
  * inventory:
  *	List what is in the pack
  */
+bool
 inventory(list, type, lstr)
-THING *list;
-int type;
-char *lstr;
+	THING *list;
+	int type;
+	char *lstr;
 {
 	register byte ch;
 	register int n_objs;
@@ -223,27 +227,27 @@ char *lstr;
 	n_objs = 0;
 	for (ch = 'a'; list != NULL; ch++, list = next(list))
 	{
-	/*
-	 * Don't print this one if:
-	 *	the type doesn't match the type we were passed AND
-	 *	it isn't a callable type AND
-	 *	it isn't a zappable weapon
-	 */
-	if (type && type != list->o_type && !(type == CALLABLE &&
-		(list->o_type == SCROLL || list->o_type == POTION ||
-		 list->o_type == RING || list->o_type == STICK)) &&
-		 !(type == WEAPON && list->o_type == POTION) &&
-		 !(type == STICK && list->o_enemy && list->o_charges))
-		continue;
-	n_objs++;
-	sprintf(inv_temp, "%c) %%s", ch);
-	add_line(lstr, inv_temp, inv_name(list, FALSE));
+		/*
+		 * Don't print this one if:
+		 *	the type doesn't match the type we were passed AND
+		 *	it isn't a callable type AND
+		 *	it isn't a zappable weapon
+		 */
+		if (type && type != list->o_type && !(type == CALLABLE &&
+		  (list->o_type == SCROLL || list->o_type == POTION ||
+		  list->o_type == RING || list->o_type == STICK)) &&
+		  !(type == WEAPON && list->o_type == POTION) &&
+		  !(type == STICK && list->o_enemy && list->o_charges))
+			continue;
+		n_objs++;
+		sprintf(inv_temp, "%c) %%s", ch);
+		add_line(lstr, inv_temp, inv_name(list, FALSE));
 	}
 	if (n_objs == 0)
 	{
-	msg(type == 0 ? "you are empty handed" :
-				"you don't have anything appropriate");
-	return FALSE;
+		msg(type == 0 ? "you are empty handed" :
+					"you don't have anything appropriate");
+		return FALSE;
 	}
 	return(end_line(lstr));
 }
@@ -252,8 +256,9 @@ char *lstr;
  * pick_up:
  *	Add something to characters pack.
  */
+void
 pick_up(ch)
-byte ch;
+	byte ch;
 {
 	register THING *obj;
 
@@ -287,8 +292,8 @@ byte ch;
  */
 THING *
 get_item(purpose, type)
-char *purpose;
-int type;
+	char *purpose;
+	int type;
 {
 	register THING *obj;
 	register byte ch;
@@ -299,8 +304,8 @@ int type;
 	int once_only = FALSE;
 
 	if (((!strncmp(s_menu,"sel",3) && strcmp(purpose,"eat")
-		 && strcmp(purpose,"drop"))) || !strcmp(s_menu,"on"))
-			once_only = TRUE;
+	  && strcmp(purpose,"drop"))) || !strcmp(s_menu,"on"))
+		once_only = TRUE;
 
 	gi_state = again;
 	if (pack == NULL)
@@ -392,8 +397,9 @@ register THING *obj;
  * money:
  *	Add or subtract gold from the pack
  */
+void
 money(value)
-register int value;
+	register int value;
 {
 	register byte floor;
 
