@@ -17,8 +17,9 @@ coord nh;
  * do_run:
  *	Start the hero running
  */
+void
 do_run(ch)
-byte ch;
+	byte ch;
 {
 	running = TRUE;
 	after = FALSE;
@@ -30,8 +31,9 @@ byte ch;
  *	Check to see that a move is legal.  If it is handle the
  * consequences (fighting, picking up, etc.)
  */
+void
 do_move(dy, dx)
-int dy, dx;
+	int dy, dx;
 {
 	register byte ch;
 	register int fl;
@@ -182,8 +184,8 @@ move_stuff:
 				enter_room(&nh);
 			bcopy(hero,nh);
 		}
-	break;
-}
+		break;
+	}
 }
 
 /*
@@ -191,8 +193,9 @@ move_stuff:
  *	Called to illuminate a room.  If it is dark, remove anything
  *	that might move.
  */
+void
 door_open(rp)
-struct room *rp;
+	struct room *rp;
 {
 	register int j, k;
 	register byte ch;
@@ -216,8 +219,9 @@ struct room *rp;
  * be_trapped:
  *	The guy stepped on a trap.... Make him pay.
  */
+byte
 be_trapped(tc)
-register coord *tc;
+	register coord *tc;
 {
 	register byte tr;
 	register int index;
@@ -283,6 +287,7 @@ register coord *tc;
 	return tr;
 }
 
+void
 descend(mesg)
 	char *mesg;
 {
@@ -303,9 +308,10 @@ descend(mesg)
  * rndmove:
  *	Move in a random direction if the monster/person is confused
  */
+void
 rndmove(who,newmv)
-THING *who;
-coord *newmv;
+	THING *who;
+	coord *newmv;
 {
 	register int x, y;
 	register byte ch;
@@ -318,7 +324,7 @@ coord *newmv;
 	 * (I.e., bump into the wall or whatever)
 	 */
 	if (y == who->t_pos.y && x == who->t_pos.x)
-		return ;
+		return;
 	if ((y < 1 || y >= maxrow) || (x < 0 || x >= COLS))
 		goto bad;
 	else if (!diag_ok(&who->t_pos, newmv))
@@ -335,9 +341,9 @@ coord *newmv;
 				goto bad;
 		}
 	}
-	return ;
+	return;
 
 bad:
 	bcopy((*newmv),who->t_pos);
-	return ;
+	return;
 }

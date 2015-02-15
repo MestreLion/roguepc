@@ -603,6 +603,10 @@ void	new_monster(), f_restor(), give_pack();
 THING	*wake_monster(), *moat();
 int	exp_add();
 
+//@ move.c
+void	do_run(), do_move(), door_open(), descend(), rndmove();
+byte	be_trapped();
+
 //@ pack.c
 byte	pack_char();
 
