@@ -18,8 +18,6 @@
  * procedure declarations
  */
 char *balloc();
-char *stpbrk();
-char *stpblk();
 
 /*
  * Now all the global variables
@@ -109,6 +107,9 @@ int	curch();
 /*@
  * Functions and constants from libc
  */
+
+//@ is{alpha,digit,upper,...}() and to{ascii,upper,lower}() families
+#include <ctype.h>
 
 //@ Get size_t and NULL
 #include <stddef.h>

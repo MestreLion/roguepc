@@ -663,6 +663,10 @@ bool	new_slime(), plop_monster();
 void	fix_stick(), do_zap(), drain(), fire_bolt();
 char	*charge_str();
 
+//@ strings.c
+char	*stccpy(), *stpblk(), *stpbrk(), *endblk();
+void	lcase();
+
 //@ things.c
 char	*inv_name(), *nothing();
 void	chopmsg(), drop(), discovered(), print_disc(), set_order();

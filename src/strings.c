@@ -1,15 +1,11 @@
+#include <string.h>   //@ strlen(), strchr()
+#include <ctype.h>    //@ is...() and to...() family
 
-// Get size_t and NULL
-#include <stddef.h>
+//@ extern char ctp_[]; //@ not needed anymore
 
-// From <string.h>
-size_t strlen(const char *s);
-
-// From <strings.h>
-char	*index(const char *s, int c);
-
-extern char ctp_[];
-
+/*@
+ * Functions available in <ctype.h>
+ *
 isalpha(x) {	return  x > 128 ? 0 : (ctp_[(x)+1]&0x03); }
 isupper(x) {	return  x > 128 ? 0 : (ctp_[(x)+1]&0x01); }
 islower(x) {	return  x > 128 ? 0 : (ctp_[(x)+1]&0x02); }
@@ -33,7 +29,14 @@ tolower(chr)
 {
 	return(isupper(chr)?((chr)+('a'-'A')):(chr));
 }
+*/
 
+/*@
+ * No exact match in signature and behavior from glibc or POSIX
+ * Similar to <string.h> strncpy(), but not a drop-in equivalent.
+ * snprintf() is perhaps a better replacement candidate.
+ */
+char *
 stccpy(s1,s2,count)
 	char *s1, *s2;
 	int count;
@@ -52,6 +55,8 @@ stccpy(s1,s2,count)
 /*
  * redo Lattice token parsing routines
  */
+
+//@ strip leading blanks
 char *
 stpblk(str)
 	char *str;
@@ -61,10 +66,15 @@ stpblk(str)
 	return(str);
 }
 
+/*@
+ * Return a pointer to the first occurrence in str
+ * of any char in brk. Seems identical to strpbrk()
+ */
+char *
 stpbrk(str,brk)
 	char *str,*brk;
 {
-	while(*str && !index(brk,*str))
+	while(*str && !strchr(brk,*str))
 		str++;
 	return(*str ? str : 0);
 }
@@ -73,6 +83,7 @@ stpbrk(str,brk)
 /*
  * remove trailing whitespace from the end of a line
  */
+char *
 endblk(str)
 	char *str;
 {
@@ -87,9 +98,10 @@ endblk(str)
 /*
  * lcase: convert a string to lower case
  */
+void
 lcase(str)
 	char *str;
 {
-	while ( *str = tolower(*str) )
+	while ( (*str = tolower(*str)) )
 		str++;
 }
