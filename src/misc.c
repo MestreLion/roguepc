@@ -38,8 +38,9 @@ byte type;
  * look:
  *	A quick glance all around the player
  */
+void
 look(wakeup)
-bool wakeup;
+	bool wakeup;
 {
 	register int x, y;
 	register byte ch, pch;
@@ -230,7 +231,7 @@ bool wakeup;
  */
 THING *
 find_obj(y, x)
-register int y, x;
+	register int y, x;
 {
 	register THING *op;
 
@@ -250,43 +251,44 @@ register int y, x;
  * eat:
  *	She wants to eat something, so let her try
  */
+void
 eat()
 {
 	register THING *obj;
 
 	if ((obj = get_item("eat", FOOD)) == NULL)
-	return;
+		return;
 	if (obj->o_type != FOOD)
 	{
-	msg("ugh, you would get ill if you ate that");
-	return;
+		msg("ugh, you would get ill if you ate that");
+		return;
 	}
 	inpack--;
 	if (--obj->o_count < 1)
 	{
-	detach(pack, obj);
-	discard(obj);
+		detach(pack, obj);
+		discard(obj);
 	}
 	if (food_left < 0)
-	food_left = 0;
+		food_left = 0;
 	if (food_left > (STOMACHSIZE - 20))
 		no_command += 2 + rnd(5);
 	if ((food_left += HUNGERTIME - 200 + rnd(400)) > STOMACHSIZE)
-	food_left = STOMACHSIZE;
+		food_left = STOMACHSIZE;
 	hungry_state = 0;
 	if (obj == cur_weapon)
-	cur_weapon = NULL;
+		cur_weapon = NULL;
 	if (obj->o_which == 1)
-	msg("my, that was a yummy %s", fruit);
+		msg("my, that was a yummy %s", fruit);
 	else
-	if (rnd(100) > 70)
-	{
-		pstats.s_exp++;
-		msg("yuk, this food tastes awful");
-		check_level();
-	}
-	else
-		msg("yum, that tasted good");
+		if (rnd(100) > 70)
+		{
+			pstats.s_exp++;
+			msg("yuk, this food tastes awful");
+			check_level();
+		}
+		else
+			msg("yum, that tasted good");
 	if (no_command)
 		msg("You feel bloated and fall asleep");
 }
@@ -296,8 +298,9 @@ eat()
  *	Used to modify the player's strength.  It keeps track of the
  *	highest it has been, just in case
  */
+void
 chg_str(amt)
-register int amt;
+	register int amt;
 {
 	str_t comp;
 
@@ -317,38 +320,40 @@ register int amt;
  * add_str:
  *	Perform the actual add, checking upper and lower bound
  */
+void
 add_str(sp, amt)
-register str_t *sp;
-int amt;
+	register str_t *sp;
+	int amt;
 {
 	if ((*sp += amt) < 3)
-	*sp = 3;
+		*sp = 3;
 	else if (*sp > 31)
-	*sp = 31;
+		*sp = 31;
 }
 
 /*
  * add_haste:
  *	Add a haste to the player
  */
+bool
 add_haste(potion)
-bool potion;
+	bool potion;
 {
 	if (on(player, ISHASTE))
 	{
-	no_command += rnd(8);
-	player.t_flags &= ~ISRUN;
-	extinguish(nohaste);
-	player.t_flags &= ~ISHASTE;
-	msg("you faint from exhaustion");
-	return FALSE;
+		no_command += rnd(8);
+		player.t_flags &= ~ISRUN;
+		extinguish(nohaste);
+		player.t_flags &= ~ISHASTE;
+		msg("you faint from exhaustion");
+		return FALSE;
 	}
 	else
 	{
-	player.t_flags |= ISHASTE;
-	if (potion)
-		fuse(nohaste, 0, rnd(4)+10);
-	return TRUE;
+		player.t_flags |= ISHASTE;
+		if (potion)
+			fuse(nohaste, 0, rnd(4)+10);
+		return TRUE;
 	}
 }
 
@@ -356,12 +361,13 @@ bool potion;
  * aggravate:
  *	Aggravate all the monsters on this level
  */
+void
 aggravate()
 {
 	register THING *mi;
 
 	for (mi = mlist; mi != NULL; mi = next(mi))
-	start_run(&mi->t_pos);
+		start_run(&mi->t_pos);
 }
 
 /*
@@ -371,7 +377,7 @@ aggravate()
  */
 char *
 vowelstr(str)
-register char *str;
+	register char *str;
 {
 	switch (*str)
 	{
@@ -390,8 +396,9 @@ register char *str;
  * is_current:
  *	See if the object is one of the currently used items
  */
+bool
 is_current(obj)
-register THING *obj;
+	register THING *obj;
 {
 	if (obj == NULL)
 		return FALSE;
@@ -408,10 +415,9 @@ register THING *obj;
  *      Set up the direction co_ordinate for use in varios "prefix"
  *	commands
  */
+bool
 get_dir()
 {
-	register char *prompt;
-	bool gotit;
 	register int ch;
 
 	if (again)
@@ -425,16 +431,17 @@ get_dir()
 	while (find_dir(ch, &delta) == 0);
 	msg("");
 	if (on(player, ISHUH) && rnd(5) == 0)
-	do {
-		delta.y = rnd(3) - 1;
-		delta.x = rnd(3) - 1;
-	} while (delta.y == 0 && delta.x == 0);
+		do {
+			delta.y = rnd(3) - 1;
+			delta.x = rnd(3) - 1;
+		} while (delta.y == 0 && delta.x == 0);
 	return TRUE;
 }
 
+bool
 find_dir(ch, cp)
-byte ch;
-coord *cp;
+	byte ch;
+	coord *cp;
 {
 	bool gotit;
 
@@ -457,8 +464,9 @@ coord *cp;
  * sign:
  *	Return the sign of the number
  */
+shint
 sign(nm)
-register int nm;
+	register int nm;
 {
 	if (nm < 0)
 		return -1;
@@ -470,24 +478,25 @@ register int nm;
  * spread:
  *	Give a spread around a given number (+/- 10%)
  */
+int
 spread(nm)
-register int nm;
+	register int nm;
 {
-	register int r = nm - nm / 10 + rnd(nm / 5);
-	return r;
+	return nm - nm / 10 + rnd(nm / 5);
 }
 
 /*
  * call_it:
  *	Call an object something after use.
  */
+void
 call_it(know, guess)
-register bool know;
-register char **guess;
+	register bool know;
+	register char **guess;
 {
 	if (know && **guess)
-		**guess = NULL;
-	else if (!know && **guess == NULL) {
+		**guess = (size_t)NULL;
+	else if (!know && **guess == (size_t)NULL) {
 		msg("%scall it? ",noterse("what do you want to "));
 		getinfo(prbuf,MAXNAME);
 		if (*prbuf != ESCAPE)
@@ -500,6 +509,7 @@ register char **guess;
  * step_ok:
  *	Returns true if it is ok to step on ch
  */
+bool
 step_ok(ch)
 {
 	switch (ch)
@@ -522,21 +532,21 @@ step_ok(ch)
  *	Decide how good an object is and return the correct character for
  * printing.
  */
-
+char
 goodch(obj)
-register THING *obj;
+	register THING *obj;
 {
-	register int ch = MAGIC;
+	register char ch = MAGIC;
 
 	if (obj->o_flags & ISCURSED)
-	ch = BMAGIC;
+		ch = BMAGIC;
 	switch (obj->o_type) {
 	when ARMOR:
 		if (obj->o_ac > a_class[obj->o_which])
-		ch = BMAGIC;
+			ch = BMAGIC;
 	when WEAPON:
 		if (obj->o_hplus < 0 || obj->o_dplus < 0)
-		ch = BMAGIC;
+			ch = BMAGIC;
 	when SCROLL:
 		switch (obj->o_which) {
 		when S_SLEEP:
@@ -568,7 +578,7 @@ register THING *obj;
 		case R_ADDDAM:
 		case R_ADDHIT:
 			if (obj->o_ac < 0)
-			ch = BMAGIC;
+				ch = BMAGIC;
 		when R_AGGR:
 		case R_TELEPORT:
 			ch = BMAGIC;
@@ -582,6 +592,7 @@ register THING *obj;
 /*
  * help: prints out help screens
  */
+void
 help(helpscr)
 	char **helpscr;
 {
@@ -608,7 +619,7 @@ help(helpscr)
 				isfull = TRUE;
 		}
 		else
-{
+		{
 			hrow = (hcount % 46) / 2;
 			if (hcount % 2)
 				hcol = 40;
@@ -636,15 +647,16 @@ help(helpscr)
 			while (answer != ' ' && answer != ESCAPE) ;
 		}
 		hcount++;
-   }
-   wrestor();
+	}
+	wrestor();
 #endif //HELP
 }
 
 #ifndef UNIX
 
+int
 DISTANCE(y1, x1, y2, x2)
-int y1, x1, y2, x2;
+	int y1, x1, y2, x2;
 {
 	register int dx, dy;
 
@@ -653,12 +665,14 @@ int y1, x1, y2, x2;
 	return dx * dx + dy * dy;
 }
 
+bool
 _ce(a,b)
 	coord *a, *b;
 {
 	return(a->x == b->x && a->y == b->y);
 }
 
+int
 INDEX(y,x)
 {
 #ifdef DEBUG
@@ -668,11 +682,13 @@ INDEX(y,x)
 	return((x * (maxrow-1)) + y - 1);
 }
 
+bool
 offmap(y,x)
 {
 	return (y < 1 || y >= maxrow || x < 0 || x >= COLS) ;
 }
 
+byte
 winat(y,x)
 	int y, x;
 {
@@ -684,6 +700,7 @@ winat(y,x)
  * search:
  *	Player gropes about him to find hidden things.
  */
+void
 search()
 {
 	register int y, x;
@@ -691,40 +708,40 @@ search()
 	register int ey, ex;
 
 	if (on(player, ISBLIND))
-	return;
+		return;
 	ey = hero.y + 1;
 	ex = hero.x + 1;
 	for (y = hero.y - 1; y <= ey; y++)
-	for (x = hero.x - 1; x <= ex; x++)
-	{
-		if ((y == hero.y && x == hero.x) || offmap(y, x))
-		continue;
-		fp = &flat(y, x);
-		if (!(*fp & F_REAL))
-		switch (chat(y, x))
+		for (x = hero.x - 1; x <= ex; x++)
 		{
-			case VWALL:
-			case HWALL:
-			case ULWALL:
-			case URWALL:
-			case LLWALL:
-			case LRWALL:
-			if (rnd(5) != 0)
-				break;
-			chat(y, x) = DOOR;
-			*fp |= F_REAL;
-			count = running = FALSE;
-			break;
-			case FLOOR:
-			if (rnd(2) != 0)
-				break;
-			chat(y, x) = TRAP;
-			*fp |= F_REAL;
-			count = running = FALSE;
-			msg("you found %s", tr_name(*fp & F_TMASK));
-			break;
+			if ((y == hero.y && x == hero.x) || offmap(y, x))
+				continue;
+			fp = &flat(y, x);
+			if (!(*fp & F_REAL))
+				switch (chat(y, x))
+				{
+					case VWALL:
+					case HWALL:
+					case ULWALL:
+					case URWALL:
+					case LLWALL:
+					case LRWALL:
+						if (rnd(5) != 0)
+							break;
+						chat(y, x) = DOOR;
+						*fp |= F_REAL;
+						count = running = FALSE;
+						break;
+					case FLOOR:
+						if (rnd(2) != 0)
+							break;
+						chat(y, x) = TRAP;
+						*fp |= F_REAL;
+						count = running = FALSE;
+						msg("you found %s", tr_name(*fp & F_TMASK));
+						break;
+				}
 		}
-	}
 }
 
 
@@ -732,6 +749,7 @@ search()
  * d_level:
  *	He wants to go down a level
  */
+void
 d_level()
 {
 	if (chat(hero.y, hero.x) != STAIRS)
@@ -746,6 +764,7 @@ d_level()
  * u_level:
  *	He wants to go up a level
  */
+void
 u_level()
 {
 	if (chat(hero.y, hero.x) == STAIRS)
@@ -755,7 +774,8 @@ u_level()
 				total_winner();
 			new_level();
 			msg("you feel a wrenching sensation in your gut");
-		} else
+		}
+		else
 			msg("your way is magically blocked");
 	else
 		msg("I see no way up");
@@ -765,6 +785,7 @@ u_level()
  * call:
  *	Allow a user to call a potion, scroll, or ring something
  */
+void
 call()
 {
 	register THING *obj;
@@ -776,28 +797,28 @@ call()
 	 * Make certain that it is somethings that we want to wear
 	 */
 	if (obj == NULL)
-	return;
+		return;
 	switch (obj->o_type)
 	{
 	when RING:
 		guess = (char **)r_guess;
 		know = r_know;
-		elsewise = (*guess[obj->o_which] != NULL ?
+		elsewise = (*guess[obj->o_which] != (size_t)NULL ?
 			guess[obj->o_which] : r_stones[obj->o_which]);
 	when POTION:
 		guess = (char **)p_guess;
 		know = p_know;
-		elsewise = (*guess[obj->o_which] != NULL ?
+		elsewise = (*guess[obj->o_which] != (size_t)NULL ?
 			guess[obj->o_which] : p_colors[obj->o_which]);
 	when SCROLL:
 		guess = (char **)s_guess;
 		know = s_know;
-		elsewise = (*guess[obj->o_which] != NULL ?
+		elsewise = (*guess[obj->o_which] != (size_t)NULL ?
 			guess[obj->o_which] : (char *)(&s_names[obj->o_which]));
 	when STICK:
 		guess = (char **)ws_guess;
 		know = ws_know;
-		elsewise = (*guess[obj->o_which] != NULL ?
+		elsewise = (*guess[obj->o_which] != (size_t)NULL ?
 			guess[obj->o_which] : ws_made[obj->o_which]);
 	otherwise:
 		msg("you can't call that anything");
@@ -805,8 +826,8 @@ call()
 	}
 	if (know[obj->o_which])
 	{
-	msg("that has already been identified");
-	return;
+		msg("that has already been identified");
+		return;
 	}
 	msg("Was called \"%s\"", elsewise);
 	msg("what do you want to call it? ");
@@ -819,6 +840,7 @@ call()
 /*
  * prompt player for definition of macro
  */
+void
 do_macro(buf,sz)
 	char *buf;
 	int sz;
@@ -836,6 +858,7 @@ do_macro(buf,sz)
 }
 
 #ifdef ME
+bool
 me()
 {
 	return is_me;
@@ -844,6 +867,7 @@ me()
 
 
 #ifdef TEST
+bool
 istest()
 {
 	return (!strcmp("debug",fruit));

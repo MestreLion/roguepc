@@ -580,6 +580,23 @@ int	rnd(), roll();
 void	draw_maze(), new_frontier(), add_frnt(), con_frnt(), splat();
 bool	maze_at(), inrange();
 
+//@ misc.c
+void	look(), eat(), chg_str(), add_str(), aggravate(), call_it(),
+		help(), search(), d_level(), u_level(), call(), do_macro();
+THING	*find_obj();
+bool	add_haste(), is_current(), get_dir(), find_dir(), step_ok(),
+		_ce(), offmap();
+char	*tr_name(), *vowelstr(), goodch();
+shint	sign();
+byte	winat();
+int	spread(), DISTANCE(), INDEX();
+#ifdef ME
+bool	me();
+#endif
+#ifdef TEST
+bool	istest();
+#endif
+
 //@ pack.c
 byte	pack_char();
 
