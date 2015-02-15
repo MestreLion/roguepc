@@ -597,6 +597,12 @@ bool	me();
 bool	istest();
 #endif
 
+//@ monsters.c
+char	randmonster(), pick_mons();
+void	new_monster(), f_restor(), give_pack();
+THING	*wake_monster(), *moat();
+int	exp_add();
+
 //@ pack.c
 byte	pack_char();
 

@@ -80,8 +80,6 @@ extern int cksum;
  * Function types
  */
 
-THING *moat();
-
 char	*brk(), *charge_str(), *ctime(), *getenv(), *inv_name(),
 	*killname(), *nothing(), *num(), *ring_num(),
 	*sbrk(), *strcat(), *strcpy();

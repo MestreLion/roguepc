@@ -19,8 +19,9 @@ static char *wand_mons = "KEBHISORZ CAQ YTW PUGM VJ ";
  *	Pick a monster to show up.  The lower the level,
  *	the meaner the monster.
  */
+char
 randmonster(wander)
-bool wander;
+	bool wander;
 {
 	register int d;
 	register char *mons;
@@ -42,10 +43,11 @@ bool wander;
  * new_monster:
  *	Pick a new monster and add it to the list
  */
+void
 new_monster(tp, type, cp)
-THING *tp;
-byte type;
-coord *cp;
+	THING *tp;
+	byte type;
+	coord *cp;
 {
 	register struct monster *mp;
 	register int lev_add;
@@ -90,20 +92,22 @@ coord *cp;
 /*
  *  f_restor(): restor initial damage string for flytraps
  */
- f_restor()
- {
+void
+f_restor()
+{
 	register struct monster *mp = &monsters['F'-'A'];
 
 	fung_hit = 0;
 	strcpy(f_damage, mp->m_stats.s_dmg);
- }
+}
 
 /*
  * expadd:
  *	Experience to add for this monster's level/hit points
  */
+int
 exp_add(tp)
-register THING *tp;
+	register THING *tp;
 {
 	register int mod;
 
@@ -122,6 +126,7 @@ register THING *tp;
  * wanderer:
  *	Create a new wandering monster and aim it at the player
  */
+void
 wanderer()
 {
 	int i;
@@ -158,7 +163,7 @@ wanderer()
  */
 THING *
 wake_monster(y, x)
-int y, x;
+	int y, x;
 {
 	register THING *tp;
 	register struct room *rp;
@@ -211,8 +216,9 @@ int y, x;
  * give_pack:
  *	Give a pack to a monster if it deserves one
  */
+void
 give_pack(tp)
-THING *tp;
+	THING *tp;
 {
 	/*
 	 * check if we can allocate a new item
@@ -225,7 +231,7 @@ THING *tp;
  * pick_mons:
  *	Choose a sort of monster for the enemy of a vorpally enchanted weapon
  */
-
+char
 pick_mons()
 {
 	register char *cp = lvl_mons + strlen(lvl_mons);
