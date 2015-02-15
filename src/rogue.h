@@ -522,6 +522,9 @@ coord	*find_dest();
 //@ command.c
 void	command(), show_count(), execcom();
 
+//@ croot.c
+void	exit();
+
 //@ daemon.c
 void	daemon(), do_daemons(), fuse(), lengthen(), extinguish(),
 		do_fuses();
