@@ -40,6 +40,7 @@ char *msaveid = "AI Design";
  * save_game:
  *	Implement the "save game" command
  */
+void
 save_game()
 {
 #ifndef DEMO
@@ -81,6 +82,7 @@ save_game()
  *		and then dump data area determined previous to opening
  *		file.
  */
+int
 save_ds(savename)
 	char *savename;
 {
@@ -133,6 +135,7 @@ save_ds(savename)
 		}
 }
 #endif //DEMO
+
 /*
  *	Restore:
  *		Open saved data file, read in header, and determine how much
@@ -144,8 +147,9 @@ save_ds(savename)
  *		skip header,
  *		dump into memory all saved data.
  */
+void
 restore(savefile)
-char *savefile;
+	char *savefile;
 {
 #ifndef DEMO
 	int oldrev, oldver, old_check;

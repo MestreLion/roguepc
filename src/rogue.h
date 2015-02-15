@@ -644,6 +644,10 @@ void	demo();
 void	do_rooms(), draw_room(), vert(), horiz(), rnd_pos(), enter_room(),
 		leave_room();
 
+//@ save.c
+void	save_game(), restore();
+int	save_ds();
+
 //@ things.c
 bool	can_drop();
 
