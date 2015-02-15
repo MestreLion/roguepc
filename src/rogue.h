@@ -623,6 +623,8 @@ void	conn(), do_passages(), door(), passnum(), numpass(), psplat();
 void	quaff(), invis_on(), th_effect();
 bool	turn_see();
 
+//@ protect.c
+void	protect();
 
 //@ things.c
 bool	can_drop();
