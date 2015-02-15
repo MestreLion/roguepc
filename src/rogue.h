@@ -548,10 +548,12 @@ void	init_player(), init_things(), init_colors(), init_materials(),
 		init_ds();
 char	*getsyl(), rchr();
 
-
 //@ io.c
-void	msg();
-char	*noterse();
+void	ifterse(), msg(), addmsg(), endmsg(), more(), doadd(), putmsg(),
+		scrl(), status(), wait_for(), show_win(), backspace(), str_attr(),
+		SIG2();
+char	*unctrl(), *noterse();
+int	getinfo();
 
 //@ pack.c
 byte	pack_char();

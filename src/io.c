@@ -11,7 +11,6 @@ extern int scr_type;
 extern unsigned tick;
 
 #define AC(a) (-((a)-11))
-char *stpbrk();
 #define PT(i,j) ((COLS==40)?i:j)
 /*
  * msg:
@@ -21,10 +20,10 @@ extern char *msgbuf;
 static int newpos = 0;
 
 /* VARARGS1 */
-
+void
 ifterse(tfmt,fmt,a1,a2,a3,a4,a5)
-char *tfmt,*fmt;
-int a1,a2,a3,a4,a5;
+	char *tfmt,*fmt;
+	int a1,a2,a3,a4,a5;
 {
 	if (expert)
 		msg(tfmt,a1,a2,a3,a4,a5);
@@ -34,8 +33,8 @@ int a1,a2,a3,a4,a5;
 
 void
 msg(fmt, a1, a2, a3, a4, a5)
-char *fmt;
-int a1,a2,a3,a4,a5;
+	char *fmt;
+	int a1,a2,a3,a4,a5;
 {
 	/*
 	 * if the string is "", just clear the line
@@ -59,9 +58,10 @@ int a1,a2,a3,a4,a5;
  *	Add things to the current message
  */
 /* VARARGS1 */
+void
 addmsg(fmt, a1,a2,a3,a4,a5)
-char *fmt;
-int a1,a2,a3,a4,a5;
+	char *fmt;
+	int a1,a2,a3,a4,a5;
 {
 	doadd(fmt, a1,a2,a3,a4,a5);
 }
@@ -71,6 +71,7 @@ int a1,a2,a3,a4,a5;
  *	Display a new msg (giving him a chance to see the previous one
  *	if it is up there with the -More-)
  */
+void
 endmsg()
 {
 	if (save_msg)
@@ -95,6 +96,7 @@ endmsg()
 /*
  *  More:  tag the end of a line and wait for a space
  */
+void
 more(msg)
 	char *msg;
 {
@@ -124,14 +126,14 @@ more(msg)
 		if ((i+y) < (COLS-2))
 			move(x,y+i+1);
 		mbuf[i+1] = 0;
-	 }
+	}
 
-	 move(x,y);
-	 standout();
-	 addstr(msg);
-	 standend();
+	move(x,y);
+	standout();
+	addstr(msg);
+	standend();
 
-	 while (readchar() != ' ') {
+	while (readchar() != ' ') {
 		if (covered && morethere) {
 			move(x,y);
 			addstr(mbuf);
@@ -145,9 +147,9 @@ more(msg)
 			standend();
 			morethere = TRUE;
 		}
-	 }
-	 move(x,y);
-	 addstr(mbuf);
+	}
+	move(x,y);
+	addstr(mbuf);
 }
 
 
@@ -155,9 +157,10 @@ more(msg)
  * doadd:
  *	Perform an add onto the message buffer
  */
+void
 doadd(fmt, a1, a2, a3, a4, a5)
-char *fmt;
-int a1, a2, a3, a4, a5;
+	char *fmt;
+	int a1, a2, a3, a4, a5;
 {
 	sprintf(&msgbuf[newpos],fmt, a1, a2, a3, a4, a5);
 	newpos = strlen(msgbuf);
@@ -168,6 +171,7 @@ int a1, a2, a3, a4, a5;
  *  put a msg on the line, make sure that it will fit, if it won't
  *  scroll msg sideways until he has read it all
  */
+void
 putmsg(msgline,msg)
 	int msgline;
 	char *msg;
@@ -194,20 +198,20 @@ putmsg(msgline,msg)
 				if ((tmpmsg >= (lastmsg+COLS)) || (strlen(curmsg) < COLS))
 					break;
 				curmsg = tmpmsg + 1;
-			} while (1) ;
+			} while (1);
 		}
-	} while (curlen > COLS) ;
+	} while (curlen > COLS);
 }
 
 /*
  * scrl:  scroll a message accross the line
  */
+void
 scrl(msgline,str1,str2)
 	int msgline;
 	char *str1, *str2;
 {
 	char *fmt;
-	register int x,y;
 
 	if (COLS > 40)
 		fmt = "%.80s";
@@ -219,7 +223,8 @@ scrl(msgline,str1,str2)
 		if (strlen(str2) < COLS)
 			clrtoeol();
 		printw(fmt,str2);
-	} else
+	}
+	else
 		while (str1 <= str2) {
 			move(msgline,0);
 			printw(fmt,str1++);
@@ -238,7 +243,7 @@ unsigned char ch;
 {
 	static char chstr[9];		/* Defined in curses library */
 
-	if (isspace(ch) )
+	if (isspace(ch))
 		strcpy(chstr," ");
 	else if (!isprint(ch))
 		if (ch < ' ')
@@ -257,6 +262,7 @@ unsigned char ch;
  * status:
  *	Display the important stats line.  Keep the cursor where it was.
  */
+void
 status()
 {
 	int oy, ox;
@@ -266,7 +272,7 @@ status()
 	static int s_elvl = 0;
 	static char *state_name[] =
 	{
-	"      ", "Hungry", "Weak", "Faint","?"
+		"      ", "Hungry", "Weak", "Faint","?"
 	};
 
 	SIG2();
@@ -305,7 +311,7 @@ status()
 	{
 		s_str = pstats.s_str;
 		move(PT(22,23),26);
-	printw("Str:%.3d(%.3d) ", pstats.s_str, max_stats.s_str);
+		printw("Str:%.3d(%.3d) ", pstats.s_str, max_stats.s_str);
 	}
 
 	/*
@@ -314,7 +320,7 @@ status()
 	if(s_pur != purse)
 	{
 		s_pur = purse;
-	move(23, PT(0,40));
+		move(23, PT(0,40));
 		printw("Gold:%-5.5u",purse);
 	}
 
@@ -324,13 +330,13 @@ status()
 	if(s_ac != (cur_armor != NULL ? cur_armor->o_ac : pstats.s_arm))
 	{
 		s_ac = (cur_armor != NULL ? cur_armor->o_ac : pstats.s_arm);
-	if (ISRING(LEFT,R_PROTECT))
+		if (ISRING(LEFT,R_PROTECT))
 			s_ac -= cur_ring[LEFT]->o_ac;
-	if (ISRING(RIGHT,R_PROTECT))
+		if (ISRING(RIGHT,R_PROTECT))
 			s_ac -= cur_ring[RIGHT]->o_ac;
 		move(23,PT(12,52));
 		printw("Armor:%-2.2d",
-			AC(cur_armor != NULL ? cur_armor->o_ac : pstats.s_arm));
+		AC(cur_armor != NULL ? cur_armor->o_ac : pstats.s_arm));
 	}
 
 	/*
@@ -350,7 +356,7 @@ status()
 	{
 		s_hungry = hungry_state;
 		move(24, PT(28,58));
-	addstr(state_name[0]);
+		addstr(state_name[0]);
 		move(24, PT(28,58));
 		if (hungry_state)
 		{
@@ -361,36 +367,37 @@ status()
 	}
 
 	if (is_color)
-	   standend();
+		standend();
 
 	move(oy, ox);
-
 }
 
 /*
  * wait_for
  *	Sit around until the guy types the right key
  */
+void
 wait_for(ch)
-char ch;
+	char ch;
 {
 	register char c;
 
 	if (ch == '\n')
 		while ((c = readchar()) != '\n' && c != '\r')
-		continue;
+			continue;
 	else
-	   while (readchar() != ch)
-		continue;
+		while (readchar() != ch)
+			continue;
 }
 
 /*
  * show_win:
  *	Function used to display a window and wait before returning
  */
+void
 show_win(scr, message)
-int *scr;
-char *message;
+	int *scr;
+	char *message;
 {
 	mvaddstr(0,0,message);
 	move(hero.y, hero.x);
@@ -403,6 +410,7 @@ char *message;
  * It should do all the strange processing that is
  * needed to retrieve sensible data from the user
  */
+int
 getinfo(str,size)
 	char *str;
 	int size;
@@ -436,8 +444,8 @@ getinfo(str,size)
 				break;
 			default:
 				if ( readcnt >= size) {
-				   beep();
-				   break;
+					beep();
+					break;
 				}
 				readcnt++;
 				addch(ch);
@@ -456,6 +464,7 @@ getinfo(str,size)
 	return ret;
 }
 
+void
 backspace()
 {
 	int x, y;
@@ -485,6 +494,7 @@ backspace()
  *     attributes.  And I'm not sure how I'm going to interface this with
  *     printf certainly '%' isn't a good choice of characters.  jll.
  */
+void
 str_attr(str)
 	char *str;
 {
@@ -538,20 +548,20 @@ str_attr(str)
 #else
 	while (*str)
 	{
-	if (*str == '%') {
-		str++;
-		standout();
+		if (*str == '%') {
+			str++;
+			standout();
+		}
+		addch(*str++);
+		standend();
 	}
-	addch(*str++);
-	standend();
-	}
-
 #endif //LUXURY
 }
 
 /*
  * key_state:
  */
+void
 SIG2()
 {
 	static unsigned icnt = 0, ntick = 0;
@@ -571,7 +581,7 @@ SIG2()
 		return;
 	ntick = tick + 6;
 	if (is_saved || scr_type < 0)
-			return;
+		return;
 	regs->ax = 0x200;
 	swint(SW_KEY, regs);
 	new_numl = regs->ax;
@@ -644,11 +654,11 @@ SIG2()
 			bold();
 			addstr("Fast Play");
 			standend();
-		 }
-		 else
-		 {
+		}
+		else
+		{
 			addstr("         ");
-		 }
+		}
 	}
 
 	if (numl != new_numl)
