@@ -667,6 +667,14 @@ THING	*new_thing();
 byte	add_line(), end_line();
 int	pick_one();
 
+//@ weapons.c
+void	missile(), do_motion(), fall(), init_weapon(), wield(),
+		tick_pause();
+char	*short_name(), *num();
+bool	hit_monster();
+int	fallpos();
+
+
 THING	*find_mons();
 
 #include "extern.h"

@@ -15,24 +15,25 @@ static struct init_weps {
 	char iw_launch;	/* Launching weapon */
 	int iw_flags;	/* Miscellaneous flags */
 } init_dam[MAXWEAPONS] = {
-	"2d4",	"1d3",	NONE, 		0,		/* Mace */
-	"3d4",	"1d2",	NONE,		0,		/* Long sword */
-	"1d1",	"1d1",	NONE,		0,		/* Bow */
-	"1d1",	"2d3",	BOW,		ISMANY|ISMISL,	/* Arrow */
-	"1d6",	"1d4",	NONE,		ISMISL,		/* Dagger */
-	"4d4",	"1d2",	NONE,		0,		/* 2h sword */
-	"1d1",	"1d3",	NONE,		ISMANY|ISMISL,	/* Dart */
-	"1d1",	"1d1",	NONE,		0,		/* Crossbow */
-	"1d2",	"2d5",	CROSSBOW,	ISMANY|ISMISL,	/* Crossbow bolt */
-	"2d3",	"1d6",	NONE,		ISMISL		/* Spear */
+	{"2d4",	"1d3",	NONE,     0},            	/* Mace */
+	{"3d4",	"1d2",	NONE,     0},            	/* Long sword */
+	{"1d1",	"1d1",	NONE,     0},            	/* Bow */
+	{"1d1",	"2d3",	BOW,      ISMANY|ISMISL},	/* Arrow */
+	{"1d6",	"1d4",	NONE,     ISMISL},       	/* Dagger */
+	{"4d4",	"1d2",	NONE,     0},            	/* 2h sword */
+	{"1d1",	"1d3",	NONE,     ISMANY|ISMISL},	/* Dart */
+	{"1d1",	"1d1",	NONE,     0},            	/* Crossbow */
+	{"1d2",	"2d5",	CROSSBOW, ISMANY|ISMISL},	/* Crossbow bolt */
+	{"2d3",	"1d6",	NONE,     ISMISL}        	/* Spear */
 };
 
 /*
  * missile:
  *	Fire a missile in a given direction
  */
+void
 missile(ydelta, xdelta)
-int ydelta, xdelta;
+	int ydelta, xdelta;
 {
 	register THING *obj, *nitem;
 
@@ -83,9 +84,10 @@ int ydelta, xdelta;
  *	Do the actual motion on the screen done by an object traveling
  *	across the room
  */
+void
 do_motion(obj, ydelta, xdelta)
-THING *obj;
-register int ydelta, xdelta;
+	THING *obj;
+	register int ydelta, xdelta;
 {
 	register byte under = '@';
 
@@ -126,7 +128,7 @@ register int ydelta, xdelta;
 
 char *
 short_name(obj)
-THING *obj;
+	THING *obj;
 {
 	switch (obj->o_type) {
 		case WEAPON: return w_names[obj->o_which];
@@ -147,9 +149,10 @@ THING *obj;
  * fall:
  *	Drop an item someplace around here.
  */
+void
 fall(obj, pr)
-THING *obj;
-bool pr;
+	THING *obj;
+	bool pr;
 {
 	static coord fpos;
 	register int index;
@@ -162,13 +165,13 @@ bool pr;
 		bcopy(obj->o_pos,fpos);
 		if (cansee(fpos.y, fpos.x))
 		{
-		if ((flat(obj->o_pos.y, obj->o_pos.x) & F_PASS) ||
-					   (flat(obj->o_pos.y, obj->o_pos.x) & F_MAZE))
-			standout();
-		mvaddch(fpos.y, fpos.x, obj->o_type);
-		standend();
-		if (moat(fpos.y,fpos.x) != NULL)
-			moat(fpos.y,fpos.x)->t_oldch = obj->o_type;
+			if ((flat(obj->o_pos.y, obj->o_pos.x) & F_PASS) ||
+						   (flat(obj->o_pos.y, obj->o_pos.x) & F_MAZE))
+				standout();
+			mvaddch(fpos.y, fpos.x, obj->o_type);
+			standend();
+			if (moat(fpos.y,fpos.x) != NULL)
+				moat(fpos.y,fpos.x)->t_oldch = obj->o_type;
 		}
 		attach(lvl_obj, obj);
 		return;
@@ -186,9 +189,10 @@ bool pr;
  * init_weapon:
  *	Set up the initial goodies for a weapon
  */
+void
 init_weapon(weap, type)
-register THING *weap;
-byte type;
+	register THING *weap;
+	byte type;
 {
 	register struct init_weps *iwp;
 
@@ -199,20 +203,21 @@ byte type;
 	weap->o_flags = iwp->iw_flags;
 	if (weap->o_flags & ISMANY)
 	{
-	weap->o_count = rnd(8) + 8;
-	weap->o_group = group++;
+		weap->o_count = rnd(8) + 8;
+		weap->o_group = group++;
 	}
 	else
-	weap->o_count = 1;
+		weap->o_count = 1;
 }
 
 /*
  * hit_monster:
  *	Does the missile hit the monster?
  */
+bool
 hit_monster(y, x, obj)
-register int y, x;
-THING *obj;
+	register int y, x;
+	THING *obj;
 {
 	static coord mp;
 	register THING *mo = moat(y, x);
@@ -231,14 +236,14 @@ THING *obj;
  */
 char *
 num(n1, n2, type)
-register int n1, n2;
-register char type;
+	register int n1, n2;
+	register char type;
 {
 	static char numbuf[10];
 
 	sprintf(numbuf, "%s%d", n1 < 0 ? "" : "+", n1);
 	if (type == WEAPON)
-	sprintf(&numbuf[strlen(numbuf)], ",%s%d", n2 < 0 ? "" : "+", n2);
+		sprintf(&numbuf[strlen(numbuf)], ",%s%d", n2 < 0 ? "" : "+", n2);
 	return numbuf;
 }
 
@@ -246,6 +251,7 @@ register char type;
  * wield:
  *	Pull out a certain weapon
  */
+void
 wield()
 {
 	register THING *obj, *oweapon;
@@ -254,37 +260,39 @@ wield()
 	oweapon = cur_weapon;
 	if (!can_drop(cur_weapon))
 	{
-	cur_weapon = oweapon;
-	return;
+		cur_weapon = oweapon;
+		return;
 	}
 	cur_weapon = oweapon;
 	if ((obj = get_item("wield", WEAPON)) == NULL)
 	{
 bad:
-	after = FALSE;
-	return;
+		after = FALSE;
+		return;
 	}
 
 	if (obj->o_type == ARMOR)
 	{
-	msg("you can't wield armor");
-	goto bad;
+		msg("you can't wield armor");
+		goto bad;
 	}
 	if (is_current(obj))
 		goto bad;
 
 	sp = inv_name(obj, TRUE);
 	cur_weapon = obj;
-	ifterse2("now wielding %s (%c)","you are now wielding %s (%c)", sp, pack_char(obj));
+	ifterse2("now wielding %s (%c)", "you are now wielding %s (%c)",
+		sp, pack_char(obj));
 }
 
 /*
  * fallpos:
  *	Pick a random position around the given (y, x) coordinates
  */
+int
 fallpos(obj, newpos)
-register coord *newpos;
-THING *obj;
+	register coord *newpos;
+	THING *obj;
 {
 	register int y, x, cnt = 0, ch;
 	THING *onfloor;
@@ -318,6 +326,7 @@ THING *obj;
 		return(cnt != 0);
 }
 
+void
 tick_pause()
 {
 	register int otick;
