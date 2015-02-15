@@ -576,6 +576,9 @@ bool	isjr();
 void	endit(), playit(), quit(), leave(), fatal();
 int	rnd(), roll();
 
+//@ maze.c
+void	draw_maze(), new_frontier(), add_frnt(), con_frnt(), splat();
+bool	maze_at(), inrange();
 
 //@ pack.c
 byte	pack_char();

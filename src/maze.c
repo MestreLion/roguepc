@@ -18,8 +18,9 @@ static shint frcnt, ny, nx, topy, topx;
 static shint maxx, maxy;
 static shint *fr_y, *fr_x;
 
+void
 draw_maze(rp)
-struct room *rp;
+	struct room *rp;
 {
 	register int y, x;
 	shint fy[MAXFRNT], fx[MAXFRNT];
@@ -58,10 +59,10 @@ struct room *rp;
 	rp->r_max.y = maxy - rp->r_pos.y + 1;
 	do {
 		static coord ld[4] = {
-			-1, 0,
-			0, 1,
-			1, 0,
-			0, -1
+			{-1,  0},
+			{ 0,  1},
+			{ 1,  0},
+			{ 0, -1}
 		};
 		coord *cp;
 		int sh;
@@ -70,14 +71,15 @@ struct room *rp;
 		for (psgcnt = 0,cp = ld,sh = 1; cp < &ld[4]; sh <<= 1,cp++) {
 			y = cp->y + spos.y; x = cp->x + spos.x;
 			if (!offmap(y, x) && chat(y, x) == PASSAGE)
-			psgcnt += sh;
+				psgcnt += sh;
 		}
 	} while (chat(spos.y, spos.x) == PASSAGE || psgcnt % 5);
 	splat(spos.y, spos.x);
 }
 
+void
 new_frontier(y, x)
-int y, x;
+	int y, x;
 {
 	add_frnt(y-2, x);
 	add_frnt(y+2, x);
@@ -85,12 +87,13 @@ int y, x;
 	add_frnt(y, x+2);
 }
 
+void
 add_frnt(y, x)
-int y, x;
+	int y, x;
 {
 #ifdef DEBUG
 	if (frcnt == MAXFRNT - 1)
-	debug("MAZE DRAWING ERROR #3\n");
+		debug("MAZE DRAWING ERROR #3\n");
 #endif
 	if (inrange(y, x) && chat(y, x) == NOTHING)
 	{
@@ -103,6 +106,7 @@ int y, x;
 /*
  * Connect randomly to one of the adjacent points in the spanning tree
  */
+void
 con_frnt()
 {
 	register int n, which, ydelt = 0, xdelt = 0;
@@ -122,13 +126,13 @@ con_frnt()
 	/*
 	 * Count and collect the adjacent points we can connect to
 	 */
-	if (maze_at(ny-2, nx) > 0)
+	if (maze_at(ny-2, nx))
 		choice[cnt++] = 0;
-	if (maze_at(ny+2, nx) > 0)
+	if (maze_at(ny+2, nx))
 		choice[cnt++] = 1;
-	if (maze_at(ny, nx-2) > 0)
+	if (maze_at(ny, nx-2))
 		choice[cnt++] = 2;
-	if (maze_at(ny, nx+2) > 0)
+	if (maze_at(ny, nx+2))
 		choice[cnt++] = 3;
 	/*
 	 * Choose one of the open places, connect to it and
@@ -142,6 +146,7 @@ con_frnt()
 		when 1: which = 0; ydelt = 1;
 		when 2: which = 3; xdelt = -1;
 		when 3: which = 2; xdelt = 1;
+		break;
 	}
 	y = ny + ydelt;
 	x = nx + xdelt;
@@ -149,29 +154,29 @@ con_frnt()
 		splat(y, x);
 }
 
+bool
 maze_at(y, x)
 {
-	if (inrange(y, x) && chat(y, x) == PASSAGE)
-		return 1;
-	else
-		return 0;
+	return (inrange(y, x) && chat(y, x) == PASSAGE);
 }
 
+void
 splat(y, x)
 {
 	chat(y, x) = PASSAGE;
 	flat(y, x) = F_MAZE|F_REAL;
 	if (x > maxx)
-	maxx = x;
+		maxx = x;
 	if (y > maxy)
-	maxy = y;
+		maxy = y;
 }
 
 #define MAXY (topy+((maxrow+1)/3))
 #define MAXX (topx+COLS/3)
 
+bool
 inrange(y, x)
-int x, y;
+	int x, y;
 {
 	return(y >= topy && y < MAXY && x >= topx && x < MAXX);
 }
