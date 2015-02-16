@@ -110,18 +110,13 @@ int	curch();
 #include <string.h>
 #define bcopy(a,b)	memmove(&(b),&(a),sizeof(a))
 #define stpchr	strchr
+#define setmem	memset
 
 //@ From <stddef.h>
 #define NULL	((void *)0)
 
-//@ sprintf(), f{open,read,seek,write,close}()
+//@ sprintf(), f{open,read,seek,write,close}(), unlink()
 #include <stdio.h>
-//#define open(fd, flg)	fopen
-//#define read	fread
-//#define lseek	fseek
-//#define write	fwrite
-//#define close	fclose
-
 
 //@ From <stdlib.h>
 #define EXIT_FAILURE	1	/* Failing exit status.  */
