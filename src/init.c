@@ -446,7 +446,7 @@ init_ds(clrflag)
 	_t_alloc = (int *)newmem(MAXITEMS*sizeof(int));
 
 	startmem = tbuf = newmem(MAXSTR);
-	msgbuf = newmem(BUFSIZ);
+	msgbuf = newmem(BUFSIZE);
 	prbuf = newmem(MAXSTR);
 	ring_buf = newmem(6);
 	e_levels = (long *)newmem(20 * sizeof (long));

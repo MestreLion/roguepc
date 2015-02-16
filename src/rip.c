@@ -8,7 +8,7 @@
 #include "rogue.h"
 #include "curses.h"
 
-static int sc_fd;
+static FILE *file;
 /*
  * external curses IBM (jll)
  */
@@ -35,16 +35,16 @@ score(amount, flags, monst)
 
 	if (amount || flags || monst)
 	{
-	move(LINES-1,0);
+		move(LINES-1,0);
 		cursor(TRUE);
 
-	   printw("[Press Enter to see rankings]");
-	   flush_type();
-	   wait_for('\r');
+		printw("[Press Enter to see rankings]");
+		flush_type();
+		wait_for('\r');
 
-	   move(LINES-1,0);
+		move(LINES-1,0);
 	}
-	while ((sc_fd = open(s_score, 0)) < 0)
+	while ((file = fopen(s_score, "r")) != NULL)
 	{
 		printw("\n");
 		if (noscore || (amount == 0))
@@ -55,7 +55,7 @@ reread:
 		{
 		case 'c':
 		case 'C':
-			close(creat(s_score, 0666));
+			fclose(fopen(s_score, "w"));
 			break;
 		case 'r':
 		case 'R':
@@ -65,25 +65,25 @@ reread:
 			return;
 		default:
 			goto reread;
-	}
+		}
 	}
 	printw("\n");
 	get_scores(&top_ten);
 
 	if (noscore != TRUE)
 	{
-	strcpy(his_score.sc_name,whoami);
-	his_score.sc_gold = amount;
-	his_score.sc_fate = flags ? flags : monst;
-	his_score.sc_level = max_level;
-	his_score.sc_rank  = pstats.s_lvl;
-	rank = add_scores(&his_score,&top_ten);
+		strcpy(his_score.sc_name,whoami);
+		his_score.sc_gold = amount;
+		his_score.sc_fate = flags ? flags : monst;
+		his_score.sc_level = max_level;
+		his_score.sc_rank  = pstats.s_lvl;
+		rank = add_scores(&his_score,&top_ten);
 	}
-	close(sc_fd);
+	fclose(file);
 	if (rank > 0) {
-		if ((sc_fd = creat(s_score, 0666)) >= 0) {
+		if ((file = fopen(s_score, "w")) != NULL) {
 			put_scores(&top_ten);
-			close(sc_fd);
+			fclose(file);
 		}
 	}
 	pr_scores(rank,&top_ten);
@@ -101,7 +101,7 @@ get_scores(top10)
 
 	for(i=0; i<TOPSCORES; i++,top10++) {
 		if (retcode > 0)
-			retcode = read(sc_fd,top10,sizeof(struct sc_ent));
+			retcode = fread(top10, sizeof(struct sc_ent), 1, file);
 		if (retcode <= 0)
 			top10->sc_gold = 0;
 	}
@@ -115,7 +115,7 @@ put_scores(top10)
 
 	for (i=0;(i<TOPSCORES) && top10->sc_gold;i++,top10++)
 	{
-		if (write(sc_fd,top10,sizeof(struct sc_ent)) <= 0)
+		if (fwrite(top10, sizeof(struct sc_ent), 1, file) <= 0)
 			return;
 	}
 }

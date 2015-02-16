@@ -63,7 +63,7 @@ save_game()
 	{
 		if ((retcode = save_ds(savename)) == -1)
 		{
-			if (unlink(savename) == 0)
+			if (remove(savename) == 0)
 				ifterse1("out of space?","out of space, can not write %s",savename);
 			msg("Sorry, you can't save the game just now");
 			is_saved = FALSE;
@@ -86,12 +86,12 @@ int
 save_ds(savename)
 	char *savename;
 {
-	register int sfd;
+	register FILE *file;
 	register char answer;
 
-	if ((sfd = open(savename, 0)) >= 0)
+	if ((file = fopen(savename, "r")) != NULL)
 	{
-		close(sfd);
+		fclose(file);
 		msg("%s %sexists, overwrite (y/n) ?",savename,noterse("already "));
 		answer = readchar();
 		msg("");
@@ -99,40 +99,40 @@ save_ds(savename)
 			return(-2);
 	}
 
-	if ((sfd = creat(savename, 0666))  <= 0)
+	if ((file = fopen(savename, "w")) == NULL)
 	{
-		msg("Could not creat %s",savename);
+		msg("Could not create %s",savename);
 		return (-2);
 	}
 	is_saved = TRUE;
 	mpos = 0;
 
 	errno = 1;
-	if (write(sfd,msaveid,MIDSIZE) != MIDSIZE
-		|| write(sfd, &_lowmem , &_Uend - &_lowmem) != &_Uend-&_lowmem
-			|| write(sfd, end_sb, startmem - end_sb) != startmem - end_sb)
+	if ( ! fwrite(msaveid, MIDSIZE, 1, file)
+		|| ! fwrite(&_lowmem , &_Uend - &_lowmem, 1, file)
+			|| ! fwrite(end_sb, startmem - end_sb, 1, file))
 			goto wr_err;
 	/*
 	 * save the screen (have to bring it into current data segment first)
 	 */
 	wdump();
-	if (write(sfd,savewin,4000) == 4000)
+	if (fwrite(savewin, 4000, 1, file))
 		errno = 0;
 	wrestor();
 
-	wr_err:
-		close(sfd);
-		switch (errno)
-		{
-			default:
-				msg("Could not write savefile to disk!");
-				return -1;
-			case 0:
-				move(24,0);
-				clrtoeol();
-				move(23,0);
-				return 1;
-		}
+wr_err:
+	fclose(file);
+	switch (errno)
+	{
+		default:
+			msg("Could not write savefile to disk!");
+			return -1;
+		case 0:
+			move(24,0);
+			clrtoeol();
+			move(23,0);
+			return 1;
+	}
 }
 #endif //DEMO
 
@@ -153,7 +153,8 @@ restore(savefile)
 {
 #ifndef DEMO
 	int oldrev, oldver, old_check;
-	register int oldcols, fd;
+	register int oldcols;
+	register FILE *file;
 	char errbuf[11], save_name[MAXSTR];
 	char *read_error = "Read Error";
 	struct sw_regs *oregs;
@@ -184,29 +185,29 @@ restore(savefile)
 		scr_type = ot;
 		addstr("\n");
 	}
-	if ((fd = open(savefile, 0)) < 0)
+	if ((file = fopen(savefile, "r")) == NULL)
 		fatal("%s not found\n",savefile);
 	else
 		printf("Restoring %s",savefile);
 	strcpy(save_name, savefile);
 	nbytes = &_Uend - &_lowmem;
-	if (read(fd,idbuf,MIDSIZE) != MIDSIZE || strcmp(idbuf,msaveid) )
+	if (fread(idbuf, MIDSIZE, 1, file) || strcmp(idbuf,msaveid) )
 		addstr("\nNot a savefile\n");
 	else
 	{
-		if (read(fd, &_lowmem, nbytes) == nbytes)
-			if (read(fd, end_sb,nbytes=startmem-end_sb) == nbytes)
+		if (fread(&_lowmem, nbytes, 1, file))
+			if (fread(end_sb, startmem - end_sb, 1, file))
 				goto rok;
 		addstr(errbuf);
 	}
-	close(fd);
+	fclose(file);
 	exit(EXIT_FAILURE);
 
 rok:
 	regs = oregs;
 	if (revno != oldrev || verno != oldver)
 	{
-		close(fd);
+		fclose(file);
 		exit(EXIT_FAILURE);
 	}
 
@@ -217,23 +218,23 @@ rok:
 	winit();
 	if (oldcols != COLS)
 	{
-		close(fd);
+		fclose(file);
 		fatal("Restore Error: new screen size\n");
 	}
 
 	wdump();
-	if (read(fd,savewin,4000) != 4000)
+	if (!fread(savewin, 4000, 1, file))
 	{
-		close(fd);
+		fclose(file);
 		fatal("Serious restore error");
 	}
 	wrestor();
 
-	close (fd);
+	fclose(file);
 	no_check = old_check;
 	mpos = 0;
 	ifterse1("%s, Welcome back!","Hello %s, Welcome back to the Dungeons of Doom!",whoami);
 	dnum = srand();     /* make it a little tougher on cheaters */
-	unlink(save_name);
+	remove(save_name);
 #endif //DEMO
 }

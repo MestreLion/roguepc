@@ -49,8 +49,8 @@ struct environment {
 };
 
 
-static int fd;
-static int ch;
+static FILE *file;
+static byte ch;
 static int pstate;
 static char blabel[11], bstring[25];
 static char *plabel, *pstring;
@@ -60,21 +60,19 @@ static char *plabel, *pstring;
  *        envfile - name of file that contains data to be
  *                  put in the environment
  *
- *        STATUS  - setenv return -1 if the file does not
- *                  exist or if there is not enough memory
- *                  to expand the environment
- *
+ *        STATUS  - setenv return
+ *                  @@ FALSE on failure to open envfile, TRUE otherwise
  */
-int
+bool
 setenv(envfile)
 	char *envfile;
 {
 	register char pc;
 
 	one_tick();	/* if he tries to disable the clock */
-	if ((fd = open(envfile,0)) < 0)
+	if ((file = fopen(envfile, "r")) == NULL)
 	{
-		return(ERROR);
+		return FALSE;
 	}
 
 	while ( FOREVER )
@@ -93,8 +91,8 @@ setenv(envfile)
 		while (isspace(peekc()))
 			;
 		if (ch == 0) {
-				close(fd);
-				return(NULL);
+			fclose(file);
+			return TRUE;
 		}
 		pstate = 3;
 		/*
@@ -143,7 +141,7 @@ setenv(envfile)
 	 */
 	lcase(s_menu);
 	lcase(s_screen);
-	return 0;
+	return TRUE;
 }
 
 /*
@@ -157,7 +155,7 @@ setenv(envfile)
  *  way I can avoid checking for premature eof
  *  every time a character is read.
  */
-int
+byte
 peekc()
 {
 	ch = 0;
@@ -170,7 +168,7 @@ peekc()
 		plabel = &blabel[10];
 	if (pstring > &bstring[24])
 		pstring = &bstring[24];
-	if (read(fd, &ch, 1) < 1 && pstate != 0) {
+	if (fread(&ch, 1, 1, file) < 1 && pstate != 0) {
 		/*
 		 * When looking for the end of the string,
 		 * Let the eof look like newlines
@@ -179,7 +177,7 @@ peekc()
 			return('\n');
 		fatal("rogue.opt: incorrect file format\n");
 	}
-	if (ch == 26)
+	if (ch == 26)  //@ EOF char, common in text files back then.
 		ch = '\n';
 	return(ch);
 }

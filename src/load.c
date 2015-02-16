@@ -52,7 +52,8 @@ static char *store;
  * A packed CGA 320x200x2bit image (4 colors) requires 16000 bytes + headers
  * initial block size, 0x4000 = 16384, is enough to read file in 1 pass
  */
-static int blksize = 0x4000, lfd;
+static int blksize = 0x4000;
+static FILE *file;
 
 /*@
  * Display the Rogue Enyx title image
@@ -67,10 +68,9 @@ epyx_yuck()
 	//@ clock rate is 65536/3600 per hour, about 18.2 ticks per second
 	extern unsigned int tick;
 	register int type = get_mode();
-	char *sbrk();
 
 	//@ 07h = Monochromatic (80x25 text) in MDA, Hercules, EGA, VGA
-	if (type == 7 || (lfd = open("rogue.pic", 0)) < 0)
+	if (type == 7 || (file = fopen("rogue.pic", "r")) == NULL)
 		return;
 	//@ Allocate the largest possible block size for the store buffer,
 	//@ halving the requested amount in each attempt
@@ -80,6 +80,7 @@ epyx_yuck()
 	video_mode(4);
 
 	scr_load();
+	fclose(file);
 	tick = 0;
 #ifdef LOGFILE
 	while (tick < 18 * 10)
@@ -197,9 +198,9 @@ bload(segment)
 {
 	register unsigned offset = 0, rdcnt;
 
-	if (read(lfd,store,7) <= 0)				/* Ignore first seven bytes */
-		lseek(lfd, 7L, 0);
-	while ((rdcnt=read(lfd,store,blksize)) > 0) {
+	if (!fread(store, 7, 1, file))	/* Ignore first seven bytes */
+		fseek(file, 7L, SEEK_SET);
+	while ((rdcnt = fread(store, blksize, 1, file))) {
 		dmaout(store,rdcnt/2,segment,offset);
 		if ((offset += rdcnt) >= 16384)
 			break;
@@ -220,8 +221,12 @@ find_drive()
 		else
 			drive = spec - 'a';
 	}
+	/*@
+	 * The following nonsense strongly indicates this is either a partial,
+	 * work in progress function, or a cracked version
+	 */
 	strcpy(filename,"a:jatgnas.8ys");
 	filename[0] += (char)drive;
-	access(filename);
+	access(filename);  //@ this is a useless call without checking return code
 	return drive;
 }

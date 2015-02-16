@@ -3,8 +3,6 @@
  */
 
 #define abs(x) ((x)<0?-(x):(x))
-#define TRUE 	1
-#define	FALSE	0
 
 #define refresh	stub
 
@@ -12,7 +10,7 @@
 #define	stdscr	NULL
 #define hw	NULL
 
-#define	BUFSIZ	128
+#define	BUFSIZE	128
 
 #define wmove(a,b,c)	move(b,c)
 

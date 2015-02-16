@@ -59,6 +59,10 @@
 typedef unsigned char byte;
 typedef unsigned char bool;
 
+//@ moved from curses.h so it's close to 'bool' definition
+#define TRUE 	1
+#define FALSE	0
+
 /*
  * Maximum number of different things
  */
@@ -532,7 +536,8 @@ void	doctor(), swander(), rollwand(), unconfuse(), unsee(), sight(),
 		nohaste(), stomach();
 
 //@ env.h
-int	setenv(), peekc();
+byte	 peekc();
+bool	setenv();
 void	putenv();
 
 //@ fakedos.c

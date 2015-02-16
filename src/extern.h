@@ -114,8 +114,14 @@ int	curch();
 //@ From <stddef.h>
 #define NULL	((void *)0)
 
-//@ From <stdio.h>
-int	sprintf(char *str, const char *format, ...);
+//@ sprintf(), f{open,read,seek,write,close}()
+#include <stdio.h>
+//#define open(fd, flg)	fopen
+//#define read	fread
+//#define lseek	fseek
+//#define write	fwrite
+//#define close	fclose
+
 
 //@ From <stdlib.h>
 #define EXIT_FAILURE	1	/* Failing exit status.  */
