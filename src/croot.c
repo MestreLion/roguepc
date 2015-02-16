@@ -6,11 +6,14 @@
  * As this originally does not include rogue.h, needed functions are
  * declared here
  */
-extern void _exit(int status);  //@ begin.asm, also found in <stdlib.h>
-extern int write();  //@ <unistd.h>. Actually return ssize_t
-extern void exit(int code);  //@ implemented at end of file
-extern void unsetup(); //@ mach_dep.c
-extern int main();  //@ main.c
+extern void	_exit(int status);  //@ begin.asm, <stdlib.h>, <unistd.h>
+extern int 	write();  //@ <unistd.h>. Actually return ssize_t
+extern char	*sbrk(); //@ sbrk.asm, also in <unistd.h>
+extern void	exit_croot(int code);  //@ implemented at end of file
+extern void	unsetup(); //@ mach_dep.c
+extern int 	main();  //@ main.c
+
+#define STDERR_FILENO	2  //@ from <unistd.h>
 
 static char **Argv;
 static int Argc;
@@ -29,7 +32,6 @@ Croot(cp, first)
 	int first;
 {
 	register char **cpp;
-	char *sbrk();
 
 	Argv = (char **)sbrk((first+1)*sizeof(char *));
 	Argv[0] = "";
@@ -43,7 +45,7 @@ Croot(cp, first)
 			*cpp++ = cp;
 			Argc++;
 			if (sbrk(sizeof(char *)) == (char *)-1) {
-				write(2, "Too many args.", 14);
+				write(STDERR_FILENO, "Too many args.", 14);
 				_exit(200);
 			}
 			while (*++cp)
@@ -55,10 +57,11 @@ Croot(cp, first)
 	}
 	*cpp = 0;
 	main(Argc,Argv);
-	exit(0);
+	exit_croot(0);
 }
 
-void exit(code)
+//@ renamed from exit() to avoid conflict with <stdlib.h>
+void exit_croot(code)
 {
 	(*cls_)();
 #ifdef SDEBUG

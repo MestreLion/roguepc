@@ -121,7 +121,7 @@ int	curch();
 //@ From <stdlib.h>
 #define EXIT_FAILURE	1	/* Failing exit status.  */
 #define EXIT_SUCCESS	0	/* Successful exit status.  */
-//@ void	exit(int status); //@ (pretend to) use croot's exit() for now
+#define exit	exit_croot	//@ (pretend to) use croot's exit() for now
 
 
 #ifdef LOG

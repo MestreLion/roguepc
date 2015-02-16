@@ -525,7 +525,7 @@ coord	*find_dest();
 void	command(), show_count(), execcom();
 
 //@ croot.c
-void	exit();
+void	exit_croot();
 
 //@ daemon.c
 void	daemon(), do_daemons(), fuse(), lengthen(), extinguish(),
