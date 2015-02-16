@@ -287,6 +287,30 @@ swint(intno, rp)
 	return rp->ax;
 }
 
+/*@
+ * sysint() - System Interrupt Call
+ * This was available as a C library function in old DOS compilers
+ * Created here as a stub: output general registers are zeroed,
+ * index registers are copied from input.
+ * Return ax as status
+ */
+int
+sysint(intno, inregs, outregs)
+	int intno;
+	struct sw_regs *inregs, *outregs;
+{
+	outregs->ax = 0;
+	outregs->bx = 0;
+	outregs->cx = 0;
+	outregs->dx = 0;
+	outregs->si = inregs->si;
+	outregs->di = inregs->di;
+	outregs->ds = inregs->ds;
+	outregs->es = inregs->es;
+
+	return outregs->ax;
+}
+
 int
 set_ctrlb(state)
 {
