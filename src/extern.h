@@ -4,6 +4,26 @@
  * @(#)extern.h	5.1 (Berkeley) 5/11/82
  */
 
+/*@
+ * Also standard library includes, defines and "overrides",
+ * assembly function declarations, and a bunch of global variables.
+ *
+ * The plan is to gradually move all platform-agnostic vars to rogue.h,
+ * and keep here only the definitions for mach_dep.c (as originally intended)
+ * and other platform-dependent modules such as curses, env, croot, and
+ * perhaps also load, save, protect.
+ *
+ * Standard Library includes will also remain here, as original code did not
+ * (explicitly) use any. After all, Rogue is pre-ANSI C.
+ *
+ * Assembly functions will be replaced either by standard library equivalents
+ * or functions in mach_dep.
+ *
+ * When port is successful, maybe this will be renamed mach_dep.h to avoid
+ * confusion with extern.c, which is the definition of global game vars
+ * currently declared both here and in rogue.h
+ */
+
 /*
  * Don't change the constants, since they are used for sizes in many
  * places in the program.
@@ -12,6 +32,17 @@
 #define MAXSTR		80	/* maximum length of strings */
 #define MAXLINES	25	/* maximum number of screen lines used */
 #define MAXCOLS		80	/* maximum number of screen columns used */
+
+//@ moved from rogue.h for assembly functions global variables declarations
+/*
+ *  MANX C compiler funnies
+ */
+typedef unsigned char byte;
+typedef unsigned char bool;
+
+//@ moved from curses.h so it's close to 'bool' definition
+#define TRUE 	1
+#define FALSE	0
 
 
 /*
@@ -34,7 +65,6 @@ extern char s_menu[], s_name[], s_fruit[], s_score[], s_save[], s_macro[];
 extern char s_drive[], s_screen[];
 extern char nullstr[], *it, *tbuf, *you, *no_mem;
 
-extern struct array s_names[], _guesses[];
 extern char *s_guess[], *p_guess[], *r_guess[], *ws_guess[];
 extern char f_damage[];
 
@@ -119,6 +149,7 @@ int	curch();
 #include <stdio.h>
 
 //@ From <stdlib.h>
+//#include <stdlib.h>
 #define EXIT_FAILURE	1	/* Failing exit status.  */
 #define EXIT_SUCCESS	0	/* Successful exit status.  */
 #define exit	exit_croot	//@ (pretend to) use croot's exit() for now

@@ -5,6 +5,9 @@
  */
 
 
+#include "extern.h"
+#include "swint.h"
+
 /*
  *  Options set for PC rogue
  */
@@ -52,16 +55,6 @@
 #define ifterse2 ifterse
 #define ifterse3 ifterse
 #define ifterse4 ifterse
-
-/*
- *  MANX C compiler funnies
- */
-typedef unsigned char byte;
-typedef unsigned char bool;
-
-//@ moved from curses.h so it's close to 'bool' definition
-#define TRUE 	1
-#define FALSE	0
 
 /*
  * Maximum number of different things
@@ -375,7 +368,7 @@ struct magic_item {
 
 struct array {
 	char storage[MAXNAME+1];
-} ;
+};
 
 /*
  * Room structure
@@ -507,6 +500,8 @@ extern struct monster	monsters[];
 
 extern struct magic_item	p_magic[], r_magic[], s_magic[],
 				things[], ws_magic[];
+
+extern struct array s_names[], _guesses[];
 
 /*
  * Function types
@@ -701,7 +696,3 @@ int	auto_save(), tstp();
 THING	*find_mons();
 char	*balloc();
 */
-
-
-#include "extern.h"
-#include "swint.h"
