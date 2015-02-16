@@ -191,7 +191,7 @@ mvaddch(r,c,chr)
 	addch(chr);
 }
 
-int
+byte
 mvinch(r, c)
 	int r, c;
 {
@@ -353,8 +353,7 @@ set_cursor()
  *						  -- determine screen memory location for dma
  */
 void
-winit(drive)
-	char drive;
+winit()
 {
 	register int i, cnt;
 	extern int _dsval;
@@ -738,8 +737,8 @@ switch_page(pn)
 	page_no = pn;
 }
 
-int
-get_mode(type)
+byte
+get_mode()
 /*@
  * Get current video mode using software interrupt 10h, AH=0Fh
  *
@@ -768,7 +767,7 @@ get_mode(type)
  *
  * Return AL
  */
-int
+byte
 video_mode(type)
 {
 	struct sw_regs regs;

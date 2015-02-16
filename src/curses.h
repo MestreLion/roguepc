@@ -79,12 +79,12 @@ void	real_rc(int pn, int *rp, int *cp);
 void	clrtoeol();
 void	mvaddstr(int r, int c, char *s);
 void	mvaddch(int r, int c, char chr);
-int 	mvinch(int r, int c); //@ and-ed to byte
+byte	mvinch(int r, int c);
 int 	addch(byte chr);
 void	addstr(char *s);
 void	set_attr(int bute);
 void	error();  //@ int mline, char *msg, int a1, ..., int a5
-void	winit();  //@ char drive (not used nor passed in any call)
+void	winit();
 void	forcebw();
 void	wdump();
 char	*sav_win();
@@ -105,5 +105,5 @@ void	implode();
 void	drop_curtain();
 void	raise_curtain();
 void	switch_page(int pn);
-int 	get_mode(); //@ int type (unused). return is and-ed to byte.
-int 	video_mode(int type); //@ and-ed to byte
+byte	get_mode();
+byte	video_mode(int type);
