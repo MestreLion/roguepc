@@ -542,7 +542,7 @@ int	dodos();
 //@ fight.c
 bool	fight(), swing(), roll_em(), save_throw(), save(), is_magic();
 void	attack(), check_level(), hit(), miss(), raise_level(), thunk(),
-		remove(), killed();
+		remove_monster(), killed();
 int	str_plus(), add_dam();
 
 //@ init.c

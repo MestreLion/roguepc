@@ -198,7 +198,7 @@ THING *mp;
 			purse -= GOLDCALC + GOLDCALC + GOLDCALC + GOLDCALC;
 			if (purse < 0)
 			purse = 0;
-			remove(&mp->t_pos, mp, FALSE);
+			remove_monster(&mp->t_pos, mp, FALSE);
 			if (purse != lastpurse)
 			msg("your purse feels lighter");
 		}
@@ -220,23 +220,23 @@ THING *mp;
 				steal = obj;
 			if (steal != NULL)
 			{
-			remove(&mp->t_pos, mp, FALSE);
-			inpack--;
-			if (steal->o_count > 1 && steal->o_group == 0)
-			{
-				register int oc;
+				remove_monster(&mp->t_pos, mp, FALSE);
+				inpack--;
+				if (steal->o_count > 1 && steal->o_group == 0)
+				{
+					register int oc;
 
-				oc = steal->o_count--;
-				steal->o_count = 1;
-				msg(she_stole, inv_name(steal, TRUE));
-				steal->o_count = oc;
-			}
-			else
-			{
-				detach(pack, steal);
-				discard(steal);
-				msg(she_stole, inv_name(steal, TRUE));
-			}
+					oc = steal->o_count--;
+					steal->o_count = 1;
+					msg(she_stole, inv_name(steal, TRUE));
+					steal->o_count = oc;
+				}
+				else
+				{
+					detach(pack, steal);
+					discard(steal);
+					msg(she_stole, inv_name(steal, TRUE));
+				}
 			}
 		}
 		otherwise:
@@ -597,19 +597,16 @@ register char *mname, *does, *did;
 		msg("the %s", mname);
 }
 
-/*@
- * the unfortunate name remove() prevents inclusion of <stdio.h>
- * thankfully this function is only used in this file
- */
+//@ renamed from remove() to avoid conflict with <stdio.h>
 /*
- * remove:
+ * remove_monster:
  *	Remove a monster from the screen
  */
 void
-remove(mp, tp, waskill)
-register coord *mp;
-THING *tp;
-bool waskill;
+remove_monster(mp, tp, waskill)
+	register coord *mp;
+	THING *tp;
+	bool waskill;
 {
 	register THING *obj, *nexti;
 
@@ -694,7 +691,7 @@ bool pr;
 	/*
 	 * Get rid of the monster.
 	 */
-	remove(&tp->t_pos, tp, TRUE);
+	remove_monster(&tp->t_pos, tp, TRUE);
 	if (pr)
 	{
 	addmsg("you have defeated ");
