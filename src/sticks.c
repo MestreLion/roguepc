@@ -429,11 +429,12 @@ fire_bolt(start, dir, name)
 							noterse(" from the Ice Monster"));
 						if (no_command < 20)
 							no_command += spread(7);
-					} else if ((pstats.s_hpt -= roll(6, 6)) <= 0)
+					} else if ((pstats.s_hpt -= roll(6, 6)) <= 0) {
 						if (start == &hero)
 							death('b');
 						else
 							death(moat(start->y, start->x)->t_type);
+					}
 					used = TRUE;
 					if (!is_frost)
 						msg("you are hit by the %s", name);

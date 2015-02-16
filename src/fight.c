@@ -118,14 +118,16 @@ THING *mp;
 			 * that armor is leather or there is a magic ring
 			 */
 			if (cur_armor != NULL && cur_armor->o_ac < 9
-			&& cur_armor->o_which != LEATHER)
+			  && cur_armor->o_which != LEATHER)
+			{
 				if (ISWEARING(R_SUSTARM))
-				msg("the rust vanishes instantly");
+					msg("the rust vanishes instantly");
 				else
 				{
-				msg("your armor weakens, oh my!");
-				cur_armor->o_ac++;
+					msg("your armor weakens, oh my!");
+					cur_armor->o_ac++;
 				}
+			}
 		when 'I':
 			/*
 			 * When an Ice Monster hits you, you get unfrozen faster
@@ -138,14 +140,16 @@ THING *mp;
 			 * Rattlesnakes have poisonous bites
 			 */
 			if (!save(VS_POISON))
-			if (!ISWEARING(R_SUSTSTR))
 			{
-				chg_str(-1);
-				msg("you feel a bite in your leg%s",
-					noterse(" and now feel weaker"));
+				if (!ISWEARING(R_SUSTSTR))
+				{
+					chg_str(-1);
+					msg("you feel a bite in your leg%s",
+						noterse(" and now feel weaker"));
+				}
+				else
+					msg("a bite momentarily weakens you");
 			}
-			else
-				msg("a bite momentarily weakens you");
 		when 'W':
 		case 'V':
 			/*

@@ -571,7 +571,7 @@ str_attr(str)
 void
 SIG2()
 {
-	static unsigned icnt = 0, ntick = 0;
+	static unsigned ntick = 0;
 	static int key_init = TRUE;
 	static int numl, capsl;
 	static int nspot, cspot, tspot;
@@ -579,7 +579,6 @@ SIG2()
 	static int bighand, littlehand;
 	int showtime = FALSE, spare;
 	int x, y;
-	char wbuf[10];
 #ifdef DEMO
 	static tot_time = 0;
 #endif //DEMO

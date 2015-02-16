@@ -126,7 +126,6 @@ pr_scores(newrank,top10)
 	struct sc_ent *top10;
 {
 	register int i;
-	register char *ki;
 	int curl;
 	char dthstr[30];
 	char *altmsg;
@@ -404,10 +403,12 @@ total_winner()
 			worth = r_magic[obj->o_which].mi_worth;
 			if (obj->o_which == R_ADDSTR || obj->o_which == R_ADDDAM ||
 				obj->o_which == R_PROTECT || obj->o_which == R_ADDHIT)
+			{
 				if (obj->o_ac > 0)
 					worth += obj->o_ac * 100;
 				else
 					worth = 10;
+			}
 			if (!(obj->o_flags & ISKNOW))
 				worth /= 2;
 			obj->o_flags |= ISKNOW;

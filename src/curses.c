@@ -108,8 +108,6 @@ cursor(ison)
 	bool ison;
 {
 	register int oldstate;
-	register int w_state;
-
 
 	if (iscuron == ison)
 		return ison;
@@ -208,7 +206,6 @@ addch(chr)
 	byte chr;
 {
 	int r, c;
-	register int newc, newr;
 	byte old_attr;
 
 	old_attr = ch_attr;
@@ -680,7 +677,7 @@ static int old_ds;
 void
 drop_curtain()
 {
-	register int r, c, j, delay;
+	register int r, j, delay;
 
 	if (svwin_ds == -1)
 		return;

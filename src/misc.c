@@ -115,7 +115,7 @@ look(wakeup)
 			/*
 			 * No Doors
 			 */
-			if (pch != DOOR && ch != DOOR)
+			if (pch != DOOR && ch != DOOR) {
 				/*
 				 * Either hero or other in a passage
 				 */
@@ -131,8 +131,9 @@ look(wakeup)
 				 */
 				else if ((*fp & F_PASS) && (*fp & F_PNUM) != (pfl & F_PNUM))
 					continue;
+			}
 
-			if ((tp = moat(y,x)) != NULL)
+			if ((tp = moat(y,x)) != NULL) {
 				if (on(player, SEEMONST) && on(*tp, ISINVIS)) {
 					if (door_stop && !firstmove)
 						running = FALSE;
@@ -146,6 +147,7 @@ look(wakeup)
 					if (see_monst(tp))
 						ch = tp->t_disguise;
 				}
+			}
 
 			if ((ch!=PASSAGE) && (*fp & (F_PASS | F_MAZE)))
 				/*

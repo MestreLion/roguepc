@@ -286,6 +286,7 @@ leave_room(cp)
 				 * standout bit
 				 */
 				if (isupper(toascii(ch)))
+				{
 					if (on(player, SEEMONST)) {
 						standout();
 						addch(ch);
@@ -293,6 +294,7 @@ leave_room(cp)
 						break;
 					} else
 						moat(y, x)->t_oldch = '@';
+				}
 				addch(floor);
 				break;
 			}
