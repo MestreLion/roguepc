@@ -537,8 +537,8 @@ void	doctor(), swander(), rollwand(), unconfuse(), unsee(), sight(),
 
 //@ env.h
 byte	 peekc();
-bool	setenv();
-void	putenv();
+bool	setenv_file();
+void	putenv_struct();
 
 //@ fakedos.c
 void	fakedos();

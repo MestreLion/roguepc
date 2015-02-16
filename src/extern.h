@@ -122,6 +122,7 @@ int	curch();
 #define EXIT_FAILURE	1	/* Failing exit status.  */
 #define EXIT_SUCCESS	0	/* Successful exit status.  */
 #define exit	exit_croot	//@ (pretend to) use croot's exit() for now
+#define setenv	setenv_file	//@ use env.c fake environment
 
 
 #ifdef LOG

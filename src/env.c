@@ -54,8 +54,10 @@ static byte ch;
 static int pstate;
 static char blabel[11], bstring[25];
 static char *plabel, *pstring;
+
+//@ renamed from setenv() to avoid collision with <stdlib.h>
 /*
- *  setenv: read in environment from a file
+ *  setenv_file: read in environment from a file
  *
  *        envfile - name of file that contains data to be
  *                  put in the environment
@@ -64,7 +66,7 @@ static char *plabel, *pstring;
  *                  @@ FALSE on failure to open envfile, TRUE otherwise
  */
 bool
-setenv(envfile)
+setenv_file(envfile)
 	char *envfile;
 {
 	register char pc;
@@ -133,7 +135,7 @@ setenv(envfile)
 			pstring++;
 		*pstring = 0;
 		lcase(blabel);
-		putenv(blabel,bstring);
+		putenv_struct(blabel,bstring);
 		/* printf("env: found (%s) = (%s)\n",blabel,bstring); */
 	}
 	/*
@@ -206,8 +208,9 @@ getenv(label)
 }
 #endif
 
+//@ renamed from putenv() to avoid collision with <stdlib.h>
 /*
- * Putenv: Put something into the environment
+ * putenv_struct: Put something into the "fake" environment struct
  *
  *	  label  - label of thing in environment
  *	  string - string associated with the label
@@ -216,7 +219,7 @@ getenv(label)
  *	  Just ingnores strange labels
  */
 void
-putenv(label,string)
+putenv_struct(label,string)
 	char *label, *string;
 {
 	register int i;
