@@ -2,7 +2,7 @@
  * C copy protection routines
  */
 
-#include	"swint.h"
+#include	"rogue.h"
 
 extern int goodchk;
 int no_step;
