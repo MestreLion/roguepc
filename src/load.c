@@ -207,15 +207,29 @@ bload(segment)
 	}
 }
 
+/*@
+ * Find the drive where the game runs from
+ *
+ * Return an int corresponding to the current drive or the "drive" value
+ * from the fake environment (rogue.opt), where 0=A, 1=B, etc
+ *
+ * Also contains a no-op code which checked the existence of a file named
+ * "jatgnas.8ys" in the root of such drive, but ignored the check result.
+ *
+ */
 int
 find_drive()
 {
-	int drive = bdos(0x19);
+	int drive = bdos(0x19);  //@ Get Current Default Drive (0=A, 1=B, etc)
 	char spec = s_drive[0];
 	char filename[30];
 
 	if (isalpha(spec))
 	{
+		/*@
+		 * It looks like this block could be replaced with:
+		 * drive = tolower(spec) - 'a';
+		 */
 		if (isupper(spec))
 			drive = spec - 'A';
 		else
@@ -223,10 +237,17 @@ find_drive()
 	}
 	/*@
 	 * The following nonsense strongly indicates this is either a partial,
-	 * work in progress function, or a cracked version
+	 * work in progress function, or a leftover, or an already cracked version.
+	 *
+	 * access() can be found in <unistd.h>, which can not be included yet
+	 * as it conflicts with asm's brk() and sbrk(). So for now the call is
+	 * commented out. As return code was not checked it was a useless call
+	 * anyway, and the whole block, along with the then-unused filename var,
+	 * can be removed.
 	 */
 	strcpy(filename,"a:jatgnas.8ys");
 	filename[0] += (char)drive;
-	access(filename);  //@ this is a useless call without checking return code
+	//@ access(filename);
+
 	return drive;
 }
