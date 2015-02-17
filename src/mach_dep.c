@@ -55,11 +55,25 @@ no_clock()
 	dmaout(clk_vec, 2, 0, TICK_ADDR);
 }
 
+/*@
+ * Renamed from srand() to avoid collision with <stdlib.h>
+ * Signature and usage completely different from srand()
+ *
+ * Call DOS INT 21h service 2C (Get Time) and return the sum of return
+ * registers CX and DX, a combination of HH:MM:SS.ss with hundredths of a
+ * second resolution as an integer.
+ *
+ * This could be replaced with <time.h> (int) time(NULL), but not only numbers
+ * have a completely different meaning, but also time() has only second
+ * resolution, and DOS INT 21h/2C has a 24-hour cycle.
+ *
+ * However, for an RNG seed both are suitable.
+ */
 /*
  * returns a seed for a random number generator
  */
 int
-srand()
+srand_time()
 {
 #ifdef DEBUG
 	return ++dnum;

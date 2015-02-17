@@ -142,18 +142,14 @@ int	curch();
 #define stpchr	strchr
 #define setmem	memset
 
-//@ From <stddef.h>
-#define NULL	((void *)0)
-
-//@ sprintf(), f{open,read,seek,write,close}(), unlink()
+//@ sprintf(), f{open,read,seek,write,close}(), remove()
 #include <stdio.h>
 
-//@ From <stdlib.h>
-//#include <stdlib.h>
-#define EXIT_FAILURE	1	/* Failing exit status.  */
-#define EXIT_SUCCESS	0	/* Successful exit status.  */
+//@ atoi(), NULL, EXIT_*
+#include <stdlib.h>
 #define exit	exit_croot	//@ (pretend to) use croot's exit() for now
 #define setenv	setenv_file	//@ use env.c fake environment
+#define srand	srand_time	//@ use its rogue's own RNG mechanics
 
 
 #ifdef LOG
