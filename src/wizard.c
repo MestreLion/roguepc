@@ -31,24 +31,29 @@ whatis()
 		} else
 			break;
 
+		/*@
+		 * using (size_t)NULL when all we want is to empty the string
+		 * is a nasty perversion of the NULL pointer. But it was done before
+		 * in misc.c, so using same method here for consistency.
+		 */
 		switch (obj->o_type) {
 		when SCROLL:
 			s_know[obj->o_which] = TRUE;
-			*s_guess[obj->o_which] = NULL;
+			*s_guess[obj->o_which] = (size_t)NULL;
 		when POTION:
 			p_know[obj->o_which] = TRUE;
-			*p_guess[obj->o_which] = NULL;
+			*p_guess[obj->o_which] = (size_t)NULL;
 		when STICK:
 			ws_know[obj->o_which] = TRUE;
 			obj->o_flags |= ISKNOW;
-			*ws_guess[obj->o_which] = NULL;
+			*ws_guess[obj->o_which] = (size_t)NULL;
 		when WEAPON:
 		case ARMOR:
 			obj->o_flags |= ISKNOW;
 		when RING:
 			r_know[obj->o_which] = TRUE;
 			obj->o_flags |= ISKNOW;
-			*r_guess[obj->o_which] = NULL;
+			*r_guess[obj->o_which] = (size_t)NULL;
 			break;
 		}
 		/*

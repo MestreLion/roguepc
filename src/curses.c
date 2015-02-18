@@ -413,14 +413,14 @@ winit()
 	 * Read current cursor position
 	 */
 	real_rc(old_page_no, &c_row, &c_col);
-	if ((savewin = sbrk(4096)) == -1) {
+	if ((savewin = sbrk(4096)) == (void *)-1) {
 		svwin_ds = -1;
 		savewin = (char *) _flags;
 		if (scr_type == 7)
 			fatal(no_mem);
 	} else {
-		savewin = (char *) (((int) savewin + 0xf) & 0xfff0);
-		svwin_ds = (((int) savewin >> 4) & 0xfff) + _dsval;
+		savewin = (char *) (((intptr) savewin + 0xf) & 0xfff0);
+		svwin_ds = (((intptr) savewin >> 4) & 0xfff) + _dsval;
 	}
 	for (i = 0, cnt = 0; i < 25; cnt += 2*COLS, i++)
 		scr_row[i] = cnt;
@@ -455,7 +455,7 @@ wdump()
 char *
 sav_win()
 {
-	if (savewin == _flags)
+	if (savewin == (char *)_flags)
 		dmaout(savewin,LINES*COLS,0xb800,8192);
 	return(savewin);
 }
@@ -463,7 +463,7 @@ sav_win()
 void
 res_win()
 {
-	if (savewin == _flags)
+	if (savewin == (char *)_flags)
 		dmain(savewin,LINES*COLS,0xb800,8192);
 }
 

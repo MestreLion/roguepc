@@ -354,6 +354,11 @@ typedef struct {
 	shint y;
 } coord;
 
+/*@
+ * Data type for strength values and modifiers
+ * That's very generous from Rogue devs to allow full 16-bits (uint in 1985)
+ * for strength, considering normal play would not get even remotely close to 8
+ */
 typedef unsigned int str_t;
 
 /*

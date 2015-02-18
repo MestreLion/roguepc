@@ -56,8 +56,8 @@ protect(drive)
 	no_step++;
 	rom_read.dx = sig1_read.dx = sig2_read.dx = drive;
 	sig1_read.es = sig2_read.es = getds();
-	sig1_read.bx = (int)(&buf1[0]);
-	sig2_read.bx = (int)(&buf2[0]);
+	sig1_read.bx = (intptr)(&buf1[0]);  //@ trouble here, as intptr > bx size
+	sig2_read.bx = (intptr)(&buf2[0]);  //@ ditto
 
 	for (i=0,flags=CF;i<7 && (flags&CF);i++)
 	{

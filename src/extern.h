@@ -151,6 +151,10 @@ int	curch();
 #define setenv	setenv_file	//@ use env.c fake environment
 #define srand	srand_time	//@ use its rogue's own RNG mechanics
 
+//@ uintptr_t
+#include <stdint.h>
+typedef uintptr_t	intptr;  //@ size of a real pointer
+typedef uint16_t	dosptr;  //@ size of a pointer in DOS, as Rogue relies on
 
 #ifdef LOG
 extern int captains_log;

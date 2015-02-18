@@ -40,10 +40,17 @@ clock_on()
 {
 	extern int _csval, clock();  //@ begin.asm, dos.asm
 	extern void (*cls_)();
-	int new_vec[2];
+
+	/*@
+	 * Using proper pointer size for the array and the following cast
+	 * makes the compiler happy, but it would certainly cause trouble in the
+	 * dmaout() call, as it expects 16-bit pointers. Not a big deal since soon
+	 * the dma{in,out}() functions will be stubbed or replaced.
+	 */
+	void * new_vec[2];
 
 	new_vec[0] = clock;
-	new_vec[1] = _csval;
+	new_vec[1] = (void *)(intptr)_csval;
 	dmain(clk_vec, 2, 0, TICK_ADDR);
 	dmaout(new_vec, 2, 0, TICK_ADDR);
 	cls_ = no_clock;
@@ -258,16 +265,16 @@ bdos(fnum, dxval)
  */
 char *
 newmem(nbytes,clrflag)
-	unsigned nbytes;
+	unsigned int nbytes;
 	int clrflag;
 {
 	register char *newaddr;
 
 	newaddr = sbrk(nbytes);
-	if (newaddr == -1)
+	if (newaddr == (void *)-1)
 		fatal("No Memory");
 	end_mem = newaddr + nbytes;
-	if ((unsigned)end_mem & 1)
+	if ((intptr)end_mem & 1)  //@ guarantee word (16-bit) alignment?
 		end_mem = sbrk(1);
 	return(newaddr);
 }

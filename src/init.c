@@ -440,8 +440,9 @@ init_ds(clrflag)
 {
 	register long *ep;
 
-	end_sb = _flags = newmem((MAXLINES-3)*MAXCOLS);
-	_level = newmem((MAXLINES-3)*MAXCOLS);
+	end_sb = newmem((MAXLINES-3)*MAXCOLS);
+	_flags = (byte *) end_sb;
+	_level = (byte *) newmem((MAXLINES-3)*MAXCOLS);
 	_things = (THING *)newmem(sizeof(THING) * MAXITEMS);
 	_t_alloc = (int *)newmem(MAXITEMS*sizeof(int));
 
