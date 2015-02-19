@@ -25,6 +25,7 @@ all: default
 default: $(TARGET)
 
 $(TARGET): $(OBJS)
+	$(CC) $(LFLAGS) $(OBJS) -o $@
 
 clean:
 	rm -f $(TARGET) *.o

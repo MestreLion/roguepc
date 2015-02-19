@@ -55,7 +55,6 @@ typedef unsigned char bool;
 
 //@ begin.asm
 extern int  _dsval, _csval;
-extern int  errno;  //@ also in <errno.h>
 extern char _lowmem;			/* Adresss of first save-able memory */
 extern char _Uend;				/* Address of end of user data space */
 //@ also contains void _exit() only used by croot.c
@@ -110,3 +109,6 @@ int	curch();
 #include <stdint.h>
 typedef uintptr_t	intptr;  //@ size of a real pointer
 typedef uint16_t	dosptr;  //@ size of a pointer in DOS, as Rogue relies on
+
+//@ errno, originally in begin.asm
+#include <errno.h>
