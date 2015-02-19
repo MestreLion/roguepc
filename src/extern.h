@@ -121,6 +121,10 @@ byte	getch();
 bool	no_char();  //@ actually return only 0 or 1, so a "true" bool
 int	peekb(), clock(), getds(), csum();
 
+//@ fio.asm - already replaced by <stdio.h> except write() in croot.c
+int 	open(), read(), write(), creat();
+void	close(), unlink(), lseek();
+
 //@ sbrk.asm
 char *brk(), *sbrk();
 

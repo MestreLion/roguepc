@@ -7,7 +7,7 @@
  * declared here
  */
 extern void	_exit(int status);  //@ begin.asm, <stdlib.h>, <unistd.h>
-extern int 	write();  //@ <unistd.h>. Actually return ssize_t
+extern int 	write();  //@ fio.asm, also in <unistd.h> (returning ssize_t)
 extern char	*sbrk(); //@ sbrk.asm, also in <unistd.h>
 extern void	exit_croot(int code);  //@ implemented at end of file
 extern void	unsetup(); //@ mach_dep.c
