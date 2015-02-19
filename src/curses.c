@@ -139,6 +139,62 @@ move(row, col)
 }
 
 
+/*@
+ * Put the given character on the screen
+ *
+ * Character is put at current (c_row, c_col) cursor position, and set with
+ * current ch_attr attributes.
+ *
+ * No direct curses counterpart.
+ *
+ * <stdio.h> putchar() is a replacement candidate, but it lacks the character
+ * attributes. Anyway, this will probably be deprecated after addch()
+ * is replaced, as addch() is putchr() main client. Also see credits() and
+ * backspace().
+ *
+ * Originally in zoom.asm
+ *
+ * By my understanding, asm function worked as follows: if cursor is on (via
+ * iscuron C var), it invokes BIOS INT 10h/AH=09h to put char with attributes.
+ * If not, it waits for video retrace (unless no_check C var was TRUE) and
+ * then write directly in Video Memory, using C vars scr_row and scr_ds to
+ * calculate position address.
+ *
+ * This function replicates this behavior. Also, as here was the only
+ * real usage of no_check, that var can be deprecated.
+ *
+ * BIOS INT 10h/AH=09h - Write character with attribute at cursor position
+ * AL = character
+ * BH = page number
+ * BL = character attribute
+ * CX = number of times to write character
+ *
+ */
+void
+putchr(ch)
+	byte ch;
+{
+	if (iscuron) {
+		// Use BIOS call
+		regs->ax = HILO(9, ch);
+		regs->bx = HILO(page_no, ch_attr);
+		regs->cx = 1;
+		swint(SW_SCR, regs);
+	}
+	else {
+		if (!no_check){}  // "wait" for video retrace
+		/*
+		 * Write to video memory
+		 * each char uses 2 bytes in video memory, hence doubling c_col.
+		 * scr_row array takes that into account, so no need to double c_row.
+		 * See winit()
+		 */
+		dmaout(HILO(ch_attr, ch), 1,
+			scr_ds, scr_row[c_row] + 2 * c_col);
+	}
+}
+
+
 /*
  * clear screen
  */
