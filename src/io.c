@@ -8,7 +8,6 @@
 #include	"curses.h"
 
 extern int scr_type;
-extern unsigned tick;
 
 #define AC(a) (-((a)-11))
 #define PT(i,j) ((COLS==40)?i:j)

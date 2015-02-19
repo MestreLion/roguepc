@@ -109,12 +109,18 @@ extern int cksum;
  */
 
 //@ begin.asm
-//@ no symbols directly referenced by C code other than croot.c.
+extern int  _dsval, _csval;
+extern int  errno;  //@ also in <errno.h>
+extern char _lowmem;			/* Adresss of first save-able memory */
+extern char _Uend;				/* Address of end of user data space */
+//@ also contains void _exit() only used by croot.c
+//@ and other public symbols not used in C code
 
 //@ csav.asm
 //@ it seems no symbols are directly referenced by any C code.
 
 //@ dos.asm
+extern unsigned int tick;  //@ clock rate is about 18.2 ticks per second
 void	dmain(), dmaout(), COFF(), beep(), out(), pokeb(), wsetmem(),
 		_halt();
 byte	getch();

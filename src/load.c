@@ -65,8 +65,6 @@ static FILE *file;
 void
 epyx_yuck()
 {
-	//@ clock rate is 65536/3600 per hour, about 18.2 ticks per second
-	extern unsigned int tick;
 	register int type = get_mode();
 
 	//@ 07h = Monochromatic (80x25 text) in MDA, Hercules, EGA, VGA

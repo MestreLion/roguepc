@@ -353,7 +353,6 @@ void
 winit()
 {
 	register int i, cnt;
-	extern int _dsval;
 
 	/*
 	 * Get monitor type

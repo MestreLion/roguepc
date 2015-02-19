@@ -330,7 +330,6 @@ void
 tick_pause()
 {
 	register int otick;
-	extern int tick;
 
 	otick = tick;
 	while (otick == tick)

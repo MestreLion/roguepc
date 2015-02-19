@@ -38,7 +38,6 @@ setup()
 void
 clock_on()
 {
-	extern int _csval, clock();  //@ begin.asm, dos.asm
 	extern void (*cls_)();
 
 	/*@
@@ -301,8 +300,6 @@ swint(intno, rp)
 	int intno;
 	struct sw_regs *rp;
 {
-	extern int _dsval;
-
 	rp->ds = rp->es = _dsval;
 	sysint(intno, rp, rp);
 	return rp->ax;
@@ -358,7 +355,6 @@ unsetup()
 void
 one_tick()
 {
-	extern int tick;
 	int otick = tick;
 	int i=0,j=0;
 

@@ -6,7 +6,7 @@
  * As this originally does not include rogue.h, needed functions are
  * declared here
  */
-extern void	_exit(int status);  //@ begin.asm, <stdlib.h>, <unistd.h>
+extern void	_exit(int status);  //@ begin.asm, also <stdlib.h>, <unistd.h>
 extern int 	write();  //@ fio.asm, also in <unistd.h> (returning ssize_t)
 extern char	*sbrk(); //@ sbrk.asm, also in <unistd.h>
 extern void	exit_croot(int code);  //@ implemented at end of file
