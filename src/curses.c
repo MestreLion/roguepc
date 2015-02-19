@@ -85,6 +85,22 @@ byte spc_box[BX_SIZE] = {
 	0x20, 0x20, 0x20, 0x20, 0x20, 0x20, 0x20
 };
 
+/*@
+ * Beep a an audible beep, if possible
+ *
+ * To be replaced by real curses
+ *
+ * Originally in dos.asm
+ *
+ * Used hardware port 0x61 (Keyboard Controller) for direct PC Speaker access.
+ * Now prints a BEL (0x07) character in standard output, which is supposed to
+ * make terminals play a beep.
+ */
+void
+beep()
+{
+	printf("\a");  //@ lame, I know... but it works
+}
 
 /*
  * clear screen

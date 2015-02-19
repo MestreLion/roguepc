@@ -123,3 +123,5 @@ void	raise_curtain();
 void	switch_page(int pn);
 byte	get_mode();
 byte	video_mode(int type);
+
+void	beep();  //@ originally in dos.asm

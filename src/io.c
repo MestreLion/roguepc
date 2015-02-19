@@ -453,7 +453,7 @@ getinfo(str,size)
 				readcnt++;
 				addch(ch);
 				*str++ = ch;
-				if ((ch & 0x80) == 0)
+				if ((ch & 0x80) == 0)  //@ same as: if (isascii(ch))
 					break;
 				/* no break */
 			case '\n':

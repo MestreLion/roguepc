@@ -66,7 +66,7 @@ extern int  _dsval, _csval;
 
 //@ dos.asm
 extern unsigned int tick;  //@ clock rate is about 18.2 ticks per second
-void	dmain(), dmaout(), COFF(), beep(), out(), pokeb(), wsetmem(),
+void	dmain(), dmaout(), COFF(), out(), pokeb(), wsetmem(),
 		_halt();
 byte	getch();
 bool	no_char();  //@ actually return only 0 or 1, so a "true" bool
