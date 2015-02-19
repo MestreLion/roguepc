@@ -14,12 +14,6 @@
 #include "rogue.h"
 #include "curses.h"
 
-/*
- * we need to know location of screen being saved
- */
-extern char do_force;
-extern int bwflag;
-
 #define MIDSIZE 10
 char *msaveid = "AI Design";
 

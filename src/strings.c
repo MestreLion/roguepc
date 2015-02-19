@@ -1,7 +1,7 @@
 #include <string.h>   //@ strlen()
 #include <ctype.h>    //@ is...() and to...() family
 
-//@ extern char ctp_[]; //@ not needed anymore
+//@ extern char ctp_[]; //@ not needed anymore. could not find definition
 
 /*@
  * Functions available in <ctype.h>

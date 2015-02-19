@@ -21,7 +21,6 @@
  *
  * When port is successful, maybe this will be renamed mach_dep.h to avoid
  * confusion with extern.c, which is the definition of global game vars
- * currently declared both here and in rogue.h
  */
 
 /*

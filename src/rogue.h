@@ -489,7 +489,7 @@ struct sc_ent {
 
 /*
  * External variables
- * @ all in extern.c unless noted (init.c and env.c)
+ * @ all in extern.c unless noted (init.c, env.c, croot.c and main.c)
  */
 extern int maxitems;
 extern int maxrow;
@@ -584,7 +584,13 @@ extern char *ring_buf;
 
 
 //@ croot.c
-extern void (*cls_)();
+extern void (*cls_)();  //@ used in mach_dep.c
+
+
+//@ main.c
+extern char do_force;  //@ used in save.c
+extern int bwflag;     //@ used in save.c
+extern struct sw_regs *regs;  //@ originally declared in swint.h
 
 
 /*

@@ -79,6 +79,10 @@ extern int scr_ds;
 extern int svwin_ds;
 extern int scr_type;
 extern int page_no;  //@ only used in zoom.asm
+/*
+ * we need to know location of screen being saved
+ * @ used in save.c
+ */
 extern char *savewin;
 
 /*@
