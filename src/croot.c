@@ -6,18 +6,14 @@
  * As this originally does not include rogue.h, needed functions are
  * declared here
  */
-void	_exit(int status);  //@ begin.asm, also <stdlib.h>, <unistd.h>
-int 	write();  //@ fio.asm, also in <unistd.h> (returning ssize_t)
-char	*sbrk(); //@ sbrk.asm, also in <unistd.h>
-void	exit_croot(int code);  //@ implemented at end of file
+//@ exit()
+#include <stdlib.h>
+
 void	unsetup(); //@ mach_dep.c
-int 	main();  //@ main.c
 
-#define STDERR_FILENO	2  //@ from <unistd.h>
-
-static char **Argv;
-static int Argc;
-
+/*@
+ * No-op function, probably a stub for cls_ until it gets set to no_clock()
+ */
 void
 noper()
 {
@@ -25,6 +21,18 @@ noper()
 }
 
 void (*cls_)() = noper;
+
+/*@ Former point of entry, called from begin.asm.
+ *  Now Rogue starts with main()
+ *
+ *  Original location for functions called:
+void	_exit(); //@ begin.asm
+int 	write(); //@ fio.asm
+char	*sbrk(); //@ sbrk.asm,
+void	exit();  //@ former croot_exit()
+
+static char **Argv;
+static int Argc;
 
 void
 Croot(cp, first)
@@ -45,7 +53,7 @@ Croot(cp, first)
 			*cpp++ = cp;
 			Argc++;
 			if (sbrk(sizeof(char *)) == (char *)-1) {
-				write(STDERR_FILENO, "Too many args.", 14);
+				write(2, "Too many args.", 14);
 				_exit(200);
 			}
 			while (*++cp)
@@ -57,16 +65,21 @@ Croot(cp, first)
 	}
 	*cpp = 0;
 	main(Argc,Argv);
-	exit_croot(0);
+	exit(0);
 }
+*/
 
-//@ renamed from exit() to avoid conflict with <stdlib.h>
-void exit_croot(code)
+/*@
+ * The single point of exit for Rogue
+ * renamed from exit() to avoid conflict with <stdlib.h>
+ */
+void croot_exit(status)
+	int status;
 {
 	(*cls_)();
 #ifdef SDEBUG
-	ComOff();  //@ not found
+	//@ ComOff();  //@ not found
 #endif
 	unsetup();
-	_exit(code);
+	exit(status);
 }

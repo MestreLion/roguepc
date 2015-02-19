@@ -88,7 +88,7 @@ bool	no_char();
 //@ int 	open(), read(), write(), creat();
 //@ void	close(), unlink(), lseek();
 
-//@ sbrk.asm - replaced by <unistd.h>
+//@ sbrk.asm - replaced by malloc() / free()
 //@ char *brk(), *sbrk();
 
 //@ zoom.asm - replaced by functions in curses.c
@@ -110,18 +110,19 @@ bool	no_char();
 #include <stdio.h>
 #define getch() (byte)getchar()
 
-//@ atoi(), NULL, EXIT_*
+//@ atoi(), NULL, EXIT_*, malloc(), free()
 #include <stdlib.h>
-#define exit	exit_croot	//@ (pretend to) use croot's exit() for now
+#define exit	croot_exit	//@ use croot's exit() as single point of exit
 #define setenv	setenv_file	//@ use env.c fake environment
 #define srand	md_srand	//@ use seed from time()
 
 //@ errno, originally in begin.asm
 #include <errno.h>
 
-//@ brk(), sbrk(), pause()
+//@ pause(), access()
 #include <unistd.h>
 #define daemon	start_daemon
+#define access(f)	access(f, F_OK)
 
 //@ time()
 #include <time.h>

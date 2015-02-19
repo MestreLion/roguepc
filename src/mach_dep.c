@@ -572,6 +572,7 @@ bdos(fnum, dxval)
  *  newmem - memory allocater
  *         - motto: allocate or die trying
  */
+/*@ Deprecated, see the new newmem() below
 char *
 newmem(nbytes,clrflag)
 	unsigned int nbytes;
@@ -587,6 +588,24 @@ newmem(nbytes,clrflag)
 		end_mem = sbrk(1);
 	return(newaddr);
 }
+*/
+
+/*@
+ * newmem - memory allocater
+ *        - motto: use malloc() like any sane software or die in 1985
+ *
+ * Clients should call free() for allocated objects
+ */
+char *
+newmem(nbytes)
+	unsigned int nbytes;
+{
+	void * newaddr;
+	if ((newaddr = (char *) malloc(nbytes)) == NULL)
+		fatal("No Memory");
+	return (char *)newaddr;
+}
+
 
 #define PC  0xff
 #define XT  0xfe

@@ -572,7 +572,7 @@ extern char fruit[], macro[], whoami[];
 
 
 //@ init.c
-extern char *end_sb, *end_mem, *startmem;
+extern char *end_sb, *startmem;
 extern char *tbuf, *prbuf;
 extern byte *_level, *_flags;
 extern long *e_levels;
@@ -581,6 +581,10 @@ extern THING *_things;
 extern int   *_t_alloc;
 extern char *ring_buf;
 //@ extern char *_top, *_base;  //@ not found
+/*@
+ * Deprecated:
+ * extern char *end_mem;
+ */
 
 
 //@ croot.c
@@ -610,7 +614,7 @@ coord	*find_dest();
 void	command(), show_count(), execcom();
 
 //@ croot.c
-void	exit_croot();
+void	croot_exit();
 
 //@ daemon.c
 void	start_daemon(), do_daemons(), fuse(), lengthen(), extinguish(),

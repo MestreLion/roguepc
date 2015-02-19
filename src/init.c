@@ -419,10 +419,12 @@ long *e_levels;		/* Pointer to array of experience level */
 char *tbuf;			/* Temp buffer used in fighting */
 char *msgbuf;		/* Message buffer for msg() */
 char *prbuf;		/* Printing buffer used everywhere */
-char *end_mem;		/* Pointer to end of memory */
 char *startmem;	    /* Pointer to the start of static memory */
 char *end_sb;		/* Pointer to the end of static base */
 char *ring_buf;		/* Buffer used by ring code */
+//@ Deprecated:
+//@ * char *end_mem;	/* Pointer to end of memory */
+
 
 /*
  *  Declarations for data space that must be saved and restored exaxtly

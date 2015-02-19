@@ -210,7 +210,8 @@ rok:
 	}
 
 	oldcols = COLS;
-	brk(end_sb);					/* Restore heap to empty state */
+	//@ no longer needed, memory is now managed via malloc()
+	//@ brk(end_sb);					/* Restore heap to empty state */
 	init_ds();
 	wclose();
 	winit();

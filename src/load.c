@@ -236,16 +236,13 @@ find_drive()
 	/*@
 	 * The following nonsense strongly indicates this is either a partial,
 	 * work in progress function, or a leftover, or an already cracked version.
-	 *
-	 * access() can be found in <unistd.h>, which can not be included yet
-	 * as it conflicts with asm's brk() and sbrk(). So for now the call is
-	 * commented out. As return code was not checked it was a useless call
-	 * anyway, and the whole block, along with the then-unused filename var,
-	 * can be removed.
+	 * access() is a useless call as its return code is not being checked.
+	 * Thus, the whole block, along with the then-unused filename var, is a
+	 * no-op and so could be safely removed with no functionality loss.
 	 */
 	strcpy(filename,"a:jatgnas.8ys");
 	filename[0] += (char)drive;
-	//@ access(filename);
+	access(filename);
 
 	return drive;
 }
