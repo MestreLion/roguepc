@@ -23,6 +23,9 @@ struct sw_regs {
 
 #define SETHILO(reg,hi,lo) (reg) = ((hi) << 8) | lo)
 
+//@ my own contribution
+#define HILO(hi,lo) ((LOW(hi) << 8) | LOW(lo))
+
 /* processor flags */
 #define CF	0x001
 #define PF	0x004

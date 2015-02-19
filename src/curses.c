@@ -9,7 +9,7 @@
  */
 int LINES=25, COLS=80;
 int is_saved = FALSE;
-int iscuron = TRUE;
+bool iscuron = TRUE;
 int ch_attr = 0x7;
 int old_page_no;
 int no_check = FALSE;
@@ -102,6 +102,43 @@ beep()
 	printf("\a");  //@ lame, I know... but it works
 }
 
+
+/*@
+ * Move the cursor to the given row and column
+ *
+ * To be replaced by real curses
+ *
+ * Originally in zoom.asm
+ *
+ * As per original code, also updates C global variables c_col_ and c_row,
+ * used as "cache" by curses. See getrc(). Actual cursor movement is only
+ * performed if iscuron is set. See cursor().
+ *
+ * Used BIOS INT 10h/AH=02h to set the cursor on C variable page_no.
+ * The BIOS call is now performed via swint()
+ *
+ * INT 10h/AH=02h - Set Cursor Position
+ * BH = page number
+ * DH = row
+ * DL = col
+ */
+void
+move(row, col)
+	int row;
+	int col;
+{
+	c_row = row;
+	c_col = col;
+
+	if (iscuron) {
+		regs->ax = HILO(2, 0);
+		regs->bx = HILO(page_no, 0);
+		regs->dx = HILO(row, col);
+		swint(SW_SCR, regs);
+	}
+}
+
+
 /*
  * clear screen
  */
@@ -122,7 +159,7 @@ bool
 cursor(ison)
 	bool ison;
 {
-	register int oldstate;
+	register bool oldstate;
 
 	if (iscuron == ison)
 		return ison;

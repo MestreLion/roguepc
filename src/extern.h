@@ -82,7 +82,7 @@ int 	csum();
 char *brk(), *sbrk();
 
 //@ zoom.asm
-void	move(), putchr();
+void	putchr();
 int	curch();
 
 

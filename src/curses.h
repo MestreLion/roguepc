@@ -71,7 +71,7 @@
  */
 extern int LINES, COLS;
 extern int is_saved;
-extern int iscuron;
+extern bool iscuron;
 extern int ch_attr;  //@ only used in zoom.asm
 extern int old_page_no;
 extern int no_check;
@@ -125,3 +125,4 @@ byte	get_mode();
 byte	video_mode(int type);
 
 void	beep();  //@ originally in dos.asm
+void	move();  //@ originally in zoom.asm
