@@ -74,9 +74,9 @@ int	peekb(), clock(), getds();
 //@ Moved to mach_dep.c:
 int 	csum();
 
-//@ fio.asm - already replaced by <stdio.h> except write() in croot.c
-int 	open(), read(), write(), creat();
-void	close(), unlink(), lseek();
+//@ fio.asm - replaced by <stdio.h> equivalents except write() in croot.c
+//@ int 	open(), read(), write(), creat();
+//@ void	close(), unlink(), lseek();
 
 //@ sbrk.asm
 char *brk(), *sbrk();
