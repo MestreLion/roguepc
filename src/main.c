@@ -203,8 +203,6 @@ playit(sname,bw)
 	int bw;
 {
 	if (sname) {
-		extern int iscuron;
-
 		restore(sname);
 		if (bwflag)
 			forcebw();

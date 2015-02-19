@@ -7,20 +7,22 @@
 /*
  *  Globals for curses
  */
+/*@
+ * Definition of extern globals
+ */
 int LINES=25, COLS=80;
 int is_saved = FALSE;
 int iscuron = TRUE;
 int ch_attr = 0x7;
 int old_page_no;
 int no_check = FALSE;
-
 int scr_ds=0xB800;
-int svwin_ds;  //@ exported
-
-char *savewin;
+int svwin_ds;
 int scr_type = -1;
-int tab_size = 8;
 int page_no = 0;
+char *savewin;
+
+int tab_size = 8;  //@ unused
 
 #define MAXATTR 17
 byte color_attr[] = {

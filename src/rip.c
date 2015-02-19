@@ -9,10 +9,6 @@
 #include "curses.h"
 
 static FILE *file;
-/*
- * external curses IBM (jll)
- */
-extern int scr_type;
 
 /*
  * score:

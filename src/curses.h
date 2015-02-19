@@ -56,8 +56,6 @@
 #define high() set_attr(15)
 #define bold() set_attr(16)
 
-extern int scr_ds, old_page_no, no_check;
-
 #define BX_UL	0
 #define BX_UR	1
 #define BX_LL	2
@@ -67,7 +65,21 @@ extern int scr_ds, old_page_no, no_check;
 #define BX_HB	6
 #define BX_SIZE	7
 
-extern byte dbl_box[BX_SIZE], sng_box[BX_SIZE], fat_box[BX_SIZE];
+
+/*@
+ * Global variables declarations. All defined in curses.c
+ */
+extern int LINES, COLS;
+extern int is_saved;
+extern int iscuron;
+extern int ch_attr;  //@ only used in zoom.asm
+extern int old_page_no;
+extern int no_check;
+extern int scr_ds;
+extern int svwin_ds;
+extern int scr_type;
+extern int page_no;  //@ only used in zoom.asm
+extern char *savewin;
 
 /*@
  * Function declarations

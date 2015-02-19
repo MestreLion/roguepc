@@ -56,8 +56,6 @@ new_level()
 	free_list(lvl_obj);
 	do_rooms();				/* Draw rooms */
 	if (max_level == 1) {
-		extern int svwin_ds;
-
 		reinit = TRUE;
 		if (svwin_ds == -1) {
 			move(maxrow, 0);

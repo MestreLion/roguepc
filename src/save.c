@@ -17,7 +17,6 @@
 /*
  * we need to know location of screen being saved
  */
-extern char *savewin;
 extern char do_force;
 extern int bwflag;
 

@@ -7,8 +7,6 @@
 #include	"rogue.h"
 #include	"curses.h"
 
-extern int scr_type;
-
 #define AC(a) (-((a)-11))
 #define PT(i,j) ((COLS==40)?i:j)
 /*
