@@ -4,7 +4,6 @@
 
 #include	"rogue.h"
 
-extern int goodchk;
 int no_step;
 
 #define UNDEFINED	0

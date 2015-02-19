@@ -306,7 +306,7 @@ bool was_trapped = FALSE;		/* Was a trap sprung */
 #ifdef WIZARD
 bool wizard = FALSE;			/* True if allows wizard commands */
 #endif
-int bailout = FALSE;
+bool bailout = FALSE;
 char take;				/* Thing the rogue is taking */
 char runch;				/* Direction player is running */
 /* now names are associated with fixed pointers */

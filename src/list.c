@@ -9,8 +9,6 @@
 #include "rogue.h"
 #include "curses.h"
 
-extern THING *_things;
-extern int   *_t_alloc;
 /*
  * detach:
  *	Takes an item out of whatever linked list it might be in

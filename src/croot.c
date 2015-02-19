@@ -6,25 +6,25 @@
  * As this originally does not include rogue.h, needed functions are
  * declared here
  */
-extern void	_exit(int status);  //@ begin.asm, also <stdlib.h>, <unistd.h>
-extern int 	write();  //@ fio.asm, also in <unistd.h> (returning ssize_t)
-extern char	*sbrk(); //@ sbrk.asm, also in <unistd.h>
-extern void	exit_croot(int code);  //@ implemented at end of file
-extern void	unsetup(); //@ mach_dep.c
-extern int 	main();  //@ main.c
+void	_exit(int status);  //@ begin.asm, also <stdlib.h>, <unistd.h>
+int 	write();  //@ fio.asm, also in <unistd.h> (returning ssize_t)
+char	*sbrk(); //@ sbrk.asm, also in <unistd.h>
+void	exit_croot(int code);  //@ implemented at end of file
+void	unsetup(); //@ mach_dep.c
+int 	main();  //@ main.c
 
 #define STDERR_FILENO	2  //@ from <unistd.h>
 
 static char **Argv;
 static int Argc;
 
-int
+void
 noper()
 {
-	return 0;
+	return;
 }
 
-int (*cls_)() = noper;
+void (*cls_)() = noper;
 
 void
 Croot(cp, first)

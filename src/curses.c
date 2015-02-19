@@ -7,9 +7,6 @@
 /*
  *  Globals for curses
  */
-/*@
- * Definition of extern globals
- */
 int LINES=25, COLS=80;
 int is_saved = FALSE;
 int iscuron = TRUE;

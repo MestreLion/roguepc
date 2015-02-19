@@ -489,13 +489,53 @@ struct sc_ent {
 
 /*
  * External variables
+ * @ all in extern.c unless noted (init.c and env.c)
  */
+extern int maxitems;
+extern int maxrow;
+extern int reinit;
+extern int revno, verno;
+extern int is_me;
+extern int iguess;
+extern bool bailout;
 
-extern THING *cur_armor, *cur_ring[2], *cur_weapon,
+//@ nullstr should probably be used in misc and wizard instead of (size_t)NULL
+extern char nullstr[], *it, *you, *no_mem;
+
+extern char *s_guess[], *p_guess[], *r_guess[], *ws_guess[];
+extern char f_damage[];
+
+extern bool amulet, after, again, door_stop, expert, fastmode, faststate,
+			firstmove, noscore, playing, running, save_msg, saw_amulet, terse,
+			was_trapped;
+#ifdef WIZARD
+bool wizard;
+#endif
+
+extern bool p_know[], r_know[], s_know[], ws_know[];
+
+extern char *a_names[], *flash, *he_man[], *helpcoms[], *helpobjs[], huh[],
+		*intense, *p_colors[], *r_stones[], runch, *typeahead, take,
+		*w_names[], *ws_made[], *ws_type[];
+
+extern int	a_chances[], a_class[], count, dnum, food_left,
+		fung_hit, group, hungry_state, inpack,
+		level, max_level, mpos, no_command, no_food, no_move,
+		ntraps, purse, quiet, total;
+
+extern long seed;
+
+//@ related to copy protection
+extern int hit_mul;
+extern char *your_na, *kild_by;
+extern int goodchk;
+extern char *_whoami;  //@ defined (no value set) but seems unused
+extern int cksum;
+
+extern THING *cur_armor, *cur_ring[], *cur_weapon,
 		*lvl_obj, *mlist, player;
 
 extern coord	delta, oldpos;
-
 
 extern struct room	*oldrp, passages[], rooms[];
 
@@ -507,6 +547,45 @@ extern struct magic_item	p_magic[], r_magic[], s_magic[],
 				things[], ws_magic[];
 
 extern struct array s_names[], _guesses[];
+
+#ifdef LOG
+extern int captains_log;
+#endif //LOG
+
+/*@
+ * Definition commented out:
+ * extern bool askme, fight_flush, jump, passgo, slow_invent;
+ * extern char *release;
+ *
+ * Not found:
+ * extern bool in_shell;
+ * extern char file_name[], home[], outbuf[];
+ * extern int lastscore;
+ */
+
+
+//@ env.c
+extern char s_menu[], s_fruit[], s_score[], s_save[], s_macro[];
+extern char s_drive[], s_screen[];
+extern char fruit[], macro[], whoami[];
+//@ extern char s_name[];  //@ not found. Perhaps old name for whoami[]?
+
+
+//@ init.c
+extern char *end_sb, *end_mem, *startmem;
+extern char *tbuf, *prbuf;
+extern byte *_level, *_flags;
+extern long *e_levels;
+extern char *msgbuf;
+extern THING *_things;
+extern int   *_t_alloc;
+extern char *ring_buf;
+//@ extern char *_top, *_base;  //@ not found
+
+
+//@ croot.c
+extern void (*cls_)();
+
 
 /*
  * Function types

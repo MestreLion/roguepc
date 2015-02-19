@@ -362,7 +362,7 @@ register coord *cp;
 #ifdef DEBUG
 	debug("in some bizarre place (%d, %d)", unc(*cp));
 #endif //DEBUG
-	bailout++;
+	bailout = TRUE;
 	return NULL;
 }
 

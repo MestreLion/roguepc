@@ -40,7 +40,7 @@ do_move(dy, dx)
 
 	firstmove = FALSE;
 	if (bailout) {
-		bailout = 0;
+		bailout = FALSE;
 		msg("the crack widens ... ");
 		descend("");
 		return ;

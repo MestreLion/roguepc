@@ -13,7 +13,6 @@
  * msg:
  *	Display a message at the top of the screen.
  */
-extern char *msgbuf;
 static int newpos = 0;
 
 /* VARARGS1 */

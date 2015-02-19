@@ -7,7 +7,6 @@
 
 #include "rogue.h"
 #include "curses.h"
-extern int maxrow;
 
 #define MAXFRNT 100
 

@@ -171,8 +171,6 @@ char *
 ring_num(obj)
 	register THING *obj;
 {
-	extern char *ring_buf;
-
 	if (!(obj->o_flags & ISKNOW))
 		return "";
 	switch (obj->o_which) {

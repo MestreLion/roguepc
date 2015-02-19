@@ -38,8 +38,6 @@ setup()
 void
 clock_on()
 {
-	extern void (*cls_)();
-
 	/*@
 	 * Using proper pointer size for the array and the following cast
 	 * makes the compiler happy, but it would certainly cause trouble in the
