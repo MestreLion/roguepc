@@ -54,9 +54,10 @@ typedef unsigned char bool;
  */
 
 //@ begin.asm
-extern int  _dsval, _csval;
 extern char _lowmem;			/* Adresss of first save-able memory */
 extern char _Uend;				/* Address of end of user data space */
+//@ Moved to mach_dep.c:
+extern int  _dsval, _csval;
 //@ also contains void _exit() only used by croot.c
 //@ and other public symbols not used in C code
 
@@ -69,7 +70,9 @@ void	dmain(), dmaout(), COFF(), beep(), out(), pokeb(), wsetmem(),
 		_halt();
 byte	getch();
 bool	no_char();  //@ actually return only 0 or 1, so a "true" bool
-int	peekb(), clock(), getds(), csum();
+int	peekb(), clock(), getds();
+//@ Moved to mach_dep.c:
+int 	csum();
 
 //@ fio.asm - already replaced by <stdio.h> except write() in croot.c
 int 	open(), read(), write(), creat();

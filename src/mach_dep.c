@@ -13,6 +13,46 @@
 static int clk_vec[2];
 static int ocb;
 
+/*@
+ * Initial values of the CS and DS registers
+ * Set to dummy values of a "Hello World!" program as reported by gdb
+ */
+int _dsval = 0x00;
+int _csval = 0x33;
+
+
+/*@
+ * Checksum of the game executable
+ * Used as integrity check, see new_level() and command()
+ *
+ * Return a dummy value matching the expected CSUM value defined in rogue.h
+ * to avoid triggering copy protection measures.
+ *
+ * In the future it could be controlled via command line options to simulate
+ * original behavior in case of a tampered executable.
+ *
+ * Originally in dos.asm
+ */
+int
+csum()
+{
+	return CSUM;
+}
+
+/*@
+ * Current value of the Data Segment register DS
+ * Used in copy protection, see protect()
+ *
+ * Return the initial (dummy) value of DS
+ *
+ * Originally in dos.asm
+ */
+int
+getds()
+{
+	return _dsval;
+}
+
 
 /*
  * setup:
