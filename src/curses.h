@@ -126,6 +126,9 @@ void	switch_page(int pn);
 byte	get_mode();
 byte	video_mode(int type);
 
-void	beep();  //@ originally in dos.asm
-void	move();  //@ originally in zoom.asm
-void	putchr();  //@ originally in zoom.asm
+//@ originally in dos.asm
+void	beep();
+
+//@ originally in zoom.asm
+void	move();
+void	putchr();

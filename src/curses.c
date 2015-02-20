@@ -88,7 +88,7 @@ byte spc_box[BX_SIZE] = {
 /*@
  * Beep a an audible beep, if possible
  *
- * To be replaced by real curses
+ * To be replaced by ncurses beep()
  *
  * Originally in dos.asm
  *
@@ -106,7 +106,7 @@ beep()
 /*@
  * Move the cursor to the given row and column
  *
- * To be replaced by real curses
+ * To be replaced by ncurses move()
  *
  * Originally in zoom.asm
  *
@@ -130,9 +130,10 @@ move(row, col)
 	c_row = row;
 	c_col = col;
 
-	if (iscuron) {
-		regs->ax = HILO(2, 0);
-		regs->bx = HILO(page_no, 0);
+	if (iscuron)
+	{
+		regs->ax = HIGH(2);
+		regs->bx = HIGH(page_no);
 		regs->dx = HILO(row, col);
 		swint(SW_SCR, regs);
 	}
@@ -145,7 +146,7 @@ move(row, col)
  * Character is put at current (c_row, c_col) cursor position, and set with
  * current ch_attr attributes.
  *
- * No direct curses counterpart.
+ * No direct ncurses replacement.
  *
  * <stdio.h> putchar() is a replacement candidate, but it lacks the character
  * attributes. Anyway, this will probably be deprecated after addch()
@@ -154,14 +155,13 @@ move(row, col)
  *
  * Originally in zoom.asm
  *
- * By my understanding, asm function worked as follows: if cursor is on (via
+ * By my understanding, asm function works as follows: if cursor is on (via
  * iscuron C var), it invokes BIOS INT 10h/AH=09h to put char with attributes.
  * If not, it waits for video retrace (unless no_check C var was TRUE) and
  * then write directly in Video Memory, using C vars scr_row and scr_ds to
  * calculate position address.
  *
- * This function replicates this behavior. Also, as here was the only
- * real usage of no_check, that var can be deprecated.
+ * This function replicates this behavior using dmaout() and swint().
  *
  * BIOS INT 10h/AH=09h - Write character with attribute at cursor position
  * AL = character
@@ -174,20 +174,24 @@ void
 putchr(ch)
 	byte ch;
 {
-	if (iscuron) {
+	if (iscuron)
+	{
 		// Use BIOS call
 		regs->ax = HILO(9, ch);
 		regs->bx = HILO(page_no, ch_attr);
 		regs->cx = 1;
 		swint(SW_SCR, regs);
 	}
-	else {
-		if (!no_check){}  // "wait" for video retrace
+	else
+	{
+		if (!no_check){;}  // "wait" for video retrace
 		/*
 		 * Write to video memory
-		 * each char uses 2 bytes in video memory, hence doubling c_col.
-		 * scr_row array takes that into account, so no need to double c_row.
-		 * See winit()
+		 * Each char uses 2 bytes in video memory, hence doubling c_col.
+		 * scr_row[] array takes that into account, so we can use c_row
+		 * directly. See winit().
+		 * Also, I *think* dmaout() length assumes 16-bit data, the size of int
+		 * in DOS, hence 1 for writing 2 bytes.
 		 */
 		dmaout(HILO(ch_attr, ch), 1,
 			scr_ds, scr_row[c_row] + 2 * c_col);
