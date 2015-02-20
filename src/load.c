@@ -182,9 +182,9 @@ scr_load()
 	//@ Read current video mode from BIOS Data Area, sans the burst bit
 	mode = peekb(MODESAVE,0x40) & (~BWENABLE);
 	if (burst == 1)
-		mode = mode | BWENABLE;
-	pokeb(MODESAVE,0x40,mode); //@ write mode to BIOS
-	out(MODEREG,mode);         //@ write mode to CGA 6845 controller
+		mode = mode | BWENABLE;  //@ enable burst bit
+	pokeb(MODESAVE,0x40,mode);   //@ write mode to BIOS
+	out(MODEREG,mode);           //@ write mode to CGA 6845 controller
 }
 
 /*@

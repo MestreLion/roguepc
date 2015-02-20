@@ -54,6 +54,66 @@ getds()
 }
 
 
+/*@
+ * Write a byte to a segment:offset memory address
+ *
+ * Dummy no-op, obviously. It's 2015... protected mode and flat memory model
+ * would make true poking either impossible or very dangerous.
+ *
+ * But hey, it's 2015... we can easily create a 1MB array of bytes and let
+ * Rogue play all around in its own VM. Nah... this a port, not a DOSBox remake.
+ * Still, this idea might be useful for debugging.
+ *
+ * Originally in dos.asm.
+ *
+ * value is typed as byte to make clear that the high byte is ignored.
+ */
+void
+pokeb(segment, offset, value)
+	int segment;
+	int offset;
+	byte value;
+{
+	;  // it was written, I promise!
+}
+
+
+/*@
+ * Read a byte from a segment:offset memory address
+ *
+ * Dummy, always return 0
+ *
+ * Originally in dos.asm. It zeroed AH so return is explicitly typed as byte.
+ */
+byte
+peekb(segment, offset)
+	int segment;
+	int offset;
+{
+	return 0;  // we rebooted recently, so...
+}
+
+
+/*@
+ * Write a byte to an I/O port
+ *
+ * Dummy no-op
+ *
+ * Originally in dos.asm
+ *
+ * Asm equivalent function is as a wrapper to OUT x86 CPU instruction.
+ * Only AL was sent, hence byte as argument type. Port must be 16-bit as it is
+ * written to DX, so a type uint16_t could be used enforce this.
+ */
+void
+out(port, value)
+	int port;
+	byte value;
+{
+	;  // and it's out! :)
+}
+
+
 /*
  * setup:
  *	Get starting setup for all games

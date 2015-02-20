@@ -66,13 +66,17 @@ extern int  _dsval, _csval;
 
 //@ dos.asm
 extern unsigned int tick;  //@ clock rate is about 18.2 ticks per second
-void	dmain(), dmaout(), COFF(), out(), pokeb(), wsetmem(),
-		_halt();
+void	dmain(), dmaout(), COFF(), wsetmem(), _halt();
 byte	getch();
 bool	no_char();  //@ actually return only 0 or 1, so a "true" bool
-int	peekb(), clock(), getds();
+int 	clock();
 //@ Moved to mach_dep.c:
 int 	csum();
+int 	getds();
+byte 	peekb();
+void	pokeb();
+void	out();
+
 
 //@ fio.asm - replaced by <stdio.h> equivalents except write() in croot.c
 //@ int 	open(), read(), write(), creat();
