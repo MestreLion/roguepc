@@ -132,3 +132,4 @@ void	beep();
 //@ originally in zoom.asm
 void	move();
 void	putchr();
+int 	curch();

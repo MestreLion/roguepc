@@ -81,9 +81,7 @@ int 	csum();
 //@ sbrk.asm
 char *brk(), *sbrk();
 
-//@ zoom.asm
-int	curch();
-
+//@ zoom.asm - replaced by functions in curses.c
 
 /*@
  * Functions and constants from libc

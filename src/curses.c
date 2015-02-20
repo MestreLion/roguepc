@@ -199,6 +199,58 @@ putchr(ch)
 }
 
 
+/*@
+ * Return character and attribute at current cursor position
+ *
+ * To be replaced by ncurses inch()
+ *
+ * Originally in zoom.asm
+ *
+ * By my understanding, asm function works very similar to putchr():
+ * If iscuron, invokes BIOS INT 10h/AH=02h to set cursor position from cache
+ * and 10h/AH=08h to read character, else wait retrace (unless no_check) and
+ * read directly from Video Memory. The set cursor BIOS call seems quite
+ * redundant, as virtually all calls to curch(), from both the inch() macro and
+ * the mvinch() wrapper, are preceded by a move().
+ *
+ * This function replicates this behavior, except the redundant move.
+ *
+ * BIOS INT 10h/AH=08h - Read character and attribute at cursor position
+ * BH = page number
+ * Return:
+ * AH = attribute
+ * AL = character
+ *
+ */
+int
+curch()
+{
+	byte chr;
+	byte attr;
+	int offset;
+
+	if (iscuron)
+	{
+		regs->ax = HIGH(8);
+		regs->bx = HIGH(page_no);
+		return swint(SW_SCR, regs);
+	}
+	else
+	{
+		if (!no_check){;}
+		/*
+		 * I feel dumb for not knowing the 16-bit equivalent of peekb(), but
+		 * at least it seems scr_load() doesn't either ;)
+		 * Maybe dmain() would be better?
+		 */
+		offset = scr_row[c_row] + 2 * c_col;
+		chr  = peekb(scr_ds, offset++);
+		attr = peekb(scr_ds, offset);
+		return HILO(attr, chr);
+	}
+}
+
+
 /*
  * clear screen
  */
