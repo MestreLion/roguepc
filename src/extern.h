@@ -54,10 +54,9 @@ typedef unsigned char bool;
  */
 
 //@ begin.asm
-extern char _lowmem;			/* Adresss of first save-able memory */
-extern char _Uend;				/* Address of end of user data space */
 //@ Moved to mach_dep.c:
 extern int  _dsval, _csval;
+//@ Moved to save.c (no longer extern): char _lowmem, _Uend
 //@ also contains void _exit() only used by croot.c
 //@ and other public symbols not used in C code
 

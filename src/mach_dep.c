@@ -16,6 +16,7 @@ static int ocb;
 /*@
  * Initial values of the CS and DS registers
  * Set to dummy values of a "Hello World!" program as reported by gdb
+ * Originally set by begin.asm
  */
 int _dsval = 0x00;
 int _csval = 0x33;

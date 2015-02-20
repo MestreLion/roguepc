@@ -14,6 +14,15 @@
 #include "rogue.h"
 #include "curses.h"
 
+/*@
+ * Addresses used by save.c to save and restore all global vars to disk.
+ * Changed from char to actual pointers, so we can set to a dummy address
+ * Originally externs set by begin.asm
+ */
+char dummy[1234];  //@ look how tiny Rogue data space is! :)
+char * _lowmem = dummy;  /* Adresss of first save-able memory */
+char * _Uend = dummy + sizeof(dummy);  /* Address of end of user data space */
+
 #define MIDSIZE 10
 char *msaveid = "AI Design";
 
