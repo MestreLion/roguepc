@@ -40,6 +40,7 @@ csum()
 	return CSUM;
 }
 
+
 /*@
  * Current value of the Data Segment register DS
  * Used in copy protection, see protect()
@@ -91,7 +92,7 @@ peekb(segment, offset)
 	int segment;
 	int offset;
 {
-	return 0;  // we rebooted recently, so...
+	return 0;  // we just rebooted, so...
 }
 
 
@@ -377,11 +378,25 @@ newmem(nbytes,clrflag)
 	return(newaddr);
 }
 
-#define PC	0xff
+#define PC  0xff
 #define XT  0xfe
 #define JR  0xfd
-#define AT	0xfc
-
+#define AT  0xfc
+/*@
+ * Return TRUE if the system is identified as an IBM PCJr ("PC Junior")
+ *
+ * It is only used for setting no_check in curses winit().
+ *
+ * 0xF000:0xFFFE 1  IBM computer-type code; see also BIOS INT 15h/C0h
+ *  0xFF = Original PC
+ *  0xFE = XT or Portable PC
+ *  0xFD = PCjr
+ *  0xFC = AT (or XT model 286) (or PS/2 Model 50/60)
+ *  0xFB = XT with 640K motherboard
+ *  0xFA = PS/2 Model 30
+ *  0xF9 = Convertible PC
+ *  0xF8 = PS/2 Model 80
+ */
 bool
 isjr()
 {
