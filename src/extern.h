@@ -66,7 +66,6 @@ extern int  _dsval, _csval;
 //@ dos.asm
 extern unsigned int tick;  //@ clock rate is about 18.2 ticks per second
 void	dmain(), dmaout(), COFF(), wsetmem(), _halt();
-byte	getch();
 bool	no_char();  //@ actually return only 0 or 1, so a "true" bool
 int 	clock();
 //@ Moved to mach_dep.c:
@@ -101,6 +100,7 @@ char *brk(), *sbrk();
 
 //@ sprintf(), f{open,read,seek,write,close}(), remove()
 #include <stdio.h>
+#define getch() (byte)getchar()
 
 //@ atoi(), NULL, EXIT_*
 #include <stdlib.h>
