@@ -116,6 +116,52 @@ out(port, value)
 }
 
 
+/*@
+ * Write data to memory starting at segment:offset address
+ *
+ * Length of data is measured in words (16-bit), the size of int in DOS
+ *
+ * Dummy no-op, see pokeb().
+ *
+ * Originally in dos.asm.
+ *
+ * While original is technically "direct memory access", the name is misleading
+ * as it has nothing to do with DMA channels. And despite documentation on
+ * dos.asm, it has no particular ties to video: it is a general use memory
+ * writer that happens to be most often used to write to video memory address.
+ * Asm works by setting the arguments and calling REP MOVSW
+ */
+void
+dmaout(data, wordlength, segment, offset)
+	void * data;
+	unsigned int wordlength;
+	unsigned int segment;
+	unsigned int offset;
+{
+	; // blazing fast!
+}
+
+
+/*@
+ * Read memory starting at segment:offset address and store contents in buffer
+ *
+ * Length of buffer is measured in words (16-bit), the size of int in DOS
+ *
+ * Dummy no-op, leave buffer unchanged.
+ *
+ * Originally in dos.asm. See notes on dmaout()
+ */
+void
+dmain(buffer, wordlength, segment, offset)
+	void * buffer;
+	unsigned int wordlength;
+	unsigned int segment;
+	unsigned int offset;
+{
+	;
+}
+
+
 /*
  * setup:
  *	Get starting setup for all games
