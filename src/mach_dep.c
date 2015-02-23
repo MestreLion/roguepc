@@ -19,7 +19,7 @@ static int ocb;
  * Originally set by begin.asm
  */
 int _dsval = 0x00;
-dosptr _csval = 0x33;
+dosptr _csval = 0x33;  /*@ dummy */
 
 
 /*@
@@ -187,6 +187,31 @@ _halt()
 }
 
 
+/*@
+ * Hook quit() as the ISR for CTRL-BREAK interrupts
+ *
+ * Originally in dos.asm
+ *
+ * Hook is performed using DOS INT 21h/AH=25h - Set Interrupt Vector
+ * AL = interrupt number to hook - 23h for CTRL-BREAK
+ * DS = handler function segment
+ * DX = handler function offset
+ *
+ * Actually it did not hook quit() directly, instead it hooked an asm wrapper
+ * that called quit(). For simplicity, it now "hooks" quit(), as this is bogus
+ * code anyway. See notes on clock().
+ */
+void
+COFF()
+{
+	struct sw_regs reg;
+	reg.ax = 0x2523;  // hooking to INT 23h
+	reg.ds = _csval;  // technically this should be CS from dos.asm or main.c
+	reg.dx = (dosptr)(intptr)quit;  // see clock_on() for note on casting
+	swint(SW_DOS, &reg);
+}
+
+
 /*
  * setup:
  *	Get starting setup for all games
@@ -245,6 +270,10 @@ clock_on()
 	new_vec[0] = (dosptr)(intptr)clock;
 	new_vec[1] = _csval;
 
+	/*@
+	 * I wonder why using IVT directly instead of the safer DOS INT 21h/25h,35h
+	 * calls like the well behaved COFF() does?
+	 */
 	dmain(clk_vec, 2, 0, TICK_ADDR);
 	dmaout(new_vec, 2, 0, TICK_ADDR);
 	cls_ = no_clock;

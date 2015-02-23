@@ -62,7 +62,6 @@ typedef unsigned char bool;
 //@ begin.asm
 //@ Moved to mach_dep.c:
 extern int  _dsval;
-extern dosptr _csval;
 //@ Moved to save.c (no longer extern): char _lowmem, _Uend
 //@ also contains void _exit() only used by croot.c
 //@ and other public symbols not used in C code
@@ -71,7 +70,7 @@ extern dosptr _csval;
 //@ it seems no symbols are directly referenced by any C code.
 
 //@ dos.asm
-void	COFF(), wsetmem();
+void	wsetmem();
 bool	no_char();  //@ actually return only 0 or 1, so a "true" bool
 //@ Moved to mach_dep.c:
 extern unsigned int tick;
@@ -84,6 +83,7 @@ void	dmaout();
 void	dmain();
 void	_halt();
 void	clock();
+void	COFF();
 
 //@ fio.asm - replaced by <stdio.h> equivalents except write() in croot.c
 //@ int 	open(), read(), write(), creat();
