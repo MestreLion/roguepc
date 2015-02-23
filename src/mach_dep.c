@@ -23,6 +23,14 @@ dosptr _csval = 0x33;
 
 
 /*@
+ * Global tick counter
+ * Automatically incremented by clock() 18.2 times per second
+ * Originally set by dos.asm
+ */
+unsigned int tick = 0;
+
+
+/*@
  * Checksum of the game executable
  * Used as integrity check, see new_level() and command()
  *
@@ -219,16 +227,14 @@ setup()
  * on how tick works, and what its actual and expected rates are.
  *
  * In any case, this function must be replaced with a portable way of hooking
- * clock() to a timer that does not rely on ancient ISR/INT 70h model.
+ * clock() to a timer that does not rely on ancient real mode ISR/IVT model.
  */
 void
 clock_on()
 {
 	/*@
 	 * Craft the 4-byte CS:offset function pointer for clock()
-	 *
-	 * Array indexes seem to be swapped (CS=1, offset=0), perhaps due to
-	 * little-endianess?
+	 * Array indexes are swapped (CS=1, offset=0) as it writes directly to IVT
 	 *
 	 * Using the actual clock() protected mode address and "casting" it to a
 	 * DOS real mode 16-bit offset makes the compiler happy and produce a legit
@@ -254,6 +260,45 @@ no_clock()
 {
 	dmaout(clk_vec, 2, 0, TICK_ADDR);
 }
+
+
+/*@
+ * Increment the global tick
+ *
+ * This is supposed to be called 18.2 times per second, to maintain the tick
+ * rate found in DOS system timer expected by Rogue. The game heavily relies
+ * on clock() being periodically (and automatically) called via some triggering
+ * mechanism such as an IRQ timer or signal, as made by clock_on(). If tick is
+ * not incremented some Bad Things will happen: Rogue will _halt() on the first
+ * one_tick() call, or enter infinite loop on tick_pause() and epyx_yuck().
+ *
+ * This should be changed to a sane API where code explicitly calls clock() to
+ * get current tick instead of expecting a value to be magically updated by
+ * an external interrupt.
+ *
+ * Besides, a C function could never be directly assigned as an ISR, as calling
+ * and return conventions for an interrupt handler are different from a normal
+ * function (requires IRET, preserving AX, etc)
+ *
+ * Originally in dos.asm
+ *
+ * It also performed some anti-debugger integrity checks and copy protection
+ * measures. The anti-debugger tests, if failed, lead to _halt(), and so are
+ * not reproduced here. The copy-protection measures are partially reproduced.
+ */
+void
+clock()
+{
+	tick++;
+
+	if (hit_mul != 1 && goodchk == 0xD0D)
+	{
+		kild_by = prbuf;
+		your_na = whoami;
+		hit_mul = 1;
+	}
+}
+
 
 /*@
  * Renamed from srand() to avoid collision with <stdlib.h>

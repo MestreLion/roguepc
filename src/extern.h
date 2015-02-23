@@ -71,11 +71,10 @@ extern dosptr _csval;
 //@ it seems no symbols are directly referenced by any C code.
 
 //@ dos.asm
-extern unsigned int tick;  //@ clock rate is about 18.2 ticks per second
 void	COFF(), wsetmem();
 bool	no_char();  //@ actually return only 0 or 1, so a "true" bool
-int 	clock();
 //@ Moved to mach_dep.c:
+extern unsigned int tick;
 int 	csum();
 int 	getds();
 byte 	peekb();
@@ -84,6 +83,7 @@ void	out();
 void	dmaout();
 void	dmain();
 void	_halt();
+void	clock();
 
 //@ fio.asm - replaced by <stdio.h> equivalents except write() in croot.c
 //@ int 	open(), read(), write(), creat();
