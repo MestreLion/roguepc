@@ -32,6 +32,12 @@
 #define MAXLINES	25	/* maximum number of screen lines used */
 #define MAXCOLS		80	/* maximum number of screen columns used */
 
+//@ uintptr_t
+#include <stdint.h>
+typedef uintptr_t	intptr;  //@ size of a real pointer
+typedef uint16_t	dosptr;  //@ size of a pointer in DOS, as Rogue relies on
+
+
 //@ moved from rogue.h for assembly functions global variables declarations
 /*
  *  MANX C compiler funnies
@@ -55,7 +61,8 @@ typedef unsigned char bool;
 
 //@ begin.asm
 //@ Moved to mach_dep.c:
-extern int  _dsval, _csval;
+extern int  _dsval;
+extern dosptr _csval;
 //@ Moved to save.c (no longer extern): char _lowmem, _Uend
 //@ also contains void _exit() only used by croot.c
 //@ and other public symbols not used in C code
@@ -108,11 +115,6 @@ char *brk(), *sbrk();
 #define exit	exit_croot	//@ (pretend to) use croot's exit() for now
 #define setenv	setenv_file	//@ use env.c fake environment
 #define srand	srand_time	//@ use its rogue's own RNG mechanics
-
-//@ uintptr_t
-#include <stdint.h>
-typedef uintptr_t	intptr;  //@ size of a real pointer
-typedef uint16_t	dosptr;  //@ size of a pointer in DOS, as Rogue relies on
 
 //@ errno, originally in begin.asm
 #include <errno.h>

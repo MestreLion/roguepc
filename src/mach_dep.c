@@ -9,8 +9,8 @@
 #include	"keypad.h"
 
 #define ULINE() if(is_color) lmagenta();else uline();
-#define TICK_ADDR 0x70
-static int clk_vec[2];
+#define TICK_ADDR 0x70  //@ RTC Interrupt handler. See clock_on()
+static dosptr clk_vec[2];
 static int ocb;
 
 /*@
@@ -19,7 +19,7 @@ static int ocb;
  * Originally set by begin.asm
  */
 int _dsval = 0x00;
-int _csval = 0x33;
+dosptr _csval = 0x33;
 
 
 /*@
@@ -183,24 +183,55 @@ setup()
 	ocb = set_ctrlb(0);
 }
 
+
+/*@
+ * Hook clock() as the Interrupt Service Routine (ISR) for INT 70h,
+ * saving the current handler in clk_vec.
+ *
+ * I honestly don't understand what is going on here: INT 70h is triggered by
+ * RTC via IRQ8 only on IBM-AT/XT-286 onwards. The original IBM-PC and IBM-XT
+ * had no RTC, so INT 70h was not regularly triggered. And clock(), originally
+ * in dos.asm, incremented tick C var on every call, which was used all over.
+ * Does this mean Rogue does not work on IBM-XT?
+ *
+ * But epyx_yuck() and SIG2() strongly suggests tick is incremented ~18 times
+ * per, consistent with XT's original timer. The IBM-AT BIOS by default sets
+ * the RTC rate to 1024 times per second, not 18.2.
+ *
+ * I could not find any clock rate reprogramming in Rogue, so I'm quite puzzled
+ * on how tick works, and what its actual and expected rates are.
+ *
+ * In any case, this function must be replaced with a portable way of hooking
+ * clock() to a timer that does not rely on ancient ISR/INT 70h model.
+ */
 void
 clock_on()
 {
 	/*@
-	 * Using proper pointer size for the array and the following cast
-	 * makes the compiler happy, but it would certainly cause trouble in the
-	 * dmaout() call, as it expects 16-bit pointers. Not a big deal since soon
-	 * the dma{in,out}() functions will be stubbed or replaced.
+	 * Craft the 4-byte CS:offset function pointer for clock()
+	 *
+	 * Array indexes seem to be swapped (CS=1, offset=0), perhaps due to
+	 * little-endianess?
+	 *
+	 * Using the actual clock() protected mode address and "casting" it to a
+	 * DOS real mode 16-bit offset makes the compiler happy and produce a legit
+	 * dmaout() call. But obviously the values in new_vec are completely bogus.
 	 */
-	void * new_vec[2];
+	dosptr new_vec[2];  //@ type must match clk_vec
 
-	new_vec[0] = clock;
-	new_vec[1] = (void *)(intptr)_csval;
+	new_vec[0] = (dosptr)(intptr)clock;
+	new_vec[1] = _csval;
+
 	dmain(clk_vec, 2, 0, TICK_ADDR);
 	dmaout(new_vec, 2, 0, TICK_ADDR);
 	cls_ = no_clock;
 }
 
+
+/*@
+ * Restore INT 70h ISR to its original value, as saved by clock_on()
+ * clock() will no longer be called, and thus tick will not be updated.
+ */
 void
 no_clock()
 {
