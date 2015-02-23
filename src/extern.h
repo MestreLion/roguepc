@@ -88,8 +88,8 @@ void	dmain();
 //@ int 	open(), read(), write(), creat();
 //@ void	close(), unlink(), lseek();
 
-//@ sbrk.asm
-char *brk(), *sbrk();
+//@ sbrk.asm - replaced by <unistd.h>
+//@ char *brk(), *sbrk();
 
 //@ zoom.asm - replaced by functions in curses.c
 
@@ -118,3 +118,7 @@ char *brk(), *sbrk();
 
 //@ errno, originally in begin.asm
 #include <errno.h>
+
+//@ brk(), sbrk()
+#include <unistd.h>
+#define daemon	start_daemon

@@ -60,7 +60,7 @@ int (*func)();
  *	Start a daemon, takes a function.
  */
 void
-daemon(func, arg)
+start_daemon(func, arg)
 int (*func)(), arg;
 {
 	register struct delayed_action *dev;

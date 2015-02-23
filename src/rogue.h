@@ -613,7 +613,7 @@ void	command(), show_count(), execcom();
 void	exit_croot();
 
 //@ daemon.c
-void	daemon(), do_daemons(), fuse(), lengthen(), extinguish(),
+void	start_daemon(), do_daemons(), fuse(), lengthen(), extinguish(),
 		do_fuses();
 
 //@ daemons.c
