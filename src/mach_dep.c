@@ -162,6 +162,23 @@ dmain(buffer, wordlength, segment, offset)
 }
 
 
+/*@
+ * Immediately halt execution and hang the computer
+ *
+ * Originally in dos.asm
+ *
+ * Asm version triggered the nasty combination of CLI and HLT, effectively
+ * hanging the PC. Now it uses a harmless pause()
+ */
+void
+_halt()
+{
+	endwin();
+	printf("HALT!");
+	pause();
+}
+
+
 /*
  * setup:
  *	Get starting setup for all games
