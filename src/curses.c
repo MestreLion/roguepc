@@ -196,6 +196,9 @@ putchr(ch)
 		dmaout(HILO(ch_attr, ch), 1,
 			scr_ds, scr_row[c_row] + 2 * c_col);
 	}
+#ifdef ROGUE_DEBUG
+	printf("%c", ch);
+#endif
 }
 
 
@@ -491,6 +494,9 @@ addstr(s)
 {
 	while(*s)
 		addch(*s++);
+#ifdef ROGUE_DEBUG
+	printf("\n");
+#endif
 }
 
 void

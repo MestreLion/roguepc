@@ -146,6 +146,11 @@ dmaout(data, wordlength, segment, offset)
 	unsigned int segment;
 	unsigned int offset;
 {
+#ifdef ROGUE_DEBUG
+	if (segment != scr_ds)
+		printf("dmaout(%p, %d, %04x:%04x)\n",
+				data, wordlength, segment, offset);
+#endif
 	; // blazing fast!
 }
 
@@ -625,6 +630,27 @@ sysint(intno, inregs, outregs)
 	int intno;
 	struct sw_regs *inregs, *outregs;
 {
+#ifdef ROGUE_DEBUG
+	printf("INT %x,%2X\t"
+			"al=%2X\t"
+			"bx=%4X\t"
+			"cx=%4X\t"
+			"dx=%4X\t"
+			"si=%4X\t"
+			"di=%4X\t"
+			"ds=%4X\t"
+			"es=%4X\n",
+			intno,
+			HI(inregs->ax),
+			LOW(inregs->ax),
+			inregs->bx,
+			inregs->cx,
+			inregs->dx,
+			inregs->si,
+			inregs->di,
+			inregs->ds,
+			inregs->es);
+#endif
 	outregs->ax = 0;
 	outregs->bx = 0;
 	outregs->cx = 0;
