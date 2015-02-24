@@ -10,7 +10,7 @@
 #	speed.  Don't load in csav.o
 #
 TARGET=rogue
-CFLAGS=-Wall
+CFLAGS=-Wall -O0 -g3
 
 OBJS=armor.o new_leve.o command.o mach_dep.o croot.o main.o rip.o save.o \
 	chase.o curses.o daemon.o daemons.o env.o extern.o fakedos.o fight.o \
