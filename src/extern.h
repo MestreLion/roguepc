@@ -69,8 +69,7 @@ extern int  _dsval;
 //@ csav.asm
 //@ it seems no symbols are directly referenced by any C code.
 
-//@ dos.asm
-void	wsetmem();
+//@ dos.asm - replaced by curses.c and mach_dep.c
 //@ Moved to mach_dep.c:
 extern unsigned int tick;
 int 	csum();

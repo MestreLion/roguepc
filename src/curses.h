@@ -65,6 +65,9 @@
 #define BX_HB	6
 #define BX_SIZE	7
 
+//@ in ncurses, as unsigned long. see wmemset()
+typedef uint16_t	chtype;  // character with attributes
+
 
 /*@
  * Global variables declarations. All defined in curses.c
@@ -128,6 +131,7 @@ byte	video_mode(int type);
 
 //@ originally in dos.asm
 void	beep();
+void	wsetmem();
 
 //@ originally in zoom.asm
 void	move();

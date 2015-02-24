@@ -251,6 +251,32 @@ curch()
 }
 
 
+/*@
+ * Fills a buffer with "extended" chars (char + attribute)
+ *
+ * This is the n-bytes version of setmem(). There is no POSIX or ncurses
+ * direct replacement other than a loop writing multiple bytes at a time.
+ *
+ * For DOS compatibility, chtype (and by proxy wsetmem()) is currently set to
+ * operate on 16-bit words. But chtype in actual <ncurses.h> may be set to
+ * a whooping 64-byte unsigned long, so make *really* sure buffer size and
+ * count argument are consistent with chtype size!
+ *
+ * This function could be generic enough to be in mach_dep.c, but it was only
+ * by curses.c to write a character + attribute to window buffer.
+ *
+ * Originally in dos.asm
+ */
+void
+wsetmem(buffer, count, attrchar)
+	void *buffer;
+	int count;
+	chtype attrchar;  // enforced to prevent misuse
+{
+	while (count--)
+		((chtype *)buffer)[count] = (chtype)attrchar;
+}
+
 /*
  * clear screen
  */
