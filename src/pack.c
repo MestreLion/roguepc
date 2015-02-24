@@ -53,7 +53,14 @@ add_pack(obj, silent)
 	 * to see if there is something in the same group and if there is then
 	 * increment the count.
 	 */
-	floor = (proom->r_flags & ISGONE) ? PASSAGE : FLOOR;
+
+	/*@
+	 *  bug in original Rogue: it didn't check proom != NULL, as is the case
+	 *  when add_pack() is called from init_player(), which happens before
+	 *  any room even exist. proom is set in enter_room(), which is first
+	 *  called in new_level()
+	 */
+	floor = (proom != NULL && (proom->r_flags & ISGONE)) ? PASSAGE : FLOOR;
 	if (obj->o_group)
 	{
 		for (op = pack; op != NULL; op = next(op))
