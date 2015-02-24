@@ -80,7 +80,7 @@ void	out();
 void	dmaout();
 void	dmain();
 void	_halt();
-void	clock();
+void	md_clock();
 void	COFF();
 bool	no_char();
 
@@ -114,7 +114,7 @@ bool	no_char();
 #include <stdlib.h>
 #define exit	exit_croot	//@ (pretend to) use croot's exit() for now
 #define setenv	setenv_file	//@ use env.c fake environment
-#define srand	srand_time	//@ use its rogue's own RNG mechanics
+#define srand	md_srand	//@ use seed from time()
 
 //@ errno, originally in begin.asm
 #include <errno.h>
@@ -122,3 +122,7 @@ bool	no_char();
 //@ brk(), sbrk(), pause()
 #include <unistd.h>
 #define daemon	start_daemon
+
+//@ time()
+#include <time.h>
+#define clock	md_clock

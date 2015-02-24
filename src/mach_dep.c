@@ -314,14 +314,14 @@ no_clock()
  * and return conventions for an interrupt handler are different from a normal
  * function (requires IRET, preserving AX, etc)
  *
- * Originally in dos.asm
+ * Originally in dos.asm, renamed from clock() to avoid conflict in <time.h>
  *
  * It also performed some anti-debugger integrity checks and copy protection
  * measures. The anti-debugger tests, if failed, lead to _halt(), and so are
  * not reproduced here. The copy-protection measures are partially reproduced.
  */
 void
-clock()
+md_clock()
 {
 	tick++;
 
@@ -363,6 +363,17 @@ srand_time()
 	bdos(0x2C);
 	return(regs->cx + regs->dx);
 #endif
+}
+
+
+/*@
+ * Return a seed for the RNG, POSIX version
+ * Using time() as any sane software
+ */
+int
+md_srand()
+{
+	return (int)time(NULL);
 }
 
 
