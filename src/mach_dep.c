@@ -476,6 +476,32 @@ static struct xlate {
 	{ALT_F9,	'F'}
 };
 
+
+/*@
+ * Non-blocking function that return TRUE if no key was pressed.
+ *
+ * Similar to ! kbhit() from DOS <conio.h>. POSIX has no (easy) replacement,
+ * but this function will no longer be needed when ncurses getch() is set non-
+ * blocking mode via nodelay() or timeout()
+ *
+ * Originally in dos.asm, calling a BIOS INT, which is reproduced here.
+ *
+ * BIOS INT 16h/AH=1, Get Keyboard Status
+ * Return:
+ * ZF = 0 if a key pressed (even Ctrl-Break). Not tested, COFF() handles that.
+ * AH = scan code. 0 if no key was pressed
+ * AL = ASCII character. 0 if special function key or no key pressed
+ * So AX = 0 for no key pressed
+ */
+bool
+no_char()
+{
+	struct sw_regs reg;
+	reg.ax = HIGH(1);
+	return !(swint(SW_KEY, &reg) == 0);
+}
+
+
 /*
  * readchar:
  *	Return the next input character, from the macro or from the keyboard.

@@ -71,7 +71,6 @@ extern int  _dsval;
 
 //@ dos.asm
 void	wsetmem();
-bool	no_char();  //@ actually return only 0 or 1, so a "true" bool
 //@ Moved to mach_dep.c:
 extern unsigned int tick;
 int 	csum();
@@ -84,6 +83,7 @@ void	dmain();
 void	_halt();
 void	clock();
 void	COFF();
+bool	no_char();
 
 //@ fio.asm - replaced by <stdio.h> equivalents except write() in croot.c
 //@ int 	open(), read(), write(), creat();
