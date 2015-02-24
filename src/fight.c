@@ -317,7 +317,6 @@ bool hurl;
 	register int hplus;
 	register int dplus;
 	register int damage;
-	char *stpchr();
 	att = &thatt->t_stats;
 	def = &thdef->t_stats;
 	if (weap == NULL)

@@ -102,9 +102,9 @@ bool	no_char();
 
 //@ str{len,cat,cpy,cmp,chr}() and possibly others
 #include <string.h>
-#define bcopy(a,b)	memmove(&(a),&(b),sizeof(a))
+#define bcopy(dest,source)	memmove(&(dest),&(source),sizeof(dest))
 #define stpchr	strchr
-#define setmem	memset
+#define setmem(dest,length,ch)	memset(dest,ch,length)
 
 //@ sprintf(), f{open,read,seek,write,close}(), remove()
 #include <stdio.h>

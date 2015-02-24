@@ -19,7 +19,7 @@ fakedos()
 	cursor(TRUE);
 	*savedir = bdos(0x19,0) + 'A';
 	do {
-		setmem(comline, sizeof comline, 0);
+		setmem(comline, sizeof(comline), 0);
 		printw("\n%c>",bdos(0x19,0)+'A');
 		getinfo(comline,130);
 		comhead = stpblk(comline);
