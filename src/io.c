@@ -376,14 +376,19 @@ void
 wait_for(ch)
 	char ch;
 {
+	/*@
+	 * stdio and ncurses will map all stream line endings to '\n'
+	 * Hooray ANSI! :)
+	 *
 	register char c;
 
 	if (ch == '\n')
 		while ((c = readchar()) != '\n' && c != '\r')
 			continue;
 	else
-		while (readchar() != ch)
-			continue;
+	 */
+	while (readchar() != ch)
+		continue;
 }
 
 /*
@@ -404,7 +409,7 @@ show_win(scr, message)
 /*@
  * Possible return values:
  * - ESCAPE, if user canceled input
- * - '\n' or '\r' for successful input
+ * - '\n' for successful input
  * Callers currently only test for ESCAPE
  */
 /*
@@ -457,7 +462,6 @@ getinfo(str,size)
 					break;
 				/* no break */
 			case '\n':
-			case '\r':
 				*str = 0;
 				cursor(wason);
 				ret = ch;  //@ any value different than ESCAPE or 1 would do.

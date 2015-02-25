@@ -446,4 +446,4 @@ char *flash = "your %s gives off a flash%s";
 char *it = "it";
 char *you = "you";
 char *no_mem = "Not enough Memory";
-char *smsg = "\r\n*** Stack Overflow ***\r\n$";
+//@ char *smsg = "\r\n*** Stack Overflow ***\r\n$"; //only used in csav.asm

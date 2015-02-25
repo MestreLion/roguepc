@@ -36,7 +36,7 @@ score(amount, flags, monst)
 
 		printw("[Press Enter to see rankings]");
 		flush_type();
-		wait_for('\r');
+		wait_for('\n');
 
 		move(LINES-1,0);
 	}
