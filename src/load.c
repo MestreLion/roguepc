@@ -72,7 +72,7 @@ epyx_yuck()
 		return;
 	//@ Allocate the largest possible block size for the store buffer,
 	//@ halving the requested amount in each attempt
-	while ((store = sbrk(blksize)) == (void *)-1)
+	while ((store = malloc(blksize)) == NULL)
 		blksize /= 2;
 	//@ 04h = Graphics mode 320x200 4 colors in CGA,PCjr,EGA,MCGA,VGA
 	video_mode(4);
@@ -90,7 +90,7 @@ epyx_yuck()
 		readchar();
 #endif
 	video_mode(type);
-	brk(store);
+	free(store);
 	tick = 0;
 }
 
