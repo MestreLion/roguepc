@@ -40,7 +40,7 @@ score(amount, flags, monst)
 
 		move(LINES-1,0);
 	}
-	while ((file = fopen(s_score, "r")) != NULL)
+	while ((file = fopen(s_score, "r")) == NULL)
 	{
 		printw("\n");
 		if (noscore || (amount == 0))
