@@ -201,7 +201,13 @@ picked_up:
 		 *
 		 *  the following should do the same
 		 */
-		if ((op->t_dest->x == obj->o_pos.x) && (op->t_dest->y == obj->o_pos.y))
+		/*@
+		 * Another bug in Rogue: missed NULL check for t_dest. Monsters could
+		 * be not chasing (sleeping, another room, Ice Monster, etc), so a
+		 * destination could possibly have never been assigned.
+		 */
+		if (op->t_dest != NULL &&
+		   (op->t_dest->x == obj->o_pos.x) && (op->t_dest->y == obj->o_pos.y))
 			op->t_dest = &hero;
 
 	if (obj->o_type == AMULET)
