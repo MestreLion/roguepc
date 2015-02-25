@@ -457,3 +457,18 @@ init_ds(clrflag)
 		*ep = *(ep-1) << 1;
 	*ep = 0L;
 }
+
+
+void
+free_ds()
+{
+	free(_flags);
+	free(_level);
+	free(_things);
+	free(_t_alloc);
+	free(startmem);
+	free(msgbuf);
+	free(prbuf);
+	free(ring_buf);
+	free(e_levels);
+}

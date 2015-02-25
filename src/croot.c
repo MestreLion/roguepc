@@ -10,6 +10,7 @@
 #include <stdlib.h>
 
 void	unsetup(); //@ mach_dep.c
+void	free_ds(); //@ init.c
 
 /*@
  * No-op function, probably a stub for cls_ until it gets set to no_clock()
@@ -81,5 +82,6 @@ void croot_exit(status)
 	//@ ComOff();  //@ not found
 #endif
 	unsetup();
+	free_ds();
 	exit(status);
 }

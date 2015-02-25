@@ -641,7 +641,7 @@ int	str_plus(), add_dam();
 
 //@ init.c
 void	init_player(), init_things(), init_colors(), init_names(),
-		init_stones(), init_materials(), init_ds();
+		init_stones(), init_materials(), init_ds(), free_ds();
 char	*getsyl(), rchr();
 
 //@ io.c
