@@ -489,7 +489,7 @@ struct sc_ent {
 
 /*
  * External variables
- * @ all in extern.c unless noted (init.c, env.c, croot.c and main.c)
+ * @ all in extern.c unless noted (init.c, env.c, croot.c, main.c, protect.c)
  */
 extern int maxitems;
 extern int maxrow;
@@ -594,6 +594,10 @@ extern void (*cls_)();  //@ used in mach_dep.c
 extern char do_force;  //@ used in save.c
 extern int bwflag;     //@ used in save.c
 extern struct sw_regs *regs;  //@ originally declared in swint.h
+
+
+//@ protect.c
+extern int no_step;  //@ used in clock(), originally by dos.asm
 
 
 /*

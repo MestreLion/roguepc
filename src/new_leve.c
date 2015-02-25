@@ -31,7 +31,7 @@ new_level()
 	if (level > max_level)
 		max_level = level;
 #ifdef PROTECTED
-	one_tick();
+	one_tick();  //@ make sure the clock is ticking?
 	if (level > 1 && csum() != cksum)
 		_halt();
 #endif

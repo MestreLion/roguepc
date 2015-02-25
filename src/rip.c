@@ -230,12 +230,6 @@ void
 death(monst)
 	register char monst;
 {
-	/*@
-	 * killer *seems* to be used only in DEMO mode, but since there is
-	 * copy protection involved (see kild_by in clock() @ dos.asm),
-	 * better be careful with changes.
-	 */
-	register char *killer;
 	char buf[MAXSTR];
 	register int year;
 #ifndef DEMO
@@ -264,7 +258,15 @@ death(monst)
 	center(14, your_na);
 	standend();
 
-	killer = killname(monst, TRUE);
+	/*@
+	 * This looks like a no-op, but it's not: it makes sure prbuf, used
+	 * internally in killname(), contains the actual death reason.
+	 * kild_by, the string used here, is re-assigned by clock() to point to
+	 * prbuf if copy protection checks are successful. Otherwise, it contains
+	 * the default "pirated" message. The same method is used with your_na
+	 * above.
+	 */
+	killname(monst, TRUE);
 
 	strcpy(buf,"killed by");
 
@@ -283,6 +285,7 @@ death(monst)
 	move(LINES-1, 0);
 	score(purse, 0, monst);
 #else //DEMO
+	register char *killer;
 	demo(0);
 	killer = killname(monst, TRUE);
 

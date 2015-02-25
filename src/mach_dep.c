@@ -32,20 +32,44 @@ unsigned int tick = 0;
 
 /*@
  * Checksum of the game executable
- * Used as integrity check, see new_level() and command()
- *
- * Return a dummy value matching the expected CSUM value defined in rogue.h
- * to avoid triggering copy protection measures.
- *
- * In the future it could be controlled via command line options to simulate
- * original behavior in case of a tampered executable.
  *
  * Originally in dos.asm
+
+ * Return a dummy value matching the expected CSUM value defined in rogue.h
+ * to avoid triggering self-integrity checks.
+ *
+ * The probable workflow was this:
+ *
+ * - After executable was compiled it was test run using "The Grand Beeking" as
+ *   the player name.
+ *
+ * - The "v" command (Version), when used with that player name, also prints
+ *   the checksum computed by this function. See command()
+ *
+ * - The developer changed the #define CSUM value to match the one printed.
+ *
+ * - Code was compiled again, and only extern.c required rebuilding. It's not
+ *   clear why the new value does not affect the computed checksum. Maybe it
+ *   was based only on code segment.
+ *
+ * - On every new level except the first, checksum was computed again and
+ *   checked against CSUM. If they didn't match, the PC was immediately halted.
+ *   See new_level() and _halt()
+ *
+ * - This effectively prevents game from being played past level 1 with a
+ *   tampered (most likely cracked) executable. Being checked on every new
+ *   level also inhibits the use of debuggers to crack the game on-the-fly.
+ *
+ * - This check only happened if PROTECTED was #define'd, which also triggered
+ *   several other copy protection and anti-tampering measures. See clock()
+ *
+ * To simulate original behavior in case of a tampered executable without
+ * changing the source code, just compile with a different CSUM #defined
  */
 int
 csum()
 {
-	return CSUM;
+	return -1632;
 }
 
 
@@ -53,14 +77,14 @@ csum()
  * Current value of the Data Segment register DS
  * Used in copy protection, see protect()
  *
- * Return the initial (dummy) value of DS
+ * Return the current (dummy) value of DS
  *
  * Originally in dos.asm
  */
 int
 getds()
 {
-	return _dsval;
+	return _dsval;  // hey, it's still the same!
 }
 
 
@@ -316,15 +340,27 @@ no_clock()
  *
  * Originally in dos.asm, renamed from clock() to avoid conflict in <time.h>
  *
- * It also performed some anti-debugger integrity checks and copy protection
- * measures. The anti-debugger tests, if failed, lead to _halt(), and so are
- * not reproduced here. The copy-protection measures are partially reproduced.
+ * It also performed some anti-debugger checks and copy protection measures.
+ * The copy-protection is fully reproduced to the extent of my knowledge.
+ * The anti-debugger tests, if failed, lead to _halt(), and are only partially
+ * reproduced here. See protect.c for details.
  */
 void
 md_clock()
 {
+	//@ tick the old clock
 	tick++;
 
+	//@ anti debugging: halt after 20 ticks if no_step is set
+	if (no_step && ++no_step > 20)
+		_halt();
+
+	/*@
+	 * copy protection: set tombstone strings (name, killed by) to actual
+	 * player name and death reason, and restore hit multiplier, only if
+	 * floppy check succeeded. Only a single (successful) tick was required.
+	 * See death()
+	 */
 	if (hit_mul != 1 && goodchk == 0xD0D)
 	{
 		kild_by = prbuf;
@@ -652,8 +688,8 @@ swint(intno, rp)
  * sysint() - System Interrupt Call
  * This was available as a C library function in old DOS compilers
  * Created here as a stub: output general registers are zeroed,
- * index registers are copied from input.
- * Return ax as status
+ * index and segment register values are copied from input.
+ * Return FLAGS register, or rather a dummy with reasonable values
  */
 int
 sysint(intno, inregs, outregs)
@@ -690,7 +726,8 @@ sysint(intno, inregs, outregs)
 	outregs->ds = inregs->ds;
 	outregs->es = inregs->es;
 
-	return outregs->ax;
+	// reserved flags and IF set, all others unset
+	return 0b1111001000101010;
 }
 
 int
@@ -716,6 +753,29 @@ unsetup()
 	set_ctrlb(ocb);
 }
 
+
+/*@
+ * Busy loop for 1 clock tick or _halt() if clock doesn't tick after a while
+ *
+ *      ... at least this seems to be the idea, judging by the usage in Rogue.
+ *
+ * But as it is, this function is a no-op: while loop condition starts at 0,
+ * so it immediately breaks out without ever entering the loop. tick increment
+ * is never checked, halt() is never executed. I'm not sure if this behavior
+ * was intentional or not.
+ *
+ * Anyway, checking clock ticks with a busy loop is risky: the index is an int,
+ * 16-bit in DOS, so it overflows to 0 after "only" 65536 iterations. Assuming
+ * both i and j indexes start with 1, halt condition would happen after the
+ * first outer loop cycle. And I think even in 1985 a PC could be fast enough
+ * to execute such a simple inner loop 65536 times before the clock tick once.
+ * 55ms is a long time, even for an 8MHz AT-286.
+ *
+ * So this could have been be deemed unsuitable as a check for enabled clocks,
+ * dangerous as it could lead to a halt, and so it was intentionally disabled.
+ *
+ *       ... or it could be a bug.
+ */
 void
 one_tick()
 {
