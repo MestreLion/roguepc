@@ -419,11 +419,9 @@ long *e_levels;		/* Pointer to array of experience level */
 char *tbuf;			/* Temp buffer used in fighting */
 char *msgbuf;		/* Message buffer for msg() */
 char *prbuf;		/* Printing buffer used everywhere */
-char *startmem;	    /* Pointer to the start of static memory */
-char *end_sb;		/* Pointer to the end of static base */
 char *ring_buf;		/* Buffer used by ring code */
 //@ Deprecated:
-//@ * char *end_mem;	/* Pointer to end of memory */
+//@ char *end_mem;	/* Pointer to end of memory */
 
 
 /*
@@ -442,13 +440,14 @@ init_ds(clrflag)
 {
 	register long *ep;
 
-	end_sb = newmem((MAXLINES-3)*MAXCOLS);
-	_flags = (byte *) end_sb;
+	//@ data that is saved to and restored from saved game files:
+	_flags = (byte *) newmem((MAXLINES-3)*MAXCOLS);
 	_level = (byte *) newmem((MAXLINES-3)*MAXCOLS);
 	_things = (THING *)newmem(sizeof(THING) * MAXITEMS);
 	_t_alloc = (int *)newmem(MAXITEMS*sizeof(int));
 
-	startmem = tbuf = newmem(MAXSTR);
+	//@ data discarded and re-created on new and restored games:
+	tbuf = newmem(MAXSTR);
 	msgbuf = newmem(BUFSIZE);
 	prbuf = newmem(MAXSTR);
 	ring_buf = newmem(6);
@@ -466,7 +465,7 @@ free_ds()
 	free(_level);
 	free(_things);
 	free(_t_alloc);
-	free(startmem);
+	free(tbuf);
 	free(msgbuf);
 	free(prbuf);
 	free(ring_buf);

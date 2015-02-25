@@ -572,7 +572,6 @@ extern char fruit[], macro[], whoami[];
 
 
 //@ init.c
-extern char *end_sb, *startmem;
 extern char *tbuf, *prbuf;
 extern byte *_level, *_flags;
 extern long *e_levels;

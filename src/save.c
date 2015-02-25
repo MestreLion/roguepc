@@ -15,13 +15,32 @@
 #include "curses.h"
 
 /*@
- * Addresses used by save.c to save and restore all global vars to disk.
+ * Addresses used to save and restore statically sized global vars.
  * Changed from char to actual pointers, so we can set to a dummy address
  * Originally externs set by begin.asm
  */
 char dummy[1234];  //@ look how tiny Rogue data space is! :)
 char * _lowmem = dummy;  /* Adresss of first save-able memory */
 char * _Uend = dummy + sizeof(dummy);  /* Address of end of user data space */
+
+/*@
+ * Addresses used to save and restore dynamically allocated vars in heap,
+ * the ones allocated via newmem(), which used sbrk().
+ * Originally externs set by init.c on init_ds()
+ *
+ * end_sb was the first newmem() call, so its address actually marked the begin
+ * the heap. startmem was the first call newmem() to the temporary printing
+ * buffers, so its address marked the end heap data that was worth saving, as
+ * printing buffers were discarded and not saved or restored in save files.
+ *
+ * If you think names are reversed, ask someone that truly understands x86
+ * 16-bit real mode segmented memory, DS, heap and stack. Cos I surely don't ;)
+ * See notes on restore()
+ */
+char dummier[4321];  //@ Also tiny :)
+char *end_sb = dummier;  /* Pointer to the end of static base */
+char *startmem = dummier + sizeof(dummier);  /* Pointer to the start of static memory */
+
 
 #define MIDSIZE 10
 char *msaveid = "AI Design";
@@ -213,6 +232,17 @@ rok:
 	//@ no longer needed, memory is now managed via malloc()
 	//@ brk(end_sb);					/* Restore heap to empty state */
 	init_ds();
+	/*@
+	 * There is a very clever trick going on here: by resetting the heap with
+	 * brk(end_sb) and immediately calling init_ds() it guarantees that
+	 * init_ds() will "re-allocate" the same memory area that was just written
+	 * by the game restore, as long as end_sb was the first call to newmem().
+	 *
+	 * I just wonder how Rogue made sure it was safe to "blindly" write many
+	 * KBs of data starting at end_sb address before that area was "properly"
+	 * allocated via newmem()/sbrk(). Perhaps it didn't, but it just worked.
+	 * Ah, the wonders of real mode :)
+	 */
 	wclose();
 	winit();
 	if (oldcols != COLS)
