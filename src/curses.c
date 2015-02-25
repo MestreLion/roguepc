@@ -17,7 +17,7 @@ int scr_ds=0xB800;
 int svwin_ds;
 int scr_type = -1;
 int page_no = 0;
-char *savewin;
+char savewin[4096];
 
 int tab_size = 8;  //@ unused
 
@@ -608,6 +608,7 @@ winit()
 	 * Read current cursor position
 	 */
 	real_rc(old_page_no, &c_row, &c_col);
+	/*@ savewin is now a fixed size array.
 	if ((savewin = sbrk(4096)) == (void *)-1) {
 		svwin_ds = -1;
 		savewin = (char *) _flags;
@@ -617,9 +618,12 @@ winit()
 		savewin = (char *) (((intptr) savewin + 0xf) & 0xfff0);
 		svwin_ds = (((intptr) savewin >> 4) & 0xfff) + _dsval;
 	}
+	*/
+	svwin_ds = (((intptr) savewin >> 4) & 0xfff) + _dsval;
+
 	for (i = 0, cnt = 0; i < 25; cnt += 2*COLS, i++)
 		scr_row[i] = cnt;
-	newmem(2);
+	//@ newmem(2);  // no longer need memory alignment
 	switch_page(3);
 	if (old_page_no != page_no)
 		clear();

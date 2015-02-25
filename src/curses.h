@@ -88,7 +88,7 @@ extern int scr_row[];  //@ only used in zoom.asm
  * we need to know location of screen being saved
  * @ used in save.c
  */
-extern char *savewin;
+extern char savewin[];
 
 /*@
  * Function declarations
