@@ -670,6 +670,7 @@ void	setup(), clock_on(), no_clock(), flush_type(), credits(),
 char	*newmem();
 byte	readchar();
 bool	isjr();
+struct tm	*md_localtime();
 
 //@ main.c
 void	endit(), playit(), quit(), leave(), fatal();

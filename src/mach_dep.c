@@ -415,6 +415,17 @@ md_clock()
 
 
 /*@
+ * Return current local time as a pointer to a struct
+ */
+struct tm *
+md_localtime()
+{
+	time_t secs = time(NULL);
+	return localtime(&secs);
+}
+
+
+/*@
  * Renamed from srand() to avoid collision with <stdlib.h>
  * Signature and usage completely different from srand()
  *

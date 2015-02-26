@@ -580,6 +580,7 @@ SIG2()
 	int showtime = FALSE, spare;
 	int x, y;
 #ifndef ROGUE_DOS_CLOCK
+	struct tm *local;
 	//@ manually tick the clock, for now
 	md_clock();
 #endif
@@ -608,10 +609,16 @@ SIG2()
 	 * CL = minutes (0-59)
 	 */
 	if (key_init) {
+#ifdef ROGUE_DOS_CLOCK
 		regs->ax = 0x2c << 8;
 		swint(SW_DOS, regs);
 		bighand = (regs->cx >> 8) % 12;  //@ force 12-hour display format
 		littlehand = regs->cx & 0xFF;
+#else
+		local = md_localtime();
+		bighand = local->tm_hour % 12;
+		littlehand = local->tm_min;
+#endif
 		showtime = TRUE;
 	}
 	//@ 1092 ticks = 1 minute @ 18.2 ticks per second rate
