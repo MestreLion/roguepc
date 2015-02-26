@@ -579,6 +579,10 @@ SIG2()
 	static int bighand, littlehand;
 	int showtime = FALSE, spare;
 	int x, y;
+#ifndef ROGUE_DOS_CLOCK
+	//@ manually tick the clock, for now
+	md_clock();
+#endif
 #ifdef DEMO
 	static tot_time = 0;
 #endif //DEMO

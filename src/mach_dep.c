@@ -9,8 +9,26 @@
 #include	"keypad.h"
 
 #define ULINE() if(is_color) lmagenta();else uline();
+#ifdef ROGUE_DOS_CLOCK
 #define TICK_ADDR 0x70  //@ RTC Interrupt handler. See clock_on()
 static dosptr clk_vec[2];
+#else
+/*
+ * time_t constant to disable the clock
+ * Chosen to match error value returned by time()
+ */
+#define CLOCK_OFF	-1
+/*
+ * Clock rate in ticks per second, as expected by Rogue
+ * Matches the clock rate of the IBM-PC 8253 PIT as set by BIOS and used in DOS
+ * Actual frequency is 3579545Hz / 3 / 65536 = 18.206507365
+ */
+#define CLOCK_RATE	18.2
+/*
+ * Current wall time, used to update in-game ticks
+ */
+time_t	current_time = CLOCK_OFF;
+#endif
 static int ocb;
 
 /*@
@@ -282,10 +300,13 @@ setup()
  *
  * In any case, this function must be replaced with a portable way of hooking
  * clock() to a timer that does not rely on ancient real mode ISR/IVT model.
+ * Meanwhile, md_clock() should be manually called in key loops such as waiting
+ * for (or after) user input.
  */
 void
 clock_on()
 {
+#ifdef ROGUE_DOS_CLOCK
 	/*@
 	 * Craft the 4-byte CS:offset function pointer for clock()
 	 * Array indexes are swapped (CS=1, offset=0) as it writes directly to IVT
@@ -306,6 +327,9 @@ clock_on()
 	dmain(clk_vec, 2, 0, TICK_ADDR);
 	dmaout(new_vec, 2, 0, TICK_ADDR);
 	cls_ = no_clock;
+#else
+	current_time = time(NULL);
+#endif
 }
 
 
@@ -316,7 +340,11 @@ clock_on()
 void
 no_clock()
 {
+#ifdef ROGUE_DOS_CLOCK
 	dmaout(clk_vec, 2, 0, TICK_ADDR);
+#else
+	current_time = CLOCK_OFF;
+#endif
 }
 
 
@@ -338,6 +366,12 @@ no_clock()
  * and return conventions for an interrupt handler are different from a normal
  * function (requires IRET, preserving AX, etc)
  *
+ * Meanwhile, tick is updated based on real time via time(), so it does not
+ * require being automatically called at regular intervals. It can be called at
+ * any time, will calculate elapsed time since last call and adjust tick
+ * accordingly. Currently, with time resolution of a second, for maximum
+ * portability.
+ *
  * Originally in dos.asm, renamed from clock() to avoid conflict in <time.h>
  *
  * It also performed some anti-debugger checks and copy protection measures.
@@ -348,8 +382,18 @@ no_clock()
 void
 md_clock()
 {
+#ifdef ROGUE_DOS_CLOCK
 	//@ tick the old clock
 	tick++;
+#else
+	time_t	new_time;
+	if (current_time != CLOCK_OFF)
+	{
+		new_time = time(NULL);
+		tick += (new_time - current_time) * CLOCK_RATE;
+		current_time = new_time;
+	}
+#endif
 
 	//@ anti debugging: halt after 20 ticks if no_step is set
 	if (no_step && ++no_step > 20)
@@ -783,9 +827,14 @@ one_tick()
 	int i=0,j=0;
 
 	while(i++)
+	{
+#ifndef ROGUE_DOS_CLOCK
+		md_clock();
+#endif
 		while (j++)
 			if (otick != tick)
 				return;
 			else if (i > 2)
 				_halt();
+	}
 }

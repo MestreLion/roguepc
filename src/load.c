@@ -85,7 +85,11 @@ epyx_yuck()
 		;
 #else
 	while(no_char() && tick < 18 * 60 * 5)  //@ ~5 minutes
+#ifdef ROGUE_DOS_CLOCK
 		;
+#else
+	md_clock();
+#endif  // ROGUE_DOS_CLOCK
 	if (!no_char())
 		readchar();
 #endif

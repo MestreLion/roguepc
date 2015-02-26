@@ -333,5 +333,9 @@ tick_pause()
 
 	otick = tick;
 	while (otick == tick)
+#ifdef ROGUE_DOS_CLOCK
 		;
+#else
+		md_clock();
+#endif
 }
