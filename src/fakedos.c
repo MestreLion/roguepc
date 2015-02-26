@@ -11,7 +11,7 @@ void
 fakedos()
 {
 	char comline[132];
-	register char *savedir = "a:", *comhead;
+	char savedir[] = "a:", *comhead;
 
 	wdump();
 	clear();
