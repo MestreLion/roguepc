@@ -433,9 +433,10 @@ md_localtime()
  * registers CX and DX, a combination of HH:MM:SS.ss with hundredths of a
  * second resolution as an integer.
  *
- * This could be replaced with <time.h> (int) time(NULL), but not only numbers
- * have a completely different meaning, but also time() has only second
- * resolution, and DOS INT 21h/2C has a 24-hour cycle.
+ * The portable version uses time() and return the seconds since epoch as an
+ * integer. Note that not only numbers have a completely different meaning from
+ * the DOS version, but also time() has only second resolution, and INT 21h/2C
+ * has a 24-hour cycle.
  *
  * However, for an RNG seed both are suitable.
  */
@@ -443,7 +444,7 @@ md_localtime()
  * returns a seed for a random number generator
  */
 int
-srand_time()
+md_srand()
 {
 #ifdef DEBUG
 	return ++dnum;
@@ -451,24 +452,13 @@ srand_time()
 	/*
 	 * Get Time
 	 */
+#ifdef ROGUE_DOS_TIME
 	bdos(0x2C);
 	return(regs->cx + regs->dx);
-#endif
-}
-
-
-/*@
- * Return a seed for the RNG, POSIX version
- * Using time() as any sane software
- */
-int
-md_srand()
-{
-#ifdef DEBUG
-	return ++dnum;
 #else
 	return (int)time(NULL);
-#endif
+#endif  // ROGUE_DOS_TIME
+#endif  // DEMO
 }
 
 

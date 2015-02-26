@@ -664,7 +664,7 @@ void	epyx_yuck(), scr_load(), bload();
 int	find_drive();
 
 //@ mach_def.c
-int 	srand(), bdos(), swint(), sysint(), set_ctrlb();
+int 	md_srand(), bdos(), swint(), sysint(), set_ctrlb();
 void	setup(), clock_on(), no_clock(), flush_type(), credits(),
 		unsetup(), one_tick();
 char	*newmem();
