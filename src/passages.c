@@ -182,9 +182,9 @@ do_passages()
 	 */
 	for (r1 = rdes; r1 < &rdes[MAXROOMS]; r1++)
 	{
-	for (j = 0; j < MAXROOMS; j++)
-		r1->isconn[j] = FALSE;
-	r1->ingraph = FALSE;
+		for (j = 0; j < MAXROOMS; j++)
+			r1->isconn[j] = FALSE;
+		r1->ingraph = FALSE;
 	}
 
 	/*
@@ -196,37 +196,37 @@ do_passages()
 	r1->ingraph = TRUE;
 	do
 	{
-	/*
-	 * find a room to connect with
-	 */
-	j = 0;
-	for (i = 0; i < MAXROOMS; i++)
-		if (r1->conn[i] && !rdes[i].ingraph && rnd(++j) == 0)
-		r2 = &rdes[i];
-	/*
-	 * if no adjacent rooms are outside the graph, pick a new room
-	 * to look from
-	 */
-	if (j == 0)
-	{
-		do
-		r1 = &rdes[rnd(MAXROOMS)];
-		while (!r1->ingraph);
-	}
-	/*
-	 * otherwise, connect new room to the graph, and draw a tunnel
-	 * to it
-	 */
-	else
-	{
-		r2->ingraph = TRUE;
-		i = r1 - rdes;
-		j = r2 - rdes;
-		conn(i, j);
-		r1->isconn[j] = TRUE;
-		r2->isconn[i] = TRUE;
-		roomcount++;
-	}
+		/*
+		 * find a room to connect with
+		 */
+		j = 0;
+		for (i = 0; i < MAXROOMS; i++)
+			if (r1->conn[i] && !rdes[i].ingraph && rnd(++j) == 0)
+				r2 = &rdes[i];
+		/*
+		 * if no adjacent rooms are outside the graph, pick a new room
+		 * to look from
+		 */
+		if (j == 0)
+		{
+			do
+				r1 = &rdes[rnd(MAXROOMS)];
+			while (!r1->ingraph);
+		}
+		/*
+		 * otherwise, connect new room to the graph, and draw a tunnel
+		 * to it
+		 */
+		else
+		{
+			r2->ingraph = TRUE;
+			i = r1 - rdes;
+			j = r2 - rdes;
+			conn(i, j);
+			r1->isconn[j] = TRUE;
+			r2->isconn[i] = TRUE;
+			roomcount++;
+		}
 	} while (roomcount < MAXROOMS);
 
 	/*
@@ -235,26 +235,26 @@ do_passages()
 	 */
 	for (roomcount = rnd(5); roomcount > 0; roomcount--)
 	{
-	r1 = &rdes[rnd(MAXROOMS)];	/* a random room to look from */
-	/*
-	 * find an adjacent room not already connected
-	 */
-	j = 0;
-	for (i = 0; i < MAXROOMS; i++)
-		if (r1->conn[i] && !r1->isconn[i] && rnd(++j) == 0)
-		r2 = &rdes[i];
-	/*
-	 * if there is one, connect it and look for the next added
-	 * passage
-	 */
-	if (j != 0)
-	{
-		i = r1 - rdes;
-		j = r2 - rdes;
-		conn(i, j);
-		r1->isconn[j] = TRUE;
-		r2->isconn[i] = TRUE;
-	}
+		r1 = &rdes[rnd(MAXROOMS)];	/* a random room to look from */
+		/*
+		 * find an adjacent room not already connected
+		 */
+		j = 0;
+		for (i = 0; i < MAXROOMS; i++)
+			if (r1->conn[i] && !r1->isconn[i] && rnd(++j) == 0)
+				r2 = &rdes[i];
+		/*
+		 * if there is one, connect it and look for the next added
+		 * passage
+		 */
+		if (j != 0)
+		{
+			i = r1 - rdes;
+			j = r2 - rdes;
+			conn(i, j);
+			r1->isconn[j] = TRUE;
+			r2->isconn[i] = TRUE;
+		}
 	}
 	passnum();
 }

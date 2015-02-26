@@ -130,7 +130,7 @@ add_pack(obj, silent)
 		for (op = pack; op != NULL; op = next(op))
 		{
 			if (op->o_type != FOOD)
-			break;
+				break;
 			lp = op;
 		}
 	}
