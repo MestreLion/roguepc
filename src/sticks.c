@@ -345,7 +345,7 @@ fire_bolt(start, dir, name)
 	coord *start, *dir;
 	char *name;
 {
-	register byte dirch, ch;
+	register byte dirch = 0, ch;
 	register THING *tp;
 	register bool hit_hero, used, changed;
 	register int i, j;

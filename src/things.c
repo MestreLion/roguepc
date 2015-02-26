@@ -425,9 +425,9 @@ void
 print_disc(type)
 	byte type;
 {
-	register bool *know;
-	register char **guess;
-	register int i, maxnum, num_found;
+	register bool *know = NULL;
+	register char **guess = NULL;
+	register int i, maxnum = 0, num_found;
 	static THING obj;
 	static short order[MAX(MAXSCROLLS, MAXPOTIONS, MAXRINGS, MAXSTICKS)];
 

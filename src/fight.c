@@ -451,7 +451,7 @@ void
 hit(er, ee)
 register char *er, *ee;
 {
-	register char *s;
+	register char *s = "";
 
 	addmsg(prname(er, TRUE));
 	switch ((terse || expert) ? 1 : rnd(4))
@@ -473,7 +473,7 @@ void
 miss(er, ee)
 register char *er, *ee;
 {
-	register char *s;
+	register char *s = "";
 
 
 	addmsg(prname(er, TRUE));

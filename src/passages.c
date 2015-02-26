@@ -175,7 +175,7 @@ do_passages()
 	{ { 0, 0, 0, 0, 1, 0, 1, 0, 1 }, { 0, 0, 0, 0, 0, 0, 0, 0, 0 }, 0 },
 	{ { 0, 0, 0, 0, 0, 1, 0, 1, 0 }, { 0, 0, 0, 0, 0, 0, 0, 0, 0 }, 0 }
 	};
-	struct rdes *r1, *r2;
+	struct rdes *r1, *r2 = NULL;
 
 	/*
 	 * reinitialize room graph description

@@ -311,7 +311,7 @@ total_winner()
 {
 #ifndef DEMO
 	register THING *obj;
-	register int worth;
+	register int worth = 0;
 	register byte c;
 	register int oldpurse;
 

@@ -50,7 +50,7 @@ look(wakeup)
 	register int ey, ex;
 	register int passcount = 0;
 	register byte pfl, *fp;
-	register int sy, sx, sumhero, diffhero;
+	register int sy, sx, sumhero = 0, diffhero = 0;
 
 	rp = proom;
 	index = INDEX(hero.y, hero.x);
@@ -602,7 +602,7 @@ help(helpscr)
 	register int hcount = 0;
 	register int hrow, hcol;
 	int isfull;
-	byte answer;
+	byte answer = 0;
 
 	wdump();
 	while (*helpscr && answer != ESCAPE)

@@ -32,7 +32,7 @@ add_pack(obj, silent)
 	register THING *obj;
 	bool silent;
 {
-	register THING *op, *lp;
+	register THING *op, *lp = NULL;
 	register bool exact, from_floor;
 	register byte floor;
 
