@@ -189,7 +189,7 @@ dmaout(data, wordlength, segment, offset)
 	unsigned int offset;
 {
 #ifdef ROGUE_DEBUG
-	if (segment != scr_ds)
+	if (segment != scr_ds || wordlength > 1)  // if not single char to screen
 		printf("dmaout(%p, %d, %04x:%04x)\n",
 				data, wordlength, segment, offset);
 #endif
