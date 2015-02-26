@@ -10,7 +10,7 @@
 #	speed.  Don't load in csav.o
 #
 TARGET:=rogue
-CFLAGS:=-Wall -O2
+CFLAGS:=-Wall -O0
 
 ifdef ROGUE_DEBUG
 CFLAGS+=-DROGUE_DEBUG -g3

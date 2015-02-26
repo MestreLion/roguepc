@@ -8,6 +8,8 @@
  */
 //@ exit()
 #include <stdlib.h>
+//@ printf()
+#include <stdio.h>
 
 void	unsetup(); //@ mach_dep.c
 void	free_ds(); //@ init.c
@@ -83,5 +85,8 @@ void croot_exit(status)
 #endif
 	unsetup();
 	free_ds();
+#ifdef ROGUE_DEBUG
+	printf("exit\n");
+#endif
 	exit(status);
 }
