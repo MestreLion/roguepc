@@ -464,7 +464,11 @@ srand_time()
 int
 md_srand()
 {
+#ifdef DEBUG
+	return ++dnum;
+#else
 	return (int)time(NULL);
+#endif
 }
 
 
@@ -592,6 +596,10 @@ static struct xlate {
  * blocking mode via nodelay() or timeout()
  *
  * Originally in dos.asm, calling a BIOS INT, which is reproduced here.
+ *
+ * But as sysint() is just a stub that returns ax = 0, this function will
+ * always return FALSE, indicating a key was pressed. Not a problem as the main
+ * caller, readchar(), is a blocking function.
  *
  * BIOS INT 16h/AH=1, Get Keyboard Status
  * Return:

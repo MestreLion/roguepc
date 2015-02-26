@@ -91,8 +91,8 @@ epyx_yuck()
 	md_clock();
 #endif  // ROGUE_DOS_CLOCK
 	if (!no_char())
-		readchar();
-#endif
+		readchar();  //@ consume the input character, if any, before leaving
+#endif  // LOGFILE
 	video_mode(type);
 	free(store);
 	tick = 0;
