@@ -93,7 +93,7 @@ epyx_yuck()
 	if (!no_char())
 		readchar();  //@ consume the input character, if any, before leaving
 #endif  // LOGFILE
-	video_mode(type);
+	video_mode(type); //@ restore previous mode
 	free(store);
 	tick = 0;
 }

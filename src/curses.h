@@ -2,6 +2,10 @@
  *  Cursor motion header for Monochrome display
  */
 
+#ifndef ROGUE_SCR_TYPE
+#define ROGUE_SCR_TYPE 3  //@ 80x25 Color. See winit() for other values
+#endif
+
 #define abs(x) ((x)<0?-(x):(x))
 
 #define refresh	stub

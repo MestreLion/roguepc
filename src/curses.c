@@ -553,10 +553,15 @@ winit()
 	/*
 	 * Get monitor type
 	 */
+#ifdef ROGUE_DOS_SCREEN
 	regs->ax = 15 << 8;
 	swint(SW_SCR, regs);
 	old_page_no = regs->bx >> 8;
 	scr_type = regs->ax = 0xff & regs->ax;
+#else
+	old_page_no = 0;
+	scr_type = ROGUE_SCR_TYPE;
+#endif
 	/*
 	 * initialization is any good because restarting game
 	 * has old values!!!
@@ -567,6 +572,19 @@ winit()
 	scr_ds  =  0xB800;
 	at_table = monoc_attr;
 
+	/*@
+	 * BIOS INT 10h/AX=0Fh table for AL values used in the switch:
+	 * 00h - Text 40x25 mono  - Only CGA, PCjr, Tandy
+	 * 01h - Text 40x25 color - Only CGA, PCjr, Tandy
+	 * 02h - Text 80x25 mono  - Only CGA, PCjr, Tandy
+	 * 03h - Text 80x25 color - All adapters
+	 * 07h - Text 80x25 mono  - MDA, Hercules, EGA, VGA
+	 * Notes:
+	 * - mono is actually 16 shades of gray
+	 * - colors are always 16 except for EGA in mode 3, which could be 64
+	 * - EGA in mode 3 could also be 80x43
+	 * - VGA in mode 3 could also be 80x43 or 80x50
+	 */
 	switch (scr_type) {
 		/*
 		 *  It is a TV
