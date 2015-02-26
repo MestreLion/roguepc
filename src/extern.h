@@ -52,12 +52,15 @@ typedef unsigned char bool;
 /*
  * Function types
  */
-/*@
- * For the assembly files only. C functions were moved to rogue.h
- * Function signature was inferred from their standard counterparts, if any,
- * and their usage in rogue. This is just a stub for now, not an accurate
- * documentation on signature and sizes.
- */
+
+//@ mach_dep.c originals
+int 	md_srand(), bdos(), swint(), sysint(), set_ctrlb();
+void	setup(), clock_on(), no_clock(), flush_type(), credits(),
+		unsetup(), one_tick();
+char	*newmem();
+byte	readchar();
+bool	isjr();
+struct tm	*md_localtime();
 
 //@ begin.asm
 //@ Moved to mach_dep.c:
