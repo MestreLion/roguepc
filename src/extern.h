@@ -28,8 +28,12 @@
 //@ uintptr_t, uint16_t
 #include <stdint.h>
 
-//@ is{alpha,digit,upper,...}() and to{ascii,upper,lower}() families
+//@ is{alpha,digit,upper,...}() and to{upper,lower,...}() families
 #include <ctype.h>
+#ifndef toascii
+//@ Marked obsolescent in POSIX-2008, so not in <ctype.h> if C99 is used
+#define toascii(c)	((c) & 0x7f)
+#endif
 
 //@ str{len,cat,cpy,cmp,chr}() and possibly others
 #include <string.h>
@@ -82,12 +86,12 @@ typedef unsigned char bool;
  * Function types
  */
 //@ mach_dep.c originals
-int 	md_srand(), bdos(), swint(), sysint(), set_ctrlb();
+int 	md_srand(), bdos(), swint(), sysint();
 void	setup(), clock_on(), no_clock(), flush_type(), credits(),
 		unsetup(), one_tick();
 char	*newmem();
 byte	readchar();
-bool	isjr();
+bool	isjr(), set_ctrlb();
 struct tm	*md_localtime();
 
 //@ dos.asm

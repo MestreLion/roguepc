@@ -719,6 +719,7 @@ wclose()
 
 void
 box(ul_r, ul_c, lr_r, lr_c)
+	int ul_r, ul_c, lr_r, lr_c;
 {
 	vbox(dbl_box, ul_r, ul_c, lr_r, lr_c);
 }
@@ -828,6 +829,7 @@ scroll()
  */
 void
 blot_out(ul_row,ul_col,lr_row,lr_col)
+	int ul_row,ul_col,lr_row,lr_col;
 {
 	regs->ax = 0x600;
 	regs->bx = 0x700;
@@ -934,6 +936,7 @@ raise_curtain()
 
 void
 switch_page(pn)
+	int pn;
 {
 	register int pgsize;
 
@@ -983,6 +986,7 @@ get_mode()
  */
 byte
 video_mode(type)
+	int type;
 {
 	struct sw_regs regs;
 

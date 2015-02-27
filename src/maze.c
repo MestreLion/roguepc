@@ -155,12 +155,14 @@ con_frnt()
 
 bool
 maze_at(y, x)
+	int y, x;
 {
 	return (inrange(y, x) && chat(y, x) == PASSAGE);
 }
 
 void
 splat(y, x)
+	int y, x;
 {
 	chat(y, x) = PASSAGE;
 	flat(y, x) = F_MAZE|F_REAL;

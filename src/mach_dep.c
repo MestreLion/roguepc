@@ -788,8 +788,9 @@ sysint(intno, inregs, outregs)
 	return 0b1111001000101010;
 }
 
-int
+bool
 set_ctrlb(state)
+	bool state;
 {
 	struct sw_regs rg;
 	int retcode;
@@ -798,8 +799,8 @@ set_ctrlb(state)
 	swint(SW_DOS,&rg);
 	retcode = rg.dx &0xFF;
 
-	rg.ax = 0x3300;
-	rg.dx = (state) ? 1 : 0;
+	rg.ax = 0x3300;  //@ shouldn't this be 0x3301? As it is it just reads again
+	rg.dx = state;
 	swint(SW_DOS,&rg);
 
 	return retcode;

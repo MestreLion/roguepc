@@ -56,6 +56,7 @@ static struct sw_regs sig2_read = {
 
 void
 protect(drive)
+	int drive;
 {
 #ifndef ROGUE_NOGOOD
 	goodchk = 0xD0D;  //@ success marker: 0xD0D stands for "Dungeons Of Doom"

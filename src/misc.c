@@ -513,6 +513,7 @@ call_it(know, guess)
  */
 bool
 step_ok(ch)
+	byte ch;
 {
 	switch (ch)
 	{
@@ -676,6 +677,7 @@ _ce(a,b)
 
 int
 INDEX(y,x)
+	int y, x;
 {
 #ifdef DEBUG
 	if (offmap(y,x) && me())
@@ -686,6 +688,7 @@ INDEX(y,x)
 
 bool
 offmap(y,x)
+	int y, x;
 {
 	return (y < 1 || y >= maxrow || x < 0 || x >= COLS) ;
 }
