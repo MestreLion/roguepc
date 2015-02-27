@@ -363,21 +363,27 @@ THING *cur_weapon;			/* Which weapon he is weilding */
 
 struct room *oldrp;			/* Roomin(&oldpos) */
 struct room rooms[MAXROOMS];		/* One for each room -- A level */
+
+#define XX  {0, 0}
+#define ___ {XX, XX, XX, XX, XX, XX, XX, XX, XX, XX, XX, XX} //@ 12 exits
 struct room passages[MAXPASS] =		/* One for each passage */
 {
-	{ {0, 0}, {0, 0}, {0, 0}, 0, ISGONE|ISDARK, 0, {} },
-	{ {0, 0}, {0, 0}, {0, 0}, 0, ISGONE|ISDARK, 0, {} },
-	{ {0, 0}, {0, 0}, {0, 0}, 0, ISGONE|ISDARK, 0, {} },
-	{ {0, 0}, {0, 0}, {0, 0}, 0, ISGONE|ISDARK, 0, {} },
-	{ {0, 0}, {0, 0}, {0, 0}, 0, ISGONE|ISDARK, 0, {} },
-	{ {0, 0}, {0, 0}, {0, 0}, 0, ISGONE|ISDARK, 0, {} },
-	{ {0, 0}, {0, 0}, {0, 0}, 0, ISGONE|ISDARK, 0, {} },
-	{ {0, 0}, {0, 0}, {0, 0}, 0, ISGONE|ISDARK, 0, {} },
-	{ {0, 0}, {0, 0}, {0, 0}, 0, ISGONE|ISDARK, 0, {} },
-	{ {0, 0}, {0, 0}, {0, 0}, 0, ISGONE|ISDARK, 0, {} },
-	{ {0, 0}, {0, 0}, {0, 0}, 0, ISGONE|ISDARK, 0, {} },
-	{ {0, 0}, {0, 0}, {0, 0}, 0, ISGONE|ISDARK, 0, {} }
+	{ {0, 0}, {0, 0}, {0, 0}, 0, ISGONE|ISDARK, 0, ___ },
+	{ {0, 0}, {0, 0}, {0, 0}, 0, ISGONE|ISDARK, 0, ___ },
+	{ {0, 0}, {0, 0}, {0, 0}, 0, ISGONE|ISDARK, 0, ___ },
+	{ {0, 0}, {0, 0}, {0, 0}, 0, ISGONE|ISDARK, 0, ___ },
+	{ {0, 0}, {0, 0}, {0, 0}, 0, ISGONE|ISDARK, 0, ___ },
+	{ {0, 0}, {0, 0}, {0, 0}, 0, ISGONE|ISDARK, 0, ___ },
+	{ {0, 0}, {0, 0}, {0, 0}, 0, ISGONE|ISDARK, 0, ___ },
+	{ {0, 0}, {0, 0}, {0, 0}, 0, ISGONE|ISDARK, 0, ___ },
+	{ {0, 0}, {0, 0}, {0, 0}, 0, ISGONE|ISDARK, 0, ___ },
+	{ {0, 0}, {0, 0}, {0, 0}, 0, ISGONE|ISDARK, 0, ___ },
+	{ {0, 0}, {0, 0}, {0, 0}, 0, ISGONE|ISDARK, 0, ___ },
+	{ {0, 0}, {0, 0}, {0, 0}, 0, ISGONE|ISDARK, 0, ___ }
 };
+#undef ___
+#undef XX
+
 
 #define INIT_STATS { 16, 0, 1, 10, 12, "1d4", 12 }
 

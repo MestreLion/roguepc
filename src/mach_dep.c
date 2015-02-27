@@ -785,7 +785,7 @@ sysint(intno, inregs, outregs)
 	outregs->es = inregs->es;
 
 	// reserved flags and IF set, all others unset
-	return 0b1111001000101010;
+	return 0xF22A;
 }
 
 bool

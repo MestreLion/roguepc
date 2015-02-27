@@ -133,7 +133,7 @@ void	getrc(int *rp, int *cp);
 void	real_rc(int pn, int *rp, int *cp);
 void	clrtoeol();
 void	mvaddstr(int r, int c, char *s);
-void	mvaddch(int r, int c, char chr);
+void	mvaddch(int r, int c, byte chr);
 byte	mvinch(int r, int c);
 int 	addch(byte chr);
 void	addstr(char *s);

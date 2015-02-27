@@ -298,8 +298,7 @@ clear()
  *  Turn cursor on and off
  */
 bool
-cursor(ison)
-	bool ison;
+cursor(bool ison)
 {
 	register bool oldstate;
 
@@ -375,9 +374,7 @@ mvaddstr(r,c,s)
 }
 
 void
-mvaddch(r,c,chr)
-	int r, c;
-	char chr;
+mvaddch(int r, int c, byte chr)
 {
 	move(r, c);
 	addch(chr);
@@ -396,8 +393,7 @@ mvinch(r, c)
  * character position
  */
 int
-addch(chr)
-	byte chr;
+addch(byte chr)
 {
 	int r, c;
 	byte old_attr;

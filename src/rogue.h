@@ -453,7 +453,7 @@ typedef union thing THING;
 struct monster {
 	char *m_name;			/* What to call the monster */
 	shint m_carry;			/* Probability of carrying something */
-	short m_flags;			/* Things about the monster */
+	unsigned short m_flags;			/* Things about the monster */
 	struct stats m_stats;		/* Initial stats */
 };
 
