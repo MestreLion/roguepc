@@ -6,7 +6,6 @@
 
 
 #include "extern.h"
-#include "swint.h"
 
 /*
  *  Options set for PC rogue
@@ -55,6 +54,15 @@
 #define ifterse2 ifterse
 #define ifterse3 ifterse
 #define ifterse4 ifterse
+
+/*
+ * Don't change the constants, since they are used for sizes in many
+ * places in the program.
+ */
+
+#define MAXSTR  	80	/* maximum length of strings */
+#define MAXLINES	25	/* maximum number of screen lines used */
+#define MAXCOLS 	80	/* maximum number of screen columns used */
 
 /*
  * Maximum number of different things
@@ -593,7 +601,6 @@ extern void (*cls_)();  //@ used in mach_dep.c
 //@ main.c
 extern char do_force;  //@ used in save.c
 extern int bwflag;     //@ used in save.c
-extern struct sw_regs *regs;  //@ originally declared in swint.h
 
 
 //@ protect.c
@@ -602,6 +609,9 @@ extern int no_step;  //@ used in clock(), originally by dos.asm
 
 /*
  * Function types
+ *
+ * @ curses.c has its own header
+ * @ mach_dep.c functions are declared in extern.h
  */
 
 //@ armor.c

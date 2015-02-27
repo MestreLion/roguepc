@@ -39,13 +39,18 @@ static int ocb;
 int _dsval = 0x00;
 dosptr _csval = 0x33;  /*@ dummy */
 
-
 /*@
  * Global tick counter
  * Automatically incremented by clock() 18.2 times per second
  * Originally set by dos.asm
  */
 unsigned int tick = 0;
+
+/*
+ * Permanent stack data
+ * @ originally defined in main.c
+ */
+struct sw_regs *regs;
 
 
 /*@

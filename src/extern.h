@@ -9,96 +9,24 @@
  * assembly function declarations, and a bunch of global variables.
  *
  * The plan is to gradually move all platform-agnostic vars to rogue.h,
- * and keep here only the definitions for mach_dep.c (as originally intended)
- * and other platform-dependent modules such as curses, env, croot, and
- * perhaps also load, save, protect.
+ * and keep here only the declarations for mach_dep.c (as originally intended)
  *
  * Standard Library includes will also remain here, as original code did not
  * (explicitly) use any. After all, Rogue is pre-ANSI C.
  *
- * Assembly functions will be replaced either by standard library equivalents
+ * Assembly functions are be replaced either by standard library equivalents
  * or functions in mach_dep.
  *
- * When port is successful, maybe this will be renamed mach_dep.h to avoid
+ * When port is completed, maybe this will be renamed mach_dep.h to avoid
  * confusion with extern.c, which is the definition of global game vars
  */
 
-/*
- * Don't change the constants, since they are used for sizes in many
- * places in the program.
- */
-
-#define MAXSTR		80	/* maximum length of strings */
-#define MAXLINES	25	/* maximum number of screen lines used */
-#define MAXCOLS		80	/* maximum number of screen columns used */
-
-//@ uintptr_t
-#include <stdint.h>
-typedef uintptr_t	intptr;  //@ size of a real pointer
-typedef uint16_t	dosptr;  //@ size of a pointer in DOS, as Rogue relies on
-
-
-//@ moved from rogue.h for assembly functions global variables declarations
-/*
- *  MANX C compiler funnies
- */
-typedef unsigned char byte;
-typedef unsigned char bool;
-
-//@ moved from curses.h so it's close to 'bool' definition
-#define TRUE 	1
-#define FALSE	0
-
-/*
- * Function types
- */
-
-//@ mach_dep.c originals
-int 	md_srand(), bdos(), swint(), sysint(), set_ctrlb();
-void	setup(), clock_on(), no_clock(), flush_type(), credits(),
-		unsetup(), one_tick();
-char	*newmem();
-byte	readchar();
-bool	isjr();
-struct tm	*md_localtime();
-
-//@ begin.asm
-//@ Moved to mach_dep.c:
-extern int  _dsval;
-//@ Moved to save.c (no longer extern): char _lowmem, _Uend
-//@ also contains void _exit() only used by croot.c
-//@ and other public symbols not used in C code
-
-//@ csav.asm
-//@ it seems no symbols are directly referenced by any C code.
-
-//@ dos.asm - replaced by curses.c and mach_dep.c
-//@ Moved to mach_dep.c:
-extern unsigned int tick;
-int 	csum();
-int 	getds();
-byte 	peekb();
-void	pokeb();
-void	out();
-void	dmaout();
-void	dmain();
-void	_halt();
-void	md_clock();
-void	COFF();
-bool	no_char();
-
-//@ fio.asm - replaced by <stdio.h> equivalents except write() in croot.c
-//@ int 	open(), read(), write(), creat();
-//@ void	close(), unlink(), lseek();
-
-//@ sbrk.asm - replaced by malloc() / free()
-//@ char *brk(), *sbrk();
-
-//@ zoom.asm - replaced by functions in curses.c
-
 /*@
- * Functions and constants from libc
+ * Functions from libc and their "overrides"
  */
+
+//@ uintptr_t, uint16_t
+#include <stdint.h>
 
 //@ is{alpha,digit,upper,...}() and to{ascii,upper,lower}() families
 #include <ctype.h>
@@ -130,3 +58,55 @@ bool	no_char();
 //@ time()
 #include <time.h>
 #define clock	md_clock
+
+/*@
+ * Project includes, defines and typedefs
+ */
+#include "swint.h"
+
+//@ moved from curses.h so it's close to 'bool' definition
+#define TRUE 	1
+#define FALSE	0
+
+typedef uintptr_t	intptr;  //@ size of a real pointer
+typedef uint16_t	dosptr;  //@ size of a pointer in DOS, as Rogue relies on
+/*
+ *  MANX C compiler funnies
+ *  @ moved from rogue.h
+ */
+typedef unsigned char byte;
+typedef unsigned char bool;
+
+
+/*
+ * Function types
+ */
+//@ mach_dep.c originals
+int 	md_srand(), bdos(), swint(), sysint(), set_ctrlb();
+void	setup(), clock_on(), no_clock(), flush_type(), credits(),
+		unsetup(), one_tick();
+char	*newmem();
+byte	readchar();
+bool	isjr();
+struct tm	*md_localtime();
+
+//@ dos.asm
+int 	csum();
+int 	getds();
+byte 	peekb();
+void	pokeb();
+void	out();
+void	dmaout();
+void	dmain();
+void	_halt();
+void	md_clock();
+void	COFF();
+bool	no_char();
+
+
+/*@
+ * Global vars
+ */
+extern unsigned int tick;  //@ from dos.asm
+extern int  _dsval;  //@ from begin.asm
+extern struct sw_regs *regs; //@ from main.c, originally declared in swint.h

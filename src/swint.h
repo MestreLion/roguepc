@@ -9,13 +9,13 @@ struct sw_regs {
 	int	dx;
 	int	si;
 	int	di;
-	int ds;
+	int	ds;
 	int	es;
 };
 
-#define	SW_DOS	0x21
-#define	SW_KEY	0x16
-#define	SW_SCR	0x10
+#define SW_DOS	0x21
+#define SW_KEY	0x16
+#define SW_SCR	0x10
 #define SW_DSK	0x13
 
 #define LOW(x) ((x) & 0xff)

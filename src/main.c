@@ -27,11 +27,6 @@ int log_read, log_write;
 #endif
 
 /*
- * Permanent stack data
- */
-struct sw_regs *regs;
-
-/*
  * main:
  *	The main program, of course
  */
