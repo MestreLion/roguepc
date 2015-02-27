@@ -853,3 +853,18 @@ one_tick()
 				_halt();
 	}
 }
+
+
+/*
+ *  fatal: exit with a message
+ *  @ moved from main.c
+ */
+void
+fatal(msg,arg)
+	char *msg;
+	int arg;
+{
+	endwin();
+	printw(msg, arg);
+	exit(EXIT_SUCCESS);
+}

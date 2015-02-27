@@ -121,35 +121,6 @@
 #endif
 
 /*
- * Things that appear on the screens
- */
-#define PASSAGE		(0xb1)
-#define DOOR		(0xce)
-#define FLOOR		(0xfa)
-#define PLAYER		(0x01)
-#define TRAP		(0x04)
-#define STAIRS		(0xf0)
-#define GOLD		(0x0f)
-#define POTION		(0xad)
-#define SCROLL		(0x0d)
-#define MAGIC		'$'
-#define	BMAGIC		'+'
-#define FOOD		(0x05)
-#define STICK		(0xe7)
-#define ARMOR		(0x08)
-#define AMULET		(0x0c)
-#define RING		(0x09)
-#define WEAPON		(0x18)
-#define CALLABLE	-1
-
-#define VWALL	(0xba)
-#define HWALL	(0xcd)
-#define ULWALL	(0xc9)
-#define URWALL	(0xbb)
-#define LLWALL	(0xc8)
-#define LRWALL	(0xbc)
-
-/*
  * Various constants
  */
 #define BEARTIME	spread(3)
@@ -674,7 +645,7 @@ void	epyx_yuck(), scr_load(), bload();
 int	find_drive();
 
 //@ main.c
-void	endit(), playit(), quit(), leave(), fatal();
+void	endit(), playit(), quit(), leave();
 int	rnd(), roll();
 
 //@ maze.c

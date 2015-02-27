@@ -283,16 +283,3 @@ leave()
 	move(LINES - 2, 0);
 	fatal("Ok, if you want to leave that badly\n");
 }
-
-/*
- *  fatal: exit with a message
- */
-void
-fatal(msg,arg)
-	char *msg;
-	int arg;
-{
-	endwin();
-	printw(msg, arg);
-	exit(EXIT_SUCCESS);
-}

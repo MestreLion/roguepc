@@ -1,7 +1,8 @@
 /*
  *  Cursor motion stuff to simulate a "no refresh" version of curses
  */
-#include	"rogue.h"
+
+#include	"extern.h"
 #include	"curses.h"
 
 /*
@@ -672,16 +673,20 @@ wdump()
 char *
 sav_win()
 {
+	/*@ savewin is now a fixed size array
 	if (savewin == (char *)_flags)
 		dmaout(savewin,LINES*COLS,0xb800,8192);
+	*/
 	return(savewin);
 }
 
 void
 res_win()
 {
+	/*@ savewin is now a fixed size array
 	if (savewin == (char *)_flags)
 		dmain(savewin,LINES*COLS,0xb800,8192);
+	*/
 }
 
 /*
