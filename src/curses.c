@@ -507,6 +507,7 @@ set_attr(bute)
 		ch_attr = bute;
 }
 
+//@ unused
 void
 error(mline,msg,a1,a2,a3,a4,a5)
 	int mline;
@@ -804,6 +805,7 @@ scroll_up(start_row,end_row,nlines)
 	move(end_row,c_col);
 }
 
+//@ unused
 void
 scroll_dn(start_row,end_row,nlines)
 	int start_row,end_row,nlines;
@@ -816,6 +818,7 @@ scroll_dn(start_row,end_row,nlines)
 	move(start_row,c_col);
 }
 
+//@ unused
 void
 scroll()
 {
@@ -853,6 +856,7 @@ repchr(chr,cnt)
 
 /*
  * try to fixup screen after we get a control break
+ * @ unused
  */
 void
 fixup()

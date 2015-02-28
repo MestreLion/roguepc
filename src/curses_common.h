@@ -7,6 +7,12 @@
  * kept together here for consistency and completeness.
  */
 
+/*@
+ * This color/bw checks are inconsistent with each other:
+ * scr_type 0 and 2 evaluate as TRUE for both (but they are mono),
+ * scr_type 7 evaluate as FALSE for both (also mono)
+ * See winit()
+ */
 #define is_color (scr_type!=7)
 #define is_bw (scr_type==0 || scr_type==2)
 
@@ -59,23 +65,23 @@
 #define LRWALL	(0xbc)
 
 /*@
- * Function declarations
+ * Function prototypes
  */
-void	clear();
+void	clear(void);
 bool	cursor(bool ison); //@ curs_set()
 void	getrc(int *rp, int *cp);
-void	clrtoeol();
+void	clrtoeol(void);
 void	mvaddstr(int r, int c, char *s);
 void	mvaddch(int r, int c, byte chr);
 byte	mvinch(int r, int c);
 int 	addch(byte chr);
 void	addstr(char *s);
 void	set_attr(int bute);
-void	winit();
-void	forcebw();
-void	wdump();
-void	wrestor();
-void	wclose();
+void	winit(void);
+void	forcebw(void);
+void	wdump(void);
+void	wrestor(void);
+void	wclose(void);
 void	box(int ul_r, int ul_c, int lr_r, int lr_c);
 void	center(int row, char *string);
 void	printw(); //@ char *msg, int a1, ..., int a8

@@ -506,7 +506,7 @@ add_line(use, fmt, arg)
 	register byte retchar = ' ';
 	if (line_cnt == 0)
 	{
-		wdump(0);
+		wdump();
 		clear();
 	}
 	if (line_cnt >= LINES - 1 || fmt == NULL)
@@ -551,7 +551,7 @@ end_line(use)
 	register int retchar;
 
 	retchar = add_line(use, NULL);
-	wrestor(0);
+	wrestor();
 	line_cnt = 0;
 	newpage = FALSE;
 	return(retchar);
