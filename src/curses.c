@@ -3,7 +3,8 @@
  */
 
 #include	"extern.h"
-#include	"curses.h"
+#include	"curses_common.h"
+#include	"curses_dos.h"
 
 /*
  *  Globals for curses

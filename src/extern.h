@@ -45,7 +45,7 @@
 #include <stdio.h>
 #define getch() (byte)getchar()
 
-//@ atoi(), NULL, EXIT_*, malloc(), free()
+//@ atoi(), NULL, EXIT_*, malloc(), free(), abs()
 #include <stdlib.h>
 #define exit	croot_exit	//@ use croot's exit() as single point of exit
 #define setenv	setenv_file	//@ use env.c fake environment

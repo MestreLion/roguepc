@@ -77,6 +77,7 @@
 #define MAXPASS		13	/* upper limit on number of passages */
 #define MAXNAME		20  /* Maximum Length of a scroll */
 #define MAXITEMS	83  /* Maximum number of randomly generated things */
+#define BUFSIZE		128 /*@ moved from curses.h */
 
 /*
  * All the fun defines
