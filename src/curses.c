@@ -490,10 +490,14 @@ void
 addstr(s)
 	char *s;
 {
+#ifdef ROGUE_DEBUG
+	print_int_calls = FALSE;
+#endif
 	while(*s)
 		addch(*s++);
 #ifdef ROGUE_DEBUG
 	printf("\n");
+	print_int_calls = TRUE;
 #endif
 }
 

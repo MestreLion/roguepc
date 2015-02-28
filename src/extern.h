@@ -117,3 +117,6 @@ void	fatal();
 extern unsigned int tick;  //@ from dos.asm
 extern int  _dsval;  //@ from begin.asm
 extern struct sw_regs *regs; //@ from main.c, originally declared in swint.h
+#ifdef ROGUE_DEBUG
+extern bool print_int_calls;
+#endif

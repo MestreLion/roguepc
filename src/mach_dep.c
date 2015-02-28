@@ -52,6 +52,15 @@ unsigned int tick = 0;
  */
 struct sw_regs *regs;
 
+#ifdef ROGUE_DEBUG
+/*
+ * Used to suppress printing BIOS INT calls. Used by some curses calls to
+ * prevent flooding output with INT 10h/2 (move cursor) and INT 10h/9h (write
+ * character) debug messages when printing strings.
+ *
+ */
+bool print_int_calls = TRUE;
+#endif
 
 /*@
  * Checksum of the game executable
@@ -755,25 +764,26 @@ sysint(intno, inregs, outregs)
 	struct sw_regs *inregs, *outregs;
 {
 #ifdef ROGUE_DEBUG
-	printf("INT %x,%2X\t"
-			"al=%2X\t"
-			"bx=%4X\t"
-			"cx=%4X\t"
-			"dx=%4X\t"
-			"si=%4X\t"
-			"di=%4X\t"
-			"ds=%4X\t"
-			"es=%4X\n",
-			intno,
-			HI(inregs->ax),
-			LOW(inregs->ax),
-			inregs->bx,
-			inregs->cx,
-			inregs->dx,
-			inregs->si,
-			inregs->di,
-			inregs->ds,
-			inregs->es);
+	if(print_int_calls)
+		printf("INT %x,%2X\t"
+				"al=%2X\t"
+				"bx=%4X\t"
+				"cx=%4X\t"
+				"dx=%4X\t"
+				"si=%4X\t"
+				"di=%4X\t"
+				"ds=%4X\t"
+				"es=%4X\n",
+				intno,
+				HI(inregs->ax),
+				LOW(inregs->ax),
+				inregs->bx,
+				inregs->cx,
+				inregs->dx,
+				inregs->si,
+				inregs->di,
+				inregs->ds,
+				inregs->es);
 #endif
 	outregs->ax = 0;
 	outregs->bx = 0;
