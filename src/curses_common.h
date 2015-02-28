@@ -84,7 +84,7 @@ void	wrestor(void);
 void	wclose(void);
 void	box(int ul_r, int ul_c, int lr_r, int lr_c);
 void	center(int row, char *string);
-void	printw(); //@ char *msg, int a1, ..., int a8
+void	printw(const char *msg, ...);
 void	blot_out(int ul_row, int ul_col, int lr_row, int lr_col);
 void	implode();
 void	drop_curtain();

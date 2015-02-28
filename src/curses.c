@@ -784,16 +784,31 @@ center(row,string)
 }
 
 
+/*@
+ * Originally had this signature:
+ * printw(msg,a1,a2,a3,a4,a5,a6,a7,a8)
+ *   char *msg;
+ *   int a1, a2, a3, a4, a5, a6, a7, a8;
+ *
+ * Guess there was no varargs in 1985...
+ *
+ * Also changed sprintf() to the more secure vsnprintf()
+ * No buffer overflows in 85 either?
+ *
+ * Ieeeee indeed :)
+ */
 /*
  * printw(Ieeeee)
  */
 void
-printw(msg,a1,a2,a3,a4,a5,a6,a7,a8)
-	char *msg;
-	int a1, a2, a3, a4, a5, a6, a7, a8;
+printw(const char *msg, ...)
 {
 	char pwbuf[132];
-	sprintf(pwbuf,msg,a1,a2,a3,a4,a5,a6,a7,a8);
+	va_list argp;
+
+	va_start(argp, msg);
+	vsnprintf(pwbuf, sizeof(pwbuf), msg, argp);
+	va_end(argp);
 	addstr(pwbuf);
 }
 

@@ -63,6 +63,10 @@
 #include <time.h>
 #define clock	md_clock
 
+//@ vsprintf()
+#include <stdarg.h>
+
+
 /*@
  * Project includes, defines and typedefs
  */
