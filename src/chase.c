@@ -201,7 +201,7 @@ register THING *mp;
 	  && ((cur_weapon->o_flags & DIDFLASH) == 0))
 	{
 		cur_weapon->o_flags |=	DIDFLASH;
-		msg(flash, w_names[cur_weapon->o_which], terse	|| expert ? "" : intense);
+		msg(flashmsg, w_names[cur_weapon->o_which], terse	|| expert ? "" : intense);
 	}
 	return TRUE;
 }

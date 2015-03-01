@@ -445,10 +445,10 @@ struct magic_item things[NUMTHINGS] = {
  * Common strings
  */
 char nullstr[] = "";
-char *typeahead = nullstr;
+char *typebuf = nullstr;
 
 char *intense = " of intense white light";
-char *flash = "your %s gives off a flash%s";
+char *flashmsg = "your %s gives off a flash%s";
 char *it = "it";
 char *you = "you";
 char *no_mem = "Not enough Memory";

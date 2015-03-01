@@ -494,8 +494,8 @@ bool wizard;
 
 extern bool p_know[], r_know[], s_know[], ws_know[];
 
-extern char *a_names[], *flash, *he_man[], *helpcoms[], *helpobjs[], huh[],
-		*intense, *p_colors[], *r_stones[], runch, *typeahead, take,
+extern char *a_names[], *flashmsg, *he_man[], *helpcoms[], *helpobjs[], huh[],
+		*intense, *p_colors[], *r_stones[], runch, *typebuf, take,
 		*w_names[], *ws_made[], *ws_type[];
 
 extern int	a_chances[], a_class[], count, dnum, food_left,

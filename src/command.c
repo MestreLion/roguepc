@@ -221,7 +221,7 @@ execcom()
 				? "Ok, I'll be brief"
 				: "Goodie, I can use big words again!");
 		when 'F': after = FALSE; do_macro(macro, MACROSZ);
-		when CTRL('F'): after = FALSE; typeahead = macro;
+		when CTRL('F'): after = FALSE; typebuf = macro;
 		when CTRL('R'): after = FALSE; msg(huh);
 		when 'v':
 			after = FALSE;

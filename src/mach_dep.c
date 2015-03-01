@@ -478,7 +478,7 @@ md_srand()
 
 /*
  * flush_type:
- *	Flush typeahead for traps, etc.
+ *	Flush typebuf for traps, etc.
  */
 void
 flush_type()
@@ -488,7 +488,7 @@ flush_type()
 	regs->dx = 0xff;		/* set input flag */
 	swint(SW_DOS, regs);
 #endif //CRASH_MACHINE
-	typeahead = "";
+	typebuf = "";
 }
 
 void
@@ -631,9 +631,9 @@ readchar()
 	register struct xlate *x;
 	register byte ch;
 
-	if (*typeahead) {
+	if (*typebuf) {
 		SIG2();
-		return(*typeahead++);
+		return(*typebuf++);
 	}
 	/*
 	 * while there are no characters in the type ahead buffer
