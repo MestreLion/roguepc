@@ -66,6 +66,9 @@
 //@ vsprintf()
 #include <stdarg.h>
 
+//@ bool type, originally typedef unsigned char
+#include <stdbool.h>
+
 
 /*@
  * Project includes, defines and typedefs
@@ -83,7 +86,6 @@ typedef uint16_t	dosptr;  //@ size of a pointer in DOS, as Rogue relies on
  *  @ moved from rogue.h
  */
 typedef unsigned char byte;
-typedef unsigned char bool;
 
 
 /*
