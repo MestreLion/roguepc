@@ -630,9 +630,13 @@ void	init_player(), init_things(), init_colors(), init_names(),
 char	*getsyl(), rchr();
 
 //@ io.c
-void	ifterse(), msg(), addmsg(), endmsg(), more(), doadd(), putmsg(),
-		scrl(), status(), wait_for(), show_win(), backspace(), str_attr(),
-		SIG2();
+void	ifterse(const char *tfmt, const char *fmt, ...);
+void	msg(const char *fmt, ...);
+void	vmsg(const char *fmt, va_list argp);
+void	addmsg(const char *fmt, ...);
+void	doadd(const char *fmt, va_list argp);
+void	endmsg(), more(), putmsg(), scrl(), status(), wait_for(),
+		show_win(), backspace(), str_attr(), SIG2();
 char	*unctrl(), *noterse();
 int	getinfo();
 

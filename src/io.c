@@ -16,21 +16,24 @@
 static int newpos = 0;
 
 /* VARARGS1 */
+/*@ nope, it was not vargars. But now it is */
 void
-ifterse(tfmt,fmt,a1,a2,a3,a4,a5)
-	char *tfmt,*fmt;
-	int a1,a2,a3,a4,a5;
+ifterse(const char *tfmt, const char *fmt, ...)
 {
+	va_list argp;
+	va_start(argp, fmt);
+
 	if (expert)
-		msg(tfmt,a1,a2,a3,a4,a5);
+		vmsg(tfmt, argp);
 	else
-		msg(fmt,a1,a2,a3,a4,a5);
+		vmsg(fmt, argp);
+
+	va_end(argp);
 }
 
+//@ va_list variant of msg()
 void
-msg(fmt, a1, a2, a3, a4, a5)
-	char *fmt;
-	int a1,a2,a3,a4,a5;
+vmsg(const char *fmt, va_list argp)
 {
 	/*
 	 * if the string is "", just clear the line
@@ -45,21 +48,37 @@ msg(fmt, a1, a2, a3, a4, a5)
 	/*
 	 * otherwise add to the message and flush it out
 	 */
-	doadd(fmt, a1,a2,a3,a4,a5);
+	doadd(fmt, argp);
 	endmsg();
 }
 
+//@ varargs variant, now a wrapper for vmsg()
+void
+msg(const char *fmt, ...)
+{
+	va_list argp;
+	va_start(argp, fmt);
+
+	vmsg(fmt, argp);
+
+	va_end(argp);
+}
+/* VARARGS1
+ * @ now for real
+ */
 /*
  * addmsg:
  *	Add things to the current message
  */
-/* VARARGS1 */
 void
-addmsg(fmt, a1,a2,a3,a4,a5)
-	char *fmt;
-	int a1,a2,a3,a4,a5;
+addmsg(const char *fmt, ...)
 {
-	doadd(fmt, a1,a2,a3,a4,a5);
+	va_list argp;
+	va_start(argp, fmt);
+
+	doadd(fmt, argp);
+
+	va_end(argp);
 }
 
 /*
@@ -149,16 +168,20 @@ more(msg)
 }
 
 
+/*@
+* arguments changed from fixed ints to va_list.
+* no need of a varargs version as this is only used internally by io.c
+* varargs-aware functions
+*/
 /*
  * doadd:
  *	Perform an add onto the message buffer
  */
 void
-doadd(fmt, a1, a2, a3, a4, a5)
-	char *fmt;
-	int a1, a2, a3, a4, a5;
+doadd(const char *fmt, va_list argp)
 {
-	sprintf(&msgbuf[newpos],fmt, a1, a2, a3, a4, a5);
+
+	vsnprintf(&msgbuf[newpos], BUFSIZE - newpos, fmt, argp);
 	newpos = strlen(msgbuf);
 }
 
