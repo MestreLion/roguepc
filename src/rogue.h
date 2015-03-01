@@ -691,7 +691,7 @@ int	rnd_room();
 //@ pack.c
 THING	*pack_obj(), *get_item();
 void	add_pack(), pick_up(), money();
-bool	inventory(), pack_char();
+byte	inventory(), pack_char();
 
 //@ passages.c
 void	conn(), do_passages(), door(), passnum(), numpass(), psplat();

@@ -227,7 +227,7 @@ picked_up:
  * inventory:
  *	List what is in the pack
  */
-bool
+byte
 inventory(list, type, lstr)
 	THING *list;
 	int type;
@@ -260,7 +260,7 @@ inventory(list, type, lstr)
 	{
 		msg(type == 0 ? "you are empty handed" :
 					"you don't have anything appropriate");
-		return FALSE;
+		return 0;
 	}
 	return(end_line(lstr));
 }
