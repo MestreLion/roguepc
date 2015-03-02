@@ -181,6 +181,19 @@ out(port, value)
 
 
 /*@
+ * Read from an I/O port
+ *
+ * A dummy wrapper to the x86 IN instruction. Return 0
+ */
+byte
+in(port)
+	int port;
+{
+	return 0;  // maybe it's not connected :P
+}
+
+
+/*@
  * Write data to memory starting at segment:offset address
  *
  * Length of data is measured in words (16-bit), the size of int in DOS

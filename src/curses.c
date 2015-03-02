@@ -95,19 +95,38 @@ byte spc_box[BX_SIZE] = {
 /*@
  * Beep a an audible beep, if possible
  *
- * To be replaced by ncurses beep()
- *
  * Originally in dos.asm
  *
  * Used hardware port 0x61 (Keyboard Controller) for direct PC Speaker access.
- * Now prints a BEL (0x07) character in standard output, which is supposed to
- * make terminals play a beep.
+ * This behavior is reproduced here, to the best of my knowledge. Comments
+ * were copied from original.
+ *
+ * The debug code prints a BEL (0x07) character in standard output, which is
+ * supposed to make terminals play a beep.
  */
 void
-cur_beep()
+cur_beep(void)
 {
 #ifdef ROGUE_DOS_CURSES
+	byte speaker = 0x61;       //@ speaker port
+	byte saved = in(speaker);  // input control info from keyboard/speaker port
+	byte cmd = saved;
+	int cycles = 300;          // count of speaker cycles
+	int c;
+
+	while (--cycles)
+	{
+		cmd &= 0x0fc;          // speaker off pulse (mask out bit 0 and 1)
+		out(speaker, cmd);     // send command to speaker port
+		for(c=50; c; c--) {;}  // kill time for tone half-cycle
+		cmd |= 0x10;           // speaker on pulse (bit 1 on)
+		out(speaker, cmd);     // send command to speaker port
+		for(c=50; c; c--) {;}  // kill time for tone half-cycle
+	}
+	out(speaker, saved);       // restore speaker/keyboard port value
+#ifdef ROGUE_DEBUG
 	printf("\a");  //@ lame, I know... but it works
+#endif
 #else
 	beep();
 #endif

@@ -106,6 +106,7 @@ int 	getds();
 byte 	peekb();
 void	pokeb();
 void	out();
+byte	in();
 void	dmaout();
 void	dmain();
 void	_halt();

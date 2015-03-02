@@ -98,7 +98,7 @@ byte	get_mode();
 byte	video_mode(int type);
 
 //@ originally in dos.asm
-void	cur_beep();
+void	cur_beep(void);
 
 //@ originally in zoom.asm
 void	move();
