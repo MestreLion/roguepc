@@ -432,27 +432,27 @@ cur_clrtoeol(void)
 }
 
 void
-mvaddstr(r,c,s)
+cur_mvaddstr(r,c,s)
 	int r,c;
 	char *s;
 {
 	cur_move(r, c);
-	addstr(s);
+	cur_addstr(s);
 }
 
 void
-mvaddch(int r, int c, byte chr)
+cur_mvaddch(int r, int c, byte chr)
 {
 	cur_move(r, c);
-	addch(chr);
+	cur_addch(chr);
 }
 
 byte
-mvinch(r, c)
+cur_mvinch(r, c)
 	int r, c;
 {
 	cur_move(r, c);
-	return(curch()&0xff);
+	return curch();
 }
 
 /*
@@ -460,7 +460,7 @@ mvinch(r, c)
  * character position
  */
 int
-addch(byte chr)
+cur_addch(byte chr)
 {
 	int r, c;
 	byte old_attr;
@@ -553,16 +553,18 @@ addch(byte chr)
 }
 
 void
-addstr(s)
+cur_addstr(s)
 	char *s;
 {
 #ifdef ROGUE_DEBUG
 	print_int_calls = FALSE;
 #endif
 	while(*s)
-		addch(*s++);
+		cur_addch(*s++);
 #ifdef ROGUE_DEBUG
+#ifdef ROGUE_DOS_CURSES
 	printf("\n");
+#endif
 	print_int_calls = TRUE;
 #endif
 }
