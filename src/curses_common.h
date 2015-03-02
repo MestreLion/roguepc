@@ -71,7 +71,7 @@
  * Function prototypes
  * Names with 'cur_' prefix were renamed to avoid conflict with <curses.h>
  */
-void	clear(void);
+void	cur_clear(void);
 bool	cursor(bool ison); //@ curs_set()
 void	getrc(int *rp, int *cp);
 void	clrtoeol(void);
@@ -101,6 +101,6 @@ byte	video_mode(int type);
 void	cur_beep(void);
 
 //@ originally in zoom.asm
-void	move();
-void	putchr();
-int 	curch();
+void	cur_move(int row, int col);
+void	putchr(byte ch);
+byte	curch(void);

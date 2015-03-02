@@ -136,8 +136,6 @@ cur_beep(void)
 /*@
  * Move the cursor to the given row and column
  *
- * To be replaced by ncurses move()
- *
  * Originally in zoom.asm
  *
  * As per original code, also updates C global variables c_col_ and c_row,
@@ -153,13 +151,14 @@ cur_beep(void)
  * DL = col
  */
 void
-move(row, col)
+cur_move(row, col)
 	int row;
 	int col;
 {
 	c_row = row;
 	c_col = col;
 
+#ifdef ROGUE_DOS_CURSES
 	if (iscuron)
 	{
 		regs->ax = HIGH(2);
@@ -167,6 +166,9 @@ move(row, col)
 		regs->dx = HILO(row, col);
 		swint(SW_SCR, regs);
 	}
+#else
+	move(row, col);
+#endif
 }
 
 
@@ -176,12 +178,11 @@ move(row, col)
  * Character is put at current (c_row, c_col) cursor position, and set with
  * current ch_attr attributes.
  *
- * No direct ncurses replacement.
- *
- * <stdio.h> putchar() is a replacement candidate, but it lacks the character
- * attributes. Anyway, this will probably be deprecated after addch()
- * is replaced, as addch() is putchr() main client. Also see credits() and
- * backspace().
+ * Works similar to <curses.h> addch(), but always operate on current ch_attr
+ * instead of extracting attributes from ch. cur_addch() is the main caller,
+ * but credits() and backspace() also use this outside of curses. As all of
+ * them set ch_attr by themselves, either directly of via set_attr() macros,
+ * it's safe for this to be simply a wrapper to <curses.h> addch().
  *
  * Originally in zoom.asm
  *
@@ -201,9 +202,9 @@ move(row, col)
  *
  */
 void
-putchr(ch)
-	byte ch;
+putchr(byte ch)
 {
+#ifdef ROGUE_DOS_CURSES
 	if (iscuron)
 	{
 		// Use BIOS call
@@ -220,22 +221,30 @@ putchr(ch)
 		 * Each char uses 2 bytes in video memory, hence doubling c_col.
 		 * scr_row[] array takes that into account, so we can use c_row
 		 * directly. See winit().
-		 * Also, I *think* dmaout() length assumes 16-bit data, the size of int
-		 * in DOS, hence 1 for writing 2 bytes.
 		 */
 		dmaout(HILO(ch_attr, ch), 1,
 			scr_ds, scr_row[c_row] + 2 * c_col);
 	}
 #ifdef ROGUE_DEBUG
-	printf("%c", ch);
+	putchar(ch);
+#endif
+#else
+	addch(ch);
 #endif
 }
 
 
 /*@
- * Return character and attribute at current cursor position
+ * Return character (without any attributes) at current cursor position
  *
- * To be replaced by ncurses inch()
+ * Wrapper to inch() that strips attributes
+ *
+ * Asm function returned character with attributes, but all callers stripped
+ * out attributes via 0xFF-anding, considering only the character. With inch()
+ * the proper stripping would require exporting A_CHARTEXT macro, and perhaps
+ * chtype, to the public API, so to simplify both usage and implementation
+ * stripping is now performed here, and it returns a character of type byte,
+ * the type consistently used by Rogue to indicate a CP850 character.
  *
  * Originally in zoom.asm
  *
@@ -253,34 +262,28 @@ putchr(ch)
  * Return:
  * AH = attribute
  * AL = character
- *
  */
-int
-curch()
+byte
+curch(void)
 {
-	byte chr;
-	byte attr;
-	int offset;
+#ifdef ROGUE_DOS_CURSES
+	chtype chrattr = 0;
 
 	if (iscuron)
 	{
 		regs->ax = HIGH(8);
 		regs->bx = HIGH(page_no);
-		return swint(SW_SCR, regs);
+		chrattr = swint(SW_SCR, regs);
 	}
 	else
 	{
 		if (!no_check){;}
-		/*
-		 * I feel dumb for not knowing the 16-bit equivalent of peekb(), but
-		 * at least it seems scr_load() doesn't either ;)
-		 * Maybe dmain() would be better?
-		 */
-		offset = scr_row[c_row] + 2 * c_col;
-		chr  = peekb(scr_ds, offset++);
-		attr = peekb(scr_ds, offset);
-		return HILO(attr, chr);
+		dmain(&chrattr, 1, scr_ds, scr_row[c_row] + 2 * c_col);
 	}
+	return (byte)LOW(chrattr);
+#else
+	return (byte)(A_CHARTEXT & inch());
+#endif
 }
 
 
@@ -314,12 +317,16 @@ wsetmem(buffer, count, attrchar)
  * clear screen
  */
 void
-clear()
+cur_clear(void)
 {
+#ifdef ROGUE_DOS_CURSES
 	if (scr_ds == svwin_ds)
 		wsetmem(savewin, LINES*COLS, 0x0720);
 	else
 		blot_out(0,0,LINES-1,COLS-1);
+#else
+	clear();
+#endif
 }
 
 
@@ -341,7 +348,7 @@ cursor(bool ison)
 	{
 		regs->cx = (is_color ? 0x607 : 0xb0c);
 		swint(SW_SCR, regs);
-		move(c_row, c_col);
+		cur_move(c_row, c_col);
 	}
 	else
 	{
@@ -398,14 +405,14 @@ mvaddstr(r,c,s)
 	int r,c;
 	char *s;
 {
-	move(r, c);
+	cur_move(r, c);
 	addstr(s);
 }
 
 void
 mvaddch(int r, int c, byte chr)
 {
-	move(r, c);
+	cur_move(r, c);
 	addch(chr);
 }
 
@@ -413,7 +420,7 @@ byte
 mvinch(r, c)
 	int r, c;
 {
-	move(r, c);
+	cur_move(r, c);
 	return(curch()&0xff);
 }
 
@@ -499,14 +506,14 @@ addch(byte chr)
 	if (chr == '\n') {
 		if (r == LINES-1) {
 			scroll_up(0, LINES-1, 1);
-			move(LINES-1, 0);
+			cur_move(LINES-1, 0);
 		} else
-			move(r+1, 0);
+			cur_move(r+1, 0);
 			ch_attr = old_attr;
 		return c_row;
 	}
 	putchr(chr);
-	move(r,c+1);
+	cur_move(r,c+1);
 	ch_attr = old_attr;
 	/*
 	 * if you have gone of the screen scroll the whole window
@@ -549,10 +556,10 @@ error(mline,msg,a1,a2,a3,a4,a5)
 	int row, col;
 
 	getrc(&row,&col);
-	move(mline,0);
+	cur_move(mline,0);
 	clrtoeol();
 	printw(msg,a1,a2,a3,a4,a5);
-	move(row,col);
+	cur_move(row,col);
 }
 
 //@ unused, and already stubbed in original
@@ -649,7 +656,7 @@ winit()
 			fatal("Program can't be run in graphics mode");
 		 */
 		default:
-			move(24,0);
+			cur_move(24,0);
 			fatal("Unknown screen type (%d)",regs->ax);
 			break;
 	}
@@ -675,8 +682,8 @@ winit()
 	//@ newmem(2);  // no longer need memory alignment
 	switch_page(3);
 	if (old_page_no != page_no)
-		clear();
-	move(c_row, c_col);
+		cur_clear();
+	cur_move(c_row, c_col);
 	if (isjr())
 		no_check = TRUE;
 }
@@ -777,9 +784,9 @@ vbox(box, ul_r,ul_c,lr_r,lr_c)
 	/*
 	 * draw horizontal boundry
 	 */
-	move(ul_r, ul_c+1);
+	cur_move(ul_r, ul_c+1);
 	repchr(box[BX_HT], i = (lr_c - ul_c - 1));
-	move(lr_r, ul_c+1);
+	cur_move(lr_r, ul_c+1);
 	repchr(box[BX_HB], i);
 	/*
 	 * draw vertical boundry
@@ -796,7 +803,7 @@ vbox(box, ul_r,ul_c,lr_r,lr_c)
 	mvaddch(lr_r,ul_c,box[BX_LL]);
 	mvaddch(lr_r,lr_c,box[BX_LR]);
 
-	move(r,c);
+	cur_move(r,c);
 	cursor(wason);
 }
 
@@ -849,7 +856,7 @@ scroll_up(start_row,end_row,nlines)
 	regs->cx = start_row << 8;
 	regs->dx = (end_row << 8) + COLS - 1;
 	swint(SW_SCR,regs);
-	move(end_row,c_col);
+	cur_move(end_row,c_col);
 }
 
 //@ unused
@@ -862,7 +869,7 @@ scroll_dn(start_row,end_row,nlines)
 	regs->cx = start_row << 8;
 	regs->dx = (end_row << 8) + COLS - 1;
 	swint(SW_SCR,regs);
-	move(start_row,c_col);
+	cur_move(start_row,c_col);
 }
 
 //@ unused
@@ -888,7 +895,7 @@ blot_out(ul_row,ul_col,lr_row,lr_col)
 	regs->cx = (ul_row<<8) + ul_col;
 	regs->dx = (lr_row<<8) + lr_col;
 	swint(SW_SCR,regs);
-	move(ul_row,ul_col);
+	cur_move(ul_row,ul_col);
 }
 
 void
@@ -934,8 +941,8 @@ implode()
 		for (j = delay; j--; )
 			;
 		for (j = r+1; j <= er-1; j++) {
-			move(j, c+1); repchr(' ', cinc-1);
-			move(j, ec-cinc+1); repchr(' ', cinc-1);
+			cur_move(j, c+1); repchr(' ', cinc-1);
+			cur_move(j, ec-cinc+1); repchr(' ', cinc-1);
 		}
 		vbox(spc_box, r, c, er, ec);
 	}
@@ -961,13 +968,13 @@ drop_curtain()
 	vbox(sng_box, 0, 0, LINES-1, COLS-1);
 	yellow();
 	for (r = 1; r < LINES-1; r++) {
-		move(r, 1);
+		cur_move(r, 1);
 		repchr(0xb1, COLS-2);
 		for (j = delay; j--; )
 			;
 	}
 	scr_ds = svwin_ds;
-	move(0,0);
+	cur_move(0,0);
 	standend();
 }
 

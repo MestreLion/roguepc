@@ -27,10 +27,15 @@
 #define mvwaddch(w,a,b,c)	mvaddch(a,b,c)
 #define getyx(a,b,c)	getxy(&b,&c)
 #define getxy	getrc
-#define	inch()	(0xff&curch())
+
+//@ Modified macros
+#define inch	curch
 
 //@ Function mappings
 #define beep	cur_beep
+#define clear	cur_clear
+#define move	cur_move
+
 
 /*@
  * Global variables declarations. All defined in curses.c
