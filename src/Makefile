@@ -11,6 +11,7 @@
 #
 TARGET:=rogue
 CFLAGS:=-Wall -O0 -std=c99 -pedantic
+LDLIBS:=-lcurses
 
 ifdef ROGUE_DEBUG
 CFLAGS+=-DROGUE_DEBUG -g3
@@ -29,7 +30,7 @@ all: default
 default: $(TARGET)
 
 $(TARGET): $(OBJS)
-	$(CC) $(OBJS) -o $@
+	$(CC) $(OBJS) $(LDLIBS) -o $@
 
 clean:
 	rm -f $(TARGET) *.o

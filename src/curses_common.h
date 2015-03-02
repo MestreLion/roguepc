@@ -7,9 +7,6 @@
  * kept together here for consistency and completeness.
  */
 
-//@ temporary, until <curses.h> is fully integrated
-#define ROGUE_DOS_CURSES 1
-
 /*@
  * This color/bw checks are inconsistent with each other:
  * scr_type 0 and 2 evaluate as TRUE for both (but they are mono),
