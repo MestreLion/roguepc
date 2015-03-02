@@ -89,13 +89,15 @@ void	wclose(void);
 void	cur_box(int ul_r, int ul_c, int lr_r, int lr_c);
 void	center(int row, char *string);
 void	cur_printw(const char *msg, ...);
-void	blot_out(int ul_row, int ul_col, int lr_row, int lr_col);
 void	implode();
 void	drop_curtain();
 void	raise_curtain();
 void	switch_page(int pn);
 byte	get_mode();
 byte	video_mode(int type);
+#ifdef ROGUE_DOS_CURSES
+void	blot_out(int ul_row, int ul_col, int lr_row, int lr_col);
+#endif
 
 //@ originally in dos.asm
 void	cur_beep(void);

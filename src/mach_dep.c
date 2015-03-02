@@ -567,7 +567,15 @@ credits()
 	if (*tname && *tname != ESCAPE)
 		strcpy(whoami, tname);
 	is_saved = FALSE;
+#ifdef ROGUE_DOS_CURSES
 	blot_out(23,0,24,COLS-1);
+#else
+	move(23, 0);
+	//@ a single clrtobol(), if available, could replace the next 3 lines
+	clrtoeol();
+	move(24, 0);
+	clrtoeol();
+#endif
 	if (is_color)
 		brown();
 	mvaddch(22,0,0xc8);

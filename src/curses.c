@@ -938,7 +938,6 @@ scroll(void)
 {
 	scroll_up(0,24,1);
 }
-#endif
 
 /*
  * blot_out region
@@ -957,6 +956,17 @@ blot_out(ul_row,ul_col,lr_row,lr_col)
 	cur_move(ul_row,ul_col);
 }
 
+/*
+ * try to fixup screen after we get a control break
+ * @ unused
+ */
+void
+fixup(void)
+{
+	blot_out(c_row,c_col,c_row,c_col+1);
+}
+#endif
+
 void
 repchr(chr,cnt)
 	int chr, cnt;
@@ -968,19 +978,8 @@ repchr(chr,cnt)
 }
 
 /*
- * try to fixup screen after we get a control break
- * @ unused
- */
-void
-fixup()
-{
-	blot_out(c_row,c_col,c_row,c_col+1);
-}
-
-/*
  * Clear the screen in an interesting fashion
  */
-
 void
 implode()
 {
