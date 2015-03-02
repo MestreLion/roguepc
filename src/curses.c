@@ -139,6 +139,17 @@ cur_beep(void)
 }
 
 
+byte
+cur_getch(void)
+{
+#ifdef ROGUE_DOS_CURSES
+	//@ not a true replacement, as asm version has no echo and no buffering
+	return (byte)getchar();
+#else
+	return (byte)getch();
+#endif
+}
+
 /*@
  * Move the cursor to the given row and column
  *
@@ -1033,7 +1044,7 @@ drop_curtain()
 	}
 	scr_ds = svwin_ds;
 	cur_move(0,0);
-	standend();
+	cur_standend();
 }
 
 void

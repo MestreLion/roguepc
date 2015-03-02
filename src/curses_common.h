@@ -19,7 +19,7 @@
 #define is_color (scr_type!=7)
 #define is_bw (scr_type==0 || scr_type==2)
 
-#define standend() set_attr(0)
+#define cur_standend() set_attr(0)
 #define green() set_attr(1)
 #define cyan() set_attr(2)
 #define red() set_attr(3)
@@ -33,7 +33,7 @@
 #define yellow() set_attr(11)
 #define uline() set_attr(12)
 #define blue() set_attr(13)
-#define standout() set_attr(14)
+#define cur_standout() set_attr(14)
 #define high() set_attr(15)
 #define bold() set_attr(16)
 
@@ -101,6 +101,7 @@ void	blot_out(int ul_row, int ul_col, int lr_row, int lr_col);
 
 //@ originally in dos.asm
 void	cur_beep(void);
+byte	cur_getch(void);
 
 //@ originally in zoom.asm
 void	cur_move(int row, int col);

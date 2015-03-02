@@ -31,6 +31,8 @@
 
 //@ Modified macros
 #define inch	curch
+#define standend	cur_standend
+#define standout	cur_standout
 
 //@ Function mappings
 #define beep	cur_beep
@@ -44,6 +46,7 @@
 #define addstr	cur_addstr
 #define box	cur_box
 #define printw	cur_printw
+#define getch cur_getch
 
 
 /*@

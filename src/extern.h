@@ -43,7 +43,6 @@
 
 //@ sprintf(), f{open,read,seek,write,close}(), remove(), access(), putchar()
 #include <stdio.h>
-#define getch() (byte)getchar()
 
 //@ atoi(), NULL, EXIT_*, malloc(), free(), abs()
 #include <stdlib.h>
