@@ -4,11 +4,10 @@
 
 #include	"extern.h"
 #include	"curses_common.h"
-#include	"curses_dos.h"
-
 #ifndef ROGUE_DOS_CURSES
-#include <curses.h>
+#include	<curses.h>
 #endif
+#include	"curses_dos.h"
 
 
 /*
@@ -185,11 +184,15 @@ cur_move(row, col)
  * Character is put at current (c_row, c_col) cursor position, and set with
  * current ch_attr attributes.
  *
- * Works similar to <curses.h> addch(), but always operate on current ch_attr
- * instead of extracting attributes from ch. cur_addch() is the main caller,
- * but credits() and backspace() also use this outside of curses. As all of
- * them set ch_attr by themselves, either directly of via set_attr() macros,
- * it's safe for this to be simply a wrapper to <curses.h> addch().
+ * Works as a stripped-down <curses.h> addch(), or as an improved <stdio.h>
+ * putchar(): it uses attributes but always operate on current ch_attr instead
+ * of extracting attributes from ch, and put at cursor position but does not
+ * update its location, nor has any special scroll handling for '\n'. It has
+ * no direct counterpart and should not be used when working with <curses.h>.
+ *
+ * Currently credits() and backspace() do. credits() set ch_attr via set_attr()
+ * macros, so for now it may be fine for this to call <curses.h> addch(),
+ * but be aware that this makes putchr() do more than what it's supposed to.
  *
  * Originally in zoom.asm
  *
@@ -462,7 +465,9 @@ cur_mvinch(r, c)
 int
 cur_addch(byte chr)
 {
+#ifdef ROGUE_DOS_CURSES
 	int r, c;
+#endif
 	byte old_attr;
 
 	old_attr = ch_attr;
@@ -533,6 +538,7 @@ cur_addch(byte chr)
 			ch_attr = 160;
 	}
 
+#ifdef ROGUE_DOS_CURSES
 	getrc(&r,&c);
 	if (chr == '\n') {
 		if (r == LINES-1) {
@@ -545,6 +551,9 @@ cur_addch(byte chr)
 	}
 	putchr(chr);
 	cur_move(r,c+1);
+#else
+	addch(attr_get_from_dos(ch_attr) | chr);
+#endif
 	ch_attr = old_attr;
 	/*
 	 * if you have gone of the screen scroll the whole window
@@ -568,6 +577,18 @@ cur_addstr(s)
 	print_int_calls = TRUE;
 #endif
 }
+
+#ifndef ROGUE_DOS_CURSES
+/*@
+ * Convert a DOS/CGA character attribute to its curses equivalent
+ * Dummy for now, always return A_NORMAL
+ */
+attr_t
+attr_get_from_dos(byte attr)
+{
+	return A_NORMAL;
+}
+#endif
 
 void
 set_attr(bute)

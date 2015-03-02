@@ -41,3 +41,8 @@ void	fixup();
 
 //@ originally in dos.asm
 void	wsetmem();
+
+//@ not in original Rogue
+#ifndef ROGUE_DOS_CURSES
+attr_t	attr_get_from_dos(byte attr);
+#endif
