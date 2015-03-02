@@ -256,7 +256,7 @@ void
 _halt()
 {
 	endwin();
-	printf("HALT!");
+	printf("HALT!\n");
 	pause();
 }
 

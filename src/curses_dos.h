@@ -40,10 +40,10 @@ void	scroll_up(int start_row, int end_row, int nlines);
 void	scroll_dn(int start_row, int end_row, int nlines);
 void	scroll(void);
 void	fixup(void);
-#endif
 
 //@ originally in dos.asm
-void	wsetmem();
+void	wsetmem(void *buffer, int count, chtype attrchar);
+#endif
 
 //@ not in original Rogue
 #ifndef ROGUE_DOS_CURSES

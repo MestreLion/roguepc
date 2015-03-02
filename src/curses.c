@@ -30,7 +30,7 @@ int tab_size = 8;
 
 //@ private
 int ch_attr = 0x7;
-char savewin[4096];
+char savewin[2048 * sizeof(chtype)];  //@ originally 4096 bytes
 int page_no = 0;
 
 
@@ -308,6 +308,7 @@ curch(void)
 }
 
 
+#ifdef ROGUE_DOS_CURSES
 /*@
  * Fills a buffer with "extended" chars (char + attribute)
  *
@@ -315,7 +316,7 @@ curch(void)
  * direct replacement other than a loop writing multiple bytes at a time.
  *
  * For DOS compatibility, chtype (and by proxy wsetmem()) is currently set to
- * operate on 16-bit words. But chtype in actual <ncurses.h> may be set to
+ * operate on 16-bit words. But chtype size in <curses.h> may be set up to
  * a whooping 64-byte unsigned long, so make *really* sure buffer size and
  * count argument are consistent with chtype size!
  *
@@ -333,6 +334,7 @@ wsetmem(buffer, count, attrchar)
 	while (count--)
 		((chtype *)buffer)[count] = (chtype)attrchar;
 }
+#endif
 
 /*
  * clear screen
@@ -1001,7 +1003,12 @@ implode()
 	 * If the curtain is down, just clear the memory
 	 */
 	if (scr_ds == svwin_ds) {
+#ifdef ROGUE_DOS_CURSES
 		wsetmem(savewin, (er + 1) * COLS, 0x0720);
+#else
+		//@ actually should only clear up to the er-th line
+		cur_clear();
+#endif
 		return;
 	}
 	delay = scr_type == 7 ? 500 : 10;
