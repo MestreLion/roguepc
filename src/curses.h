@@ -20,6 +20,7 @@
 
 #define stdscr	NULL
 #define hw	stdscr
+#define eatme	stdscr
 
 //@ Original macros
 #define	wclear	clear

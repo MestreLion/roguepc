@@ -204,7 +204,7 @@ playit(sname,bw)
 		if (no_check == 0)
 			no_check = do_force;
 		setup();
-		iscuron = TRUE;
+		iscuron = TRUE;  //@ force the following cursor() call to turn it off
 		cursor(FALSE);
 	} else {
 		oldpos.x = hero.x;
@@ -238,7 +238,7 @@ quit()
 		leave();
 	qstate = TRUE;
 	mpos = 0;
-	getyx(eatme,oy, ox);
+	getyx(eatme,oy, ox);  //@ Rogue devs cursing curses!
 	move(0,0);
 	clrtoeol();
 	move(0,0);
