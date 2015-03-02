@@ -78,7 +78,7 @@ void	cur_clrtoeol(void);
 void	cur_mvaddstr(int r, int c, char *s);
 void	cur_mvaddch(int r, int c, byte chr);
 byte	cur_mvinch(int r, int c);
-int 	cur_addch(byte chr);
+void	cur_addch(byte chr);
 void	cur_addstr(char *s);
 void	set_attr(int bute);
 void	winit(void);

@@ -462,7 +462,7 @@ cur_mvinch(r, c)
  * put the character on the screen and update the
  * character position
  */
-int
+void
 cur_addch(byte chr)
 {
 #ifdef ROGUE_DOS_CURSES
@@ -547,7 +547,7 @@ cur_addch(byte chr)
 		} else
 			cur_move(r+1, 0);
 			ch_attr = old_attr;
-		return c_row;
+		return;
 	}
 	putchr(chr);
 	cur_move(r,c+1);
@@ -557,8 +557,9 @@ cur_addch(byte chr)
 	ch_attr = old_attr;
 	/*
 	 * if you have gone of the screen scroll the whole window
+	 * @ ... or don't, as no one checked the former c_row return value
 	 */
-	return(c_row);
+	return;
 }
 
 void
@@ -851,16 +852,16 @@ vbox(box, ul_r,ul_c,lr_r,lr_c)
 	 * draw vertical boundry
 	 */
 	for (i=ul_r+1;i<lr_r;i++) {
-		mvaddch(i,ul_c,box[BX_VW]);
-		mvaddch(i,lr_c,box[BX_VW]);
+		cur_mvaddch(i,ul_c,box[BX_VW]);
+		cur_mvaddch(i,lr_c,box[BX_VW]);
 	}
 	/*
 	 * draw corners
 	 */
-	mvaddch(ul_r,ul_c,box[BX_UL]);
-	mvaddch(ul_r,lr_c,box[BX_UR]);
-	mvaddch(lr_r,ul_c,box[BX_LL]);
-	mvaddch(lr_r,lr_c,box[BX_LR]);
+	cur_mvaddch(ul_r,ul_c,box[BX_UL]);
+	cur_mvaddch(ul_r,lr_c,box[BX_UR]);
+	cur_mvaddch(lr_r,ul_c,box[BX_LL]);
+	cur_mvaddch(lr_r,lr_c,box[BX_LR]);
 
 	cur_move(r,c);
 	cursor(wason);
@@ -874,7 +875,7 @@ center(row,string)
 	int row;
 	char *string;
 {
-	mvaddstr(row,(COLS-strlen(string))/2,string);
+	cur_mvaddstr(row,(COLS-strlen(string))/2,string);
 }
 
 
@@ -903,7 +904,7 @@ printw(const char *msg, ...)
 	va_start(argp, msg);
 	vsnprintf(pwbuf, sizeof(pwbuf), msg, argp);
 	va_end(argp);
-	addstr(pwbuf);
+	cur_addstr(pwbuf);
 }
 
 #ifdef ROGUE_DOS_CURSES
