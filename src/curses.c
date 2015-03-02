@@ -598,9 +598,13 @@ set_attr(bute)
 		ch_attr = at_table[bute];
 	else
 		ch_attr = bute;
+#ifndef ROGUE_DOS_CURSES
+	attrset(attr_get_from_dos(ch_attr));
+#endif
 }
 
-//@ unused
+#ifdef ROGUE_DOS_CURSES
+//@ unused, and proper varargs implementation would require cur_vprintw()
 void
 error(mline,msg,a1,a2,a3,a4,a5)
 	int mline;
@@ -611,7 +615,7 @@ error(mline,msg,a1,a2,a3,a4,a5)
 
 	getrc(&row,&col);
 	cur_move(mline,0);
-	clrtoeol();
+	cur_clrtoeol();
 	printw(msg,a1,a2,a3,a4,a5);
 	cur_move(row,col);
 }
@@ -622,7 +626,7 @@ error(mline,msg,a1,a2,a3,a4,a5)
  * the cursor is
  */
 void
-set_cursor()
+set_cursor(void)
 {
 /*
 	regs->ax = 15 << 8;
@@ -630,6 +634,7 @@ set_cursor()
 	real_rc(regs->bx >> 8, &c_row, &c_col);
 */
 }
+#endif
 
 /*
  *  winit(win_name):
