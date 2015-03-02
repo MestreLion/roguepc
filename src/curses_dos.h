@@ -18,8 +18,10 @@
 #define BX_HB	6
 #define BX_SIZE	7
 
+#ifdef ROGUE_DOS_CURSES
 //@ in ncurses, as unsigned long. see wsetmem()
 typedef uint16_t	chtype;  // character with attributes
+#endif
 
 
 /*@

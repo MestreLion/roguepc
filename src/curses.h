@@ -21,13 +21,16 @@
 #define stdscr	NULL
 #define hw	stdscr
 
-//@ Function "overrides"
+//@ Original macros
 #define	wclear	clear
 #define	endwin		wclose
 #define mvwaddch(w,a,b,c)	mvaddch(a,b,c)
 #define getyx(a,b,c)	getxy(&b,&c)
 #define getxy	getrc
 #define	inch()	(0xff&curch())
+
+//@ Function mappings
+#define beep	cur_beep
 
 /*@
  * Global variables declarations. All defined in curses.c

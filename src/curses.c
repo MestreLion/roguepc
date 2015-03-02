@@ -6,6 +6,11 @@
 #include	"curses_common.h"
 #include	"curses_dos.h"
 
+#ifndef ROGUE_DOS_CURSES
+#include <curses.h>
+#endif
+
+
 /*
  *  Globals for curses
  */
@@ -99,9 +104,13 @@ byte spc_box[BX_SIZE] = {
  * make terminals play a beep.
  */
 void
-beep()
+cur_beep()
 {
+#ifdef ROGUE_DOS_CURSES
 	printf("\a");  //@ lame, I know... but it works
+#else
+	beep();
+#endif
 }
 
 
