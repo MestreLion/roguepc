@@ -17,12 +17,14 @@
  */
 int LINES=25, COLS=80;
 int is_saved = FALSE;
-bool iscuron = TRUE;
 int old_page_no;  //@ this is public, but page_no is not. Weird. See rip.c
 int no_check = FALSE;
 int scr_ds=0xB800;
 int svwin_ds;
 int scr_type = -1;
+#ifdef ROGUE_DOS_CURSES
+bool iscuron = TRUE;
+#endif
 
 //@ unused
 int tab_size = 8;
@@ -341,6 +343,7 @@ cur_clear(void)
 bool
 cursor(bool ison)
 {
+#ifdef ROGUE_DOS_CURSES
 	register bool oldstate;
 
 	if (iscuron == ison)
@@ -361,6 +364,21 @@ cursor(bool ison)
 		swint(SW_SCR, regs);
 	}
 	return(oldstate);
+#else
+	/*@
+	 * curs_set return values:
+	 * ERR = terminal does not support the visibility requested
+	 *   0 = invisible
+	 *   1 = normal
+	 *   2 = very visible
+	 */
+	int oldstate = curs_set(ison);
+
+	if (oldstate == 0 || oldstate == ERR)
+		return FALSE;
+	else
+		return TRUE;
+#endif
 }
 
 
@@ -371,8 +389,12 @@ void
 getrc(rp,cp)
 	int *rp, *cp;
 {
+#ifdef ROGUE_DOS_CURSES
 	*rp = c_row;
 	*cp = c_col;
+#else
+	getyx(stdscr, *rp, *cp);
+#endif
 }
 
 void
@@ -395,14 +417,18 @@ real_rc(pn, rp,cp)
  *	clrtoeol
  */
 void
-clrtoeol()
+cur_clrtoeol(void)
 {
+#ifdef ROGUE_DOS_CURSES
 	int r,c;
 
 	if (scr_ds == svwin_ds)
 		return;
 	getrc(&r,&c);
 	blot_out(r,c,r,COLS-1);
+#else
+	clrtoeol();
+#endif
 }
 
 void

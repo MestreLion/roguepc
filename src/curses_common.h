@@ -72,9 +72,9 @@
  * Names with 'cur_' prefix were renamed to avoid conflict with <curses.h>
  */
 void	cur_clear(void);
-bool	cursor(bool ison); //@ curs_set()
+bool	cursor(bool ison);
 void	getrc(int *rp, int *cp);
-void	clrtoeol(void);
+void	cur_clrtoeol(void);
 void	mvaddstr(int r, int c, char *s);
 void	mvaddch(int r, int c, byte chr);
 byte	mvinch(int r, int c);

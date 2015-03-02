@@ -33,6 +33,7 @@
 #define inch	curch
 
 //@ Function mappings
+#define clrtoeol	cur_clrtoeol
 #define beep	cur_beep
 #define clear	cur_clear
 #define move	cur_move
@@ -43,12 +44,14 @@
  */
 extern int LINES, COLS;
 extern int is_saved;
-extern bool iscuron;
 extern int old_page_no;
 extern int no_check;
 extern int scr_ds;
 extern int svwin_ds;
 extern int scr_type;
+#ifdef ROGUE_DOS_CURSES
+extern bool iscuron;
+#endif
 
 /*
  * we need to know location of screen being saved

@@ -204,7 +204,9 @@ playit(sname,bw)
 		if (no_check == 0)
 			no_check = do_force;
 		setup();
+#ifdef ROGUE_DOS_CURSES
 		iscuron = TRUE;  //@ force the following cursor() call to turn it off
+#endif
 		cursor(FALSE);
 	} else {
 		oldpos.x = hero.x;
