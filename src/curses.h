@@ -33,15 +33,17 @@
 #define inch	curch
 
 //@ Function mappings
-#define clrtoeol	cur_clrtoeol
 #define beep	cur_beep
-#define clear	cur_clear
 #define move	cur_move
+#define clear	cur_clear
+#define clrtoeol	cur_clrtoeol
 #define mvaddstr	cur_mvaddstr
 #define mvaddch	cur_mvaddch
 #define mvinch	cur_mvinch
 #define addch	cur_addch
 #define addstr	cur_addstr
+#define box	cur_box
+#define printw	cur_printw
 
 
 /*@

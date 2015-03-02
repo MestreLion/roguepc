@@ -617,7 +617,7 @@ error(mline,msg,a1,a2,a3,a4,a5)
 	getrc(&row,&col);
 	cur_move(mline,0);
 	cur_clrtoeol();
-	printw(msg,a1,a2,a3,a4,a5);
+	cur_printw(msg,a1,a2,a3,a4,a5);
 	cur_move(row,col);
 }
 
@@ -820,8 +820,7 @@ wclose()
  */
 
 void
-box(ul_r, ul_c, lr_r, lr_c)
-	int ul_r, ul_c, lr_r, lr_c;
+cur_box(int ul_r, int ul_c, int lr_r, int lr_c)
 {
 	vbox(dbl_box, ul_r, ul_c, lr_r, lr_c);
 }
@@ -896,7 +895,7 @@ center(row,string)
  * printw(Ieeeee)
  */
 void
-printw(const char *msg, ...)
+cur_printw(const char *msg, ...)
 {
 	char pwbuf[132];
 	va_list argp;
