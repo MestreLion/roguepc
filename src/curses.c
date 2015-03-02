@@ -901,6 +901,7 @@ printw(const char *msg, ...)
 	addstr(pwbuf);
 }
 
+#ifdef ROGUE_DOS_CURSES
 void
 scroll_up(start_row,end_row,nlines)
 	int start_row,end_row,nlines;
@@ -928,12 +929,11 @@ scroll_dn(start_row,end_row,nlines)
 
 //@ unused
 void
-scroll()
+scroll(void)
 {
 	scroll_up(0,24,1);
 }
-
-
+#endif
 
 /*
  * blot_out region
