@@ -25,6 +25,9 @@
  * Functions from libc and their "overrides"
  */
 
+//@ make setenv() and getenv() available, remove toascii() and isascii()
+#define _POSIX_C_SOURCE 200809L
+
 //@ uintptr_t, uint16_t
 #include <stdint.h>
 
@@ -44,7 +47,7 @@
 //@ sprintf(), f{open,read,seek,write,close}(), remove(), access(), putchar()
 #include <stdio.h>
 
-//@ atoi(), NULL, EXIT_*, malloc(), free(), abs()
+//@ atoi(), NULL, EXIT_*, malloc(), free(), abs(), setenv(), getenv()
 #include <stdlib.h>
 #define exit	croot_exit	//@ use croot's exit() as single point of exit
 #define srand	md_srand	//@ use internal seed generator
