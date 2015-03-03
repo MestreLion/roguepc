@@ -416,6 +416,7 @@ getrc(rp,cp)
 #endif
 }
 
+#ifdef ROGUE_DOS_CURSES
 void
 real_rc(pn, rp,cp)
 	int pn, *rp, *cp;
@@ -431,6 +432,7 @@ real_rc(pn, rp,cp)
 	*rp = regs->dx >> 8;
 	*cp = regs->dx & 0xff;
 }
+#endif
 
 /*
  *	clrtoeol
