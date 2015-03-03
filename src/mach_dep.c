@@ -215,10 +215,12 @@ dmaout(data, wordlength, segment, offset)
 	unsigned int segment;
 	unsigned int offset;
 {
+#ifdef ROGUE_DOS_CURSES
 #ifdef ROGUE_DEBUG
 	if (segment != scr_ds || wordlength > 1)  // if not single char to screen
 		printf("dmaout(%p, %d, %04x:%04x)\n",
 				data, wordlength, segment, offset);
+#endif
 #endif
 	; // blazing fast!
 }
@@ -784,6 +786,7 @@ sysint(intno, inregs, outregs)
 	int intno;
 	struct sw_regs *inregs, *outregs;
 {
+#ifdef ROGUE_DOS_CURSES
 #ifdef ROGUE_DEBUG
 	if(print_int_calls)
 		printf("INT %x,%2X\t"
@@ -805,6 +808,7 @@ sysint(intno, inregs, outregs)
 				inregs->di,
 				inregs->ds,
 				inregs->es);
+#endif
 #endif
 	outregs->ax = 0;
 	outregs->bx = 0;
