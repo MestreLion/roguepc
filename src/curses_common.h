@@ -7,6 +7,8 @@
  * kept together here for consistency and completeness.
  */
 
+#define ROGUE_ASCII 1
+
 /*@
  * This color/bw checks are inconsistent with each other:
  * scr_type 0 and 2 evaluate as TRUE for both (but they are mono),
@@ -38,6 +40,36 @@
  * Things that appear on the screens
  * @ moved from rogue.h
  */
+#ifdef ROGUE_ASCII
+#define PASSAGE		'#'
+#define DOOR		'+'
+#define FLOOR		'.'
+#define PLAYER		'@'
+#define TRAP		'^'
+#define STAIRS		'%'
+#define GOLD		'*'
+#define POTION		'!'
+#define SCROLL		'?'
+#define MAGIC		'$'
+#define BMAGIC		'&'
+#define FOOD		':'
+#define STICK		'/'
+#define ARMOR		']'
+#define AMULET		','
+#define RING		'='
+#define WEAPON		')'
+#define CALLABLE	-1
+
+#define VWALL	'|'
+#define HWALL	'-'
+#define ULWALL	'1'
+#define URWALL	'2'
+#define LLWALL	'3'
+#define LRWALL	'4'
+
+#define VLEFT	'6'
+#define VRIGHT	'5'
+#else
 #define PASSAGE		(0xb1)
 #define DOOR		(0xce)
 #define FLOOR		(0xfa)
@@ -66,6 +98,7 @@
 
 #define VLEFT	(0xb9)  //@ 185
 #define VRIGHT	(0xcc)  //@ 204
+#endif
 
 /*@
  * Function prototypes
