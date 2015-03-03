@@ -882,7 +882,6 @@ fatal(const char *msg, ...)
 {
 	va_list argp;
 
-	endwin();
 	va_start(argp, msg);
 	vprintf(msg, argp);
 	va_end(argp);
@@ -901,7 +900,7 @@ void md_exit(int status)
 	//@ restore the clock, it if was ever set
 	(*cls_)();
 #endif
-	endwin();
+	cur_endwin();
 	unsetup();
 	free_ds();
 #ifdef ROGUE_DEBUG

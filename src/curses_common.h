@@ -168,7 +168,7 @@ void	winit(void);
 void	forcebw(void);
 void	wdump(void);
 void	wrestor(void);
-void	wclose(void);
+void	cur_endwin(void);
 void	cur_box(int ul_r, int ul_c, int lr_r, int lr_c);
 void	center(int row, char *string);
 void	cur_printw(const char *msg, ...);

@@ -24,7 +24,6 @@
 
 //@ Original macros
 #define	wclear	clear
-#define	endwin		wclose
 #define mvwaddch(w,a,b,c)	mvaddch(a,b,c)
 #define getyx(a,b,c)	getxy(&b,&c)
 #define getxy	getrc
@@ -33,6 +32,7 @@
 #define inch	curch
 #define standend	cur_standend
 #define standout	cur_standout
+#define endwin	cur_endwin
 
 //@ Function mappings
 #define beep	cur_beep

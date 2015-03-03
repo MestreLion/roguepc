@@ -33,9 +33,7 @@ int tab_size = 8;
 int ch_attr = 0x7;
 char savewin[2048 * sizeof(chtype)];  //@ originally 4096 bytes
 int page_no = 0;
-#ifdef ROGUE_DEBUG
-int closed = 0;  //@ how many times wclose() was invoked
-#endif
+bool init_curses = FALSE;  //@ if curses is active or not
 
 
 #define MAXATTR 17
@@ -859,8 +857,10 @@ winit()
 	int lines = min(LINES, MAXLINES);
 	int cols  = min(ROGUE_COLUMNS, MAXCOLS);
 
+	if (init_curses)
+		return;
+
 	at_table = color_attr;
-	closed--;
 
 	//@ these still affect the game. the goal is to remove them all
 	old_page_no = 0;
@@ -896,6 +896,7 @@ winit()
 	immedok(stdscr, TRUE);  //@ immediately refresh() screen on *add{ch,str}()
 	nodelay(stdscr, FALSE); //@ use a blocking getch() (already the default)
 	keypad(stdscr, TRUE);   //@ enable directional arrows, keypad, home, etc
+	init_curses = TRUE;
 #endif
 }
 
@@ -954,7 +955,7 @@ wrestor()
  *   close the window file
  */
 void
-wclose()
+cur_endwin()
 {
 #ifdef ROGUE_DOS_CURSES
 	/*
@@ -965,11 +966,12 @@ wclose()
 	if (page_no != old_page_no)
 		switch_page(old_page_no);
 #else
-	if (!closed++)
+	if (init_curses)
 	{
 		endwin();
+		init_curses = FALSE;
 #ifdef ROGUE_DEBUG
-		printf("Properly closed %u curses window\n", closed);
+		printf("Curses window closed\n");
 #endif
 	}
 #endif
