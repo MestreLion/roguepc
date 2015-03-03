@@ -1012,6 +1012,9 @@ repchr(chr,cnt)
 void
 implode()
 {
+#ifdef ROGUE_ASCII
+	cur_clear();
+#else
 	int j, delay, r, c, cinc = COLS/10/2, er, ec;
 
 	er = (COLS == 80 ? LINES-3 : LINES-4);
@@ -1038,6 +1041,7 @@ implode()
 		}
 		vbox(spc_box, r, c, er, ec);
 	}
+#endif
 }
 
 /*
