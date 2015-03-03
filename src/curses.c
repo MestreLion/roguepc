@@ -659,7 +659,9 @@ set_cursor(void)
 void
 winit()
 {
+#ifdef ROGUE_DOS_CURSES
 	register int i, cnt;
+#endif
 
 	/*
 	 * Get monitor type
@@ -733,6 +735,8 @@ winit()
 			fatal("Unknown screen type (%d)",regs->ax);
 			break;
 	}
+
+#ifdef ROGUE_DOS_CURSES
 	/*
 	 * Read current cursor position
 	 */
@@ -759,6 +763,15 @@ winit()
 	cur_move(c_row, c_col);
 	if (isjr())
 		no_check = TRUE;
+#else
+	initscr();
+	cbreak();
+	noecho();
+	//nodelay(stdscr, TRUE);
+	//nonl();
+	intrflush(stdscr, FALSE);
+	keypad(stdscr, TRUE);
+#endif
 }
 
 void
@@ -818,7 +831,7 @@ wrestor()
 void
 wclose()
 {
-
+#ifdef ROGUE_DOS_CURSES
 	/*
 	 * Restor cursor (really you want to restor video state, but be carefull)
 	 */
@@ -826,6 +839,9 @@ wclose()
 		cursor(TRUE);
 	if (page_no != old_page_no)
 		switch_page(old_page_no);
+#else
+	endwin();
+#endif
 }
 
 /*
