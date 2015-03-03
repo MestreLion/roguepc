@@ -83,6 +83,13 @@ reread:
 		}
 	}
 	pr_scores(rank,&top_ten);
+#ifndef ROGUE_DOS_CURSES
+	move(LINES-1,0);
+	cursor(TRUE);
+	printw("[Press Enter to exit]");
+	flush_type();
+	wait_for('\n');
+#endif
 #endif //WIZARD
 #endif //DEMO
 }
@@ -433,6 +440,7 @@ total_winner()
 	printw("   %5u  Gold Pieces          ", oldpurse);
 	score(purse, 2);
 #endif //DEMO
+	wclose();
 	exit(EXIT_SUCCESS);
 }
 
