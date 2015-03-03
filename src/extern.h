@@ -113,7 +113,7 @@ void	COFF();
 bool	no_char();
 
 //@ moved from main.c
-void	fatal();
+void	fatal(const char *msg, ...);
 
 
 /*@

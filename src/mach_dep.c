@@ -890,20 +890,22 @@ one_tick()
 }
 
 /*@
- * The message will never be seen, as printw() is after endwin(), and also
- * because there's no other blocking call after printw(), so any messages will
- * be cleared instantly after exit.
+ * Originally the message would never be seen, as it used printw() after an
+ * endwin(), and there was no other blocking call after it, so any  messages
+ * would be cleared instantly after display.
  */
 /*
  *  fatal: exit with a message
- *  @ moved from main.c
+ *  @ moved from main.c, changed to use varargs and actually print the message
  */
 void
-fatal(msg,arg)
-	char *msg;
-	int arg;
+fatal(const char *msg, ...)
 {
+	va_list argp;
+
 	endwin();
-	printw(msg, arg);
+	va_start(argp, msg);
+	vprintf(msg, argp);
+	va_end(argp);
 	exit(EXIT_SUCCESS);
 }
