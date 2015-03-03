@@ -17,7 +17,7 @@ ifdef ROGUE_DEBUG
 CFLAGS+=-DROGUE_DEBUG -g3
 endif
 
-OBJS=armor.o new_leve.o command.o mach_dep.o croot.o main.o rip.o save.o \
+OBJS=armor.o new_leve.o command.o mach_dep.o main.o rip.o save.o \
 	chase.o curses.o daemon.o daemons.o env.o extern.o fakedos.o fight.o \
 	init.o io.o list.o maze.o misc.o monsters.o move.o pack.o passages.o \
 	potions.o rings.o rooms.o scrolls.o sticks.o strings.o things.o \

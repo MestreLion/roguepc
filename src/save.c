@@ -205,7 +205,7 @@ restore(savefile)
 	if ((file = fopen(savefile, "r")) == NULL)
 		fatal("%s not found\n",savefile);
 	else
-		printf("Restoring %s",savefile);
+		printf("Restoring %s",savefile);  //@ this will never be seen
 	strcpy(save_name, savefile);
 	nbytes = &_Uend - &_lowmem;
 	if (fread(idbuf, MIDSIZE, 1, file) || strcmp(idbuf,msaveid) )
@@ -218,14 +218,14 @@ restore(savefile)
 		addstr(errbuf);
 	}
 	fclose(file);
-	exit(EXIT_FAILURE);
+	md_exit(EXIT_FAILURE);
 
 rok:
 	regs = oregs;
 	if (revno != oldrev || verno != oldver)
 	{
 		fclose(file);
-		exit(EXIT_FAILURE);
+		md_exit(EXIT_FAILURE);
 	}
 
 	oldcols = COLS;
@@ -243,7 +243,7 @@ rok:
 	 * allocated via newmem()/sbrk(). Perhaps it didn't, but it just worked.
 	 * Ah, the wonders of real mode :)
 	 */
-	wclose();
+	endwin();
 	winit();
 	if (oldcols != COLS)
 	{

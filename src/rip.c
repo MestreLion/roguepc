@@ -305,8 +305,7 @@ death(monst)
 		center(6, buf);
 	move(LINES-2,0);
 #endif //DEMO
-	wclose();
-	exit(EXIT_SUCCESS);
+	md_exit(EXIT_SUCCESS);
 }
 
 /*
@@ -440,8 +439,7 @@ total_winner()
 	printw("   %5u  Gold Pieces          ", oldpurse);
 	score(purse, 2);
 #endif //DEMO
-	wclose();
-	exit(EXIT_SUCCESS);
+	md_exit(EXIT_SUCCESS);
 }
 
 /*
@@ -556,7 +554,6 @@ demo(endtype)
 	if (endtype == 0)
 		return;
 	move(LINES-2,0);
-	wclose();
-	exit(EXIT_SUCCESS);
+	md_exit(EXIT_SUCCESS);
 }
 #endif //DEMO

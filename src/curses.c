@@ -769,6 +769,7 @@ winit()
 	int cols  = min(ROGUE_COLUMNS, MAXCOLS);
 
 	at_table = color_attr;
+	closed--;
 
 	//@ these still affect the game. the goal is to remove them all
 	old_page_no = 0;
@@ -873,10 +874,13 @@ wclose()
 	if (page_no != old_page_no)
 		switch_page(old_page_no);
 #else
-	endwin();
+	if (!closed++)
+	{
+		endwin();
 #ifdef ROGUE_DEBUG
-	printf("Properly closed %u curses window\n", ++closed);
+		printf("Properly closed %u curses window\n", closed);
 #endif
+	}
 #endif
 }
 

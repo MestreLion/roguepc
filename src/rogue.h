@@ -557,10 +557,6 @@ extern char *ring_buf;
  */
 
 
-//@ croot.c
-extern void (*cls_)();  //@ used in mach_dep.c
-
-
 //@ main.c
 extern char do_force;  //@ used in save.c
 extern int bwflag;     //@ used in save.c
@@ -588,9 +584,6 @@ coord	*find_dest();
 
 //@ command.c
 void	command(), show_count(), execcom();
-
-//@ croot.c
-void	croot_exit();
 
 //@ daemon.c
 void	start_daemon(), do_daemons(), fuse(), lengthen(), extinguish(),

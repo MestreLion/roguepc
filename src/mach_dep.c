@@ -310,6 +310,21 @@ setup()
 }
 
 
+#ifdef ROGUE_DOS_CLOCK
+/*@
+ * No-op function, probably a stub for cls_ until it gets set to no_clock()
+ * moved from croot.c
+ */
+void
+noper()
+{
+	return;
+}
+
+void (*cls_)() = noper;
+#endif
+
+
 /*@
  * Hook clock() as the Interrupt Service Routine (ISR) for INT 70h,
  * saving the current handler in clk_vec.
@@ -889,6 +904,7 @@ one_tick()
 	}
 }
 
+
 /*@
  * Originally the message would never be seen, as it used printw() after an
  * endwin(), and there was no other blocking call after it, so any  messages
@@ -907,5 +923,26 @@ fatal(const char *msg, ...)
 	va_start(argp, msg);
 	vprintf(msg, argp);
 	va_end(argp);
-	exit(EXIT_SUCCESS);
+	md_exit(EXIT_SUCCESS);
+}
+
+
+/*@
+ * The single point of exit for Rogue
+ * renamed from exit() to avoid conflict with <stdlib.h>
+ * moved from croot.c
+ */
+void md_exit(int status)
+{
+#ifdef ROGUE_DOS_CLOCK
+	//@ restore the clock, it if was ever set
+	(*cls_)();
+#endif
+	endwin();
+	unsetup();
+	free_ds();
+#ifdef ROGUE_DEBUG
+	printf("Exited normally\n");
+#endif
+	exit(status);
 }

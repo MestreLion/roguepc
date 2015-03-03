@@ -47,9 +47,8 @@
 //@ sprintf(), f{open,read,seek,write,close}(), remove(), access(), putchar()
 #include <stdio.h>
 
-//@ atoi(), NULL, EXIT_*, malloc(), free(), abs(), setenv(), getenv()
+//@ exit(), atoi(), NULL, EXIT_*, malloc(), free(), abs(), setenv(), getenv()
 #include <stdlib.h>
-#define exit	croot_exit	//@ use croot's exit() as single point of exit
 #define srand	md_srand	//@ use internal seed generator
 
 //@ errno, originally in begin.asm
@@ -117,6 +116,9 @@ bool	no_char();
 
 //@ moved from main.c
 void	fatal(const char *msg, ...);
+
+//@ moved from croot.c
+void	md_exit(int status);
 
 
 /*@

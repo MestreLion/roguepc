@@ -2,29 +2,6 @@
  * Modified from the MANX croot to fit the rogue requirements
  */
 
-/*@
- * As this originally does not include rogue.h, needed functions are
- * declared here
- */
-//@ exit()
-#include <stdlib.h>
-//@ printf()
-#include <stdio.h>
-
-void	unsetup(); //@ mach_dep.c
-void	free_ds(); //@ init.c
-
-/*@
- * No-op function, probably a stub for cls_ until it gets set to no_clock()
- */
-void
-noper()
-{
-	return;
-}
-
-void (*cls_)() = noper;
-
 /*@ Former point of entry, called from begin.asm.
  *  Now Rogue starts with main()
  *
@@ -71,22 +48,3 @@ Croot(cp, first)
 	exit(0);
 }
 */
-
-/*@
- * The single point of exit for Rogue
- * renamed from exit() to avoid conflict with <stdlib.h>
- */
-void croot_exit(status)
-	int status;
-{
-	(*cls_)();
-#ifdef SDEBUG
-	//@ ComOff();  //@ not found
-#endif
-	unsetup();
-	free_ds();
-#ifdef ROGUE_DEBUG
-	printf("Exited normally\n");
-#endif
-	exit(status);
-}
