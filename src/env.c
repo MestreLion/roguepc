@@ -66,7 +66,7 @@ static char *plabel, *pstring;
  *                  @@ FALSE on failure to open envfile, TRUE otherwise
  */
 bool
-setenv_file(envfile)
+setenv_from_file(envfile)
 	char *envfile;
 {
 	register char pc;

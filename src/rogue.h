@@ -610,8 +610,8 @@ void	doctor(), swander(), rollwand(), unconfuse(), unsee(), sight(),
 		nohaste(), stomach();
 
 //@ env.h
-byte	 peekc();
-bool	setenv_file();
+byte	peekc();
+bool	setenv_from_file();
 void	putenv_struct();
 
 //@ fakedos.c

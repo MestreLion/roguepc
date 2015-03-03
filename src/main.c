@@ -46,7 +46,7 @@ main(argc, argv)
 	epyx_yuck();
 	init_ds();
 
-	setenv(ENVFILE);
+	setenv_from_file(ENVFILE);
 	protect(find_drive());
 	/*
 	 * Parse the screen environment variable.  if the string starts with
