@@ -6,7 +6,6 @@
 
 #include	"rogue.h"
 #include	"curses.h"
-#include	"keypad.h"
 
 #define ULINE() if(is_color) lmagenta();else uline();
 #ifdef ROGUE_DOS_CLOCK
@@ -600,35 +599,6 @@ credits()
 	standend();
 }
 
-/*
- * Table for IBM extended key translation
- */
-static struct xlate {
-	byte keycode, keyis;
-} xtab[] = {
-	{C_HOME,	'y'},
-	{C_UP,		'k'},
-	{C_PGUP,	'u'},
-	{C_LEFT,	'h'},
-	{C_RIGHT,	'l'},
-	{C_END,		'b'},
-	{C_DOWN,	'j'},
-	{C_PGDN,	'n'},
-	{C_INS,		'>'},
-	{C_DEL,		's'},
-	{C_F1,		'?'},
-	{C_F2,		'/'},
-	{C_F3,		'a'},
-	{C_F4,		CTRL('R')},
-	{C_F5,		'c'},
-	{C_F6,		'D'},
-	{C_F7,		'i'},
-	{C_F8,		'^'},
-	{C_F9,		CTRL('F')},
-	{C_F10,		'!'},
-	{ALT_F9,	'F'}
-};
-
 
 /*@
  * Non-blocking function that return TRUE if no key was pressed.
@@ -666,8 +636,8 @@ no_char()
 byte
 readchar()
 {
-	register struct xlate *x;
-	register byte ch;
+	int xch;
+	byte ch;
 
 	if (*typebuf) {
 		SIG2();
@@ -679,20 +649,13 @@ readchar()
 	 */
 	do
 		SIG2();				/* Rogue spends a lot of time here */
-	while (no_char());
-	/*
-	 * Now read a character and translate it if it appears in the
-	 * translation table
-	 */
-	for (ch = getch(), x = xtab; x < xtab + (sizeof xtab) / sizeof *xtab; x++)
-		if (ch == x->keycode) {
-			ch = x->keyis;
-			break;
-		}
+	while ((xch = getch()) == NOCHAR);
+	ch = xlate_ch(xch);
 	if (ch == ESCAPE)
 		count = 0;
 	return ch;
 }
+
 
 int
 bdos(fnum, dxval)

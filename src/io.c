@@ -446,7 +446,7 @@ getinfo(str,size)
 	int size;
 {
 	register char *retstr;
-	register byte ch;
+	int ch;
 	int readcnt = 0;
 	int wason, ret = 1;
 	char buf[160];

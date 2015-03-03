@@ -98,7 +98,6 @@
 #define free_list(a)	_free_list(&a)
 #define max(a,b)	((a) > (b) ? (a) : (b))
 #define on(thing,flag)	(((thing).t_flags & (flag)) != 0)
-#define CTRL(ch)	((ch) & 037)
 #define GOLDCALC	(rnd(50 + 10 * level) + 2)
 #define ISRING(h,r)	(cur_ring[h] != NULL && cur_ring[h]->o_which == r)
 #define ISWEARING(r)	(ISRING(LEFT, r) || ISRING(RIGHT, r))
@@ -126,7 +125,6 @@
 #define MORETIME	150
 #define STOMACHSIZE	2000
 #define STARVETIME	850
-#define ESCAPE		27
 #define LEFT		0
 #define RIGHT		1
 #define BOLT_LENGTH	6

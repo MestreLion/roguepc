@@ -57,6 +57,9 @@
 #define is_color (scr_type!=7)
 #define is_bw (scr_type==0 || scr_type==2)
 
+//@ moved from rogue.h
+#define CTRL(ch)	((ch) & 037)
+
 #define cur_standend() set_attr(0)
 #define green() set_attr(1)
 #define cyan() set_attr(2)
@@ -139,10 +142,18 @@
 #define VRIGHT	(0xcc)  //@ 204
 #endif
 
+
+//@ moved from rogue.h
+#define ESCAPE	(27)
+
+//@ same as ERR, but different semantics
+#define NOCHAR	(-1)
+
 /*@
  * Function prototypes
  * Names with 'cur_' prefix were renamed to avoid conflict with <curses.h>
  */
+byte	xlate_ch(int ch);
 void	cur_clear(void);
 bool	cursor(bool ison);
 void	getrc(int *rp, int *cp);
@@ -173,7 +184,7 @@ void	blot_out(int ul_row, int ul_col, int lr_row, int lr_col);
 
 //@ originally in dos.asm
 void	cur_beep(void);
-byte	cur_getch(void);
+int 	cur_getch(void);
 
 //@ originally in zoom.asm
 void	cur_move(int row, int col);

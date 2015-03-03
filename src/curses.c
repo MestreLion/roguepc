@@ -8,6 +8,7 @@
 #include	<curses.h>
 #endif
 #include	"curses_dos.h"
+#include	"keypad.h"
 
 
 /*
@@ -101,6 +102,68 @@ byte spc_box[BX_SIZE] = {
 	0x20, 0x20, 0x20, 0x20, 0x20, 0x20, 0x20
 };
 
+/*
+ * Table for IBM extended key translation
+ * moved from march_dep.c
+ */
+static struct xlate {
+	int keycode;
+	byte keyis;
+} xtab[] = {
+#ifdef ROGUE_DOS_CURSES
+	{C_HOME,	'y'},
+	{C_UP,		'k'},
+	{C_PGUP,	'u'},
+	{C_LEFT,	'h'},
+	{C_RIGHT,	'l'},
+	{C_END,		'b'},
+	{C_DOWN,	'j'},
+	{C_PGDN,	'n'},
+	{C_INS,		'>'},
+	{C_DEL,		's'},
+	{C_F1,		'?'},
+	{C_F2,		'/'},
+	{C_F3,		'a'},
+	{C_F4,		CTRL('R')},
+	{C_F5,		'c'},
+	{C_F6,		'D'},
+	{C_F7,		'i'},
+	{C_F8,		'^'},
+	{C_F9,		CTRL('F')},
+	{C_F10,		'!'},
+	{ALT_F9,	'F'}
+#else
+	{KEY_HOME,	'y'},
+	{KEY_FIND,	'y'},  //@ Keypad Home (7) in some terminals
+	{KEY_A1,	'y'},  //@ Keypad upper left (7)
+	{KEY_UP,	'k'},
+	{KEY_PPAGE,	'u'},  //@ Page Up
+	{KEY_A3,	'u'},  //@ Keypad upper right (9)
+	{KEY_LEFT,	'h'},
+	{KEY_RIGHT,	'l'},
+	{KEY_END,	'b'},
+	{KEY_SELECT,'b'},  //@ Keypad End (1) in some terminals
+	{KEY_C1,	'b'},  //@ Keypad lower left (1)
+	{KEY_DOWN,	'j'},
+	{KEY_NPAGE,	'n'},  //@ Page Down
+	{KEY_C3,	'n'},  //@ Keypad lower right (3)
+	{KEY_IC,	'>'},  //@ Insert
+	{KEY_DC,	's'},  //@ Delete
+	{KEY_F(1),	'?'},
+	{KEY_F(2),	'/'},
+	{KEY_F(3),	'a'},
+	{KEY_F(4),	CTRL('R')},
+	{KEY_F(5),	'c'},
+	{KEY_F(6),	'D'},
+	{KEY_F(7),	'i'},
+	{KEY_F(8),	'^'},
+	{KEY_F(9),	CTRL('F')},
+	{KEY_F(10),	'!'},
+	{KEY_F(57),	'F'}
+#endif
+};
+
+
 /*@
  * Beep a an audible beep, if possible
  *
@@ -142,16 +205,42 @@ cur_beep(void)
 }
 
 
-byte
+int
 cur_getch(void)
 {
 #ifdef ROGUE_DOS_CURSES
 	//@ not a true replacement, as asm version has no echo and no buffering
-	return (byte)getchar();
+	return getchar();
 #else
-	return (byte)getch();
+	return getch();
 #endif
 }
+
+
+/*@
+ * Map a (possibly multi-byte or control) character to an 8-bit character using
+ * the game translation table.
+ *
+ * Moved from mach_dep.c as part of readchar()
+ */
+byte
+xlate_ch(int ch)
+{
+	struct xlate *x;
+	/*
+	 * Now read a character and translate it if it appears in the
+	 * translation table
+	 */
+	for (x = xtab; x < xtab + (sizeof xtab) / sizeof *xtab; x++)
+	{
+		if (ch == x->keycode) {
+			ch = x->keyis;
+			break;
+		}
+	}
+	return (byte)ch;
+}
+
 
 /*@
  * Move the cursor to the given row and column
