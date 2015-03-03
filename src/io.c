@@ -456,6 +456,7 @@ getinfo(str,size)
 	*str = 0;
 	wason = cursor(TRUE);
 	while(ret == 1)
+	{
 		switch(ch = getch()) {
 			case ESCAPE:
 				while(str != retstr) {
@@ -490,6 +491,7 @@ getinfo(str,size)
 				ret = ch;  //@ any value different than ESCAPE or 1 would do.
 				break;
 		}
+	}
 	dmaout(buf, 80, scr_ds, 0);
 	return ret;
 }

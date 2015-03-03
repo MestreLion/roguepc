@@ -764,13 +764,14 @@ winit()
 	if (isjr())
 		no_check = TRUE;
 #else
+	svwin_ds = 0;  //@ "segment" of savewin
 	initscr();
-	cbreak();
-	noecho();
-	//nodelay(stdscr, TRUE);
-	//nonl();
-	intrflush(stdscr, FALSE);
-	keypad(stdscr, TRUE);
+	cbreak();  //@ do not buffer input until ENTER
+	noecho();  //@ do not echo typed characters
+	immedok(stdscr, TRUE);  //@ immediately refresh() screen on *add{ch,str}()
+	nodelay(stdscr, FALSE);  //@ use a blocking getch() (default)
+	intrflush(stdscr, FALSE);  //@
+	keypad(stdscr, TRUE);  //@ enable directional arrows, keypad, home, etc
 #endif
 }
 
@@ -1061,7 +1062,11 @@ drop_curtain()
 	cursor(FALSE);
 	delay = (scr_type == 7 ? 3000 : 2000);
 	green();
+#ifdef ROGUE_ASCII
+	vbox(dbl_box, 0, 0, LINES-1, COLS-1);
+#else
 	vbox(sng_box, 0, 0, LINES-1, COLS-1);
+#endif
 	yellow();
 	for (r = 1; r < LINES-1; r++) {
 		cur_move(r, 1);
