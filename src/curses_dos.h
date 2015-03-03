@@ -18,6 +18,10 @@
 #define BX_HB	6
 #define BX_SIZE	7
 
+//@ max is also in rogue.h
+#define max(a,b)	((a) > (b) ? (a) : (b))
+#define min(a,b)	((a) < (b) ? (a) : (b))
+
 #ifdef ROGUE_DOS_CURSES
 //@ in ncurses, as unsigned long. see wsetmem()
 typedef uint16_t	chtype;  // character with attributes

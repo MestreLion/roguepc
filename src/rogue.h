@@ -56,15 +56,6 @@
 #define ifterse4 ifterse
 
 /*
- * Don't change the constants, since they are used for sizes in many
- * places in the program.
- */
-
-#define MAXSTR  	80	/* maximum length of strings */
-#define MAXLINES	25	/* maximum number of screen lines used */
-#define MAXCOLS 	80	/* maximum number of screen columns used */
-
-/*
  * Maximum number of different things
  */
 #define MAXROOMS	9

@@ -7,7 +7,46 @@
  * kept together here for consistency and completeness.
  */
 
-#define ROGUE_ASCII 1
+//@ Available charsets
+#define ASCII	1
+#define CP437	2
+#define UTF8	3
+
+//@ Selected charset
+#ifndef ROGUE_CHARSET
+	#define ROGUE_CHARSET	ASCII
+#endif
+
+//@ Convenience defines
+#if   ROGUE_CHARSET == ASCII
+	#define ROGUE_ASCII  1
+	#undef  ROGUE_CP437
+	#undef  ROGUE_UTF8
+#elif ROGUE_CHARSET == CP437
+	#undef  ROGUE_ASCII
+	#define ROGUE_CP437  1
+	#undef  ROGUE_UTF8
+#elif ROGUE_CHARSET == UTF8
+	#undef  ROGUE_ASCII
+	#undef  ROGUE_CP437
+	#define ROGUE_UTF8   1
+#endif
+
+//@ Columns mode
+#ifndef ROGUE_COLUMNS
+#define ROGUE_COLUMNS 80
+#endif
+
+/*
+ * Don't change the constants, since they are used for sizes in many
+ * places in the program.
+ * @ Heed the warning! 80 and 25 are hard coded in many places... sigh
+ * @ moved from rogue.h
+ */
+#define MAXSTR  	80	/* maximum length of strings */
+#define MAXLINES	25	/* maximum number of screen lines used */
+#define MAXCOLS 	80	/* maximum number of screen columns used */
+
 
 /*@
  * This color/bw checks are inconsistent with each other:
