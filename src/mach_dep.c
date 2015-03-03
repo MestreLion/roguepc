@@ -557,10 +557,10 @@ credits()
 		brown();
 	for(i=1;i<(COLS-1);i++) {
 		move(22,i);
-		putchr(205);
+		putchr(HWALL);
 	}
-	mvaddch(22,0,204);
-	mvaddch(22,COLS-1,185);
+	mvaddch(22,0,VRIGHT);
+	mvaddch(22,COLS-1,VLEFT);
 	standend();
 	mvaddstr(23,2,"Rogue's Name? ");
 	is_saved = TRUE;		/*  status line hack  */
@@ -580,8 +580,8 @@ credits()
 #endif
 	if (is_color)
 		brown();
-	mvaddch(22,0,0xc8);
-	mvaddch(22,COLS-1,0xbc);
+	mvaddch(22,0,LLWALL);
+	mvaddch(22,COLS-1,LRWALL);
 	standend();
 }
 

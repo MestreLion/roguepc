@@ -83,7 +83,7 @@ int c_row, c_col;   /*  Save cursor positions so we don't ask dos */
 int scr_row[25];
 
 byte dbl_box[BX_SIZE] = {
-	0xc9, 0xbb, 0xc8, 0xbc, 0xba, 0xcd, 0xcd
+	ULWALL, URWALL, LLWALL, LRWALL, VWALL, HWALL, HWALL
 };
 
 byte sng_box[BX_SIZE] = {
@@ -1061,7 +1061,7 @@ drop_curtain()
 	yellow();
 	for (r = 1; r < LINES-1; r++) {
 		cur_move(r, 1);
-		repchr(0xb1, COLS-2);
+		repchr(PASSAGE, COLS-2);
 		for (j = delay; j--; )
 			;
 	}

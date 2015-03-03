@@ -64,6 +64,9 @@
 #define LLWALL	(0xc8)
 #define LRWALL	(0xbc)
 
+#define VLEFT	(0xb9)  //@ 185
+#define VRIGHT	(0xcc)  //@ 204
+
 /*@
  * Function prototypes
  * Names with 'cur_' prefix were renamed to avoid conflict with <curses.h>
