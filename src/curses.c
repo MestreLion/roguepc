@@ -664,7 +664,6 @@ winit()
 {
 #ifdef ROGUE_DOS_CURSES
 	register int i, cnt;
-#endif
 
 	/*
 	 * Get monitor type
@@ -739,7 +738,6 @@ winit()
 			break;
 	}
 
-#ifdef ROGUE_DOS_CURSES
 	/*
 	 * Read current cursor position
 	 */
@@ -767,14 +765,45 @@ winit()
 	if (isjr())
 		no_check = TRUE;
 #else
-	svwin_ds = 0;  //@ "segment" of savewin
+	int lines = min(LINES, MAXLINES);
+	int cols  = min(ROGUE_COLUMNS, MAXCOLS);
+
+	at_table = color_attr;
+
+	//@ these still affect the game. the goal is to remove them all
+	old_page_no = 0;
+	scr_type = ROGUE_SCR_TYPE;
+	scr_ds   = 0xB800;
+	svwin_ds = 0;
+
 	initscr();
+	if ((LINES < lines) || (COLS < cols))
+	{
+		fatal("%u-column mode requires a %u x %u screen\n"
+				"Your terminal size is %u x %u\n",
+				cols, cols, lines, COLS, LINES);
+	}
+#ifdef ROGUE_DEBUG
+	printw("Real terminal size: LINES: %u\tCOLS: %u", LINES, COLS);
+	getch();
+#endif
+	if ((LINES != lines) || (COLS != cols))
+	{
+		if (resizeterm(lines, cols) == OK)
+		{
+			getch();  //@ eat up the generated KEY_RESIZE
+		}
+		else
+		{
+			fatal("Could not resize resize terminal to %u x %u\n",
+					cols, lines);
+		}
+	}
 	cbreak();  //@ do not buffer input until ENTER
 	noecho();  //@ do not echo typed characters
 	immedok(stdscr, TRUE);  //@ immediately refresh() screen on *add{ch,str}()
-	nodelay(stdscr, FALSE);  //@ use a blocking getch() (default)
-	intrflush(stdscr, FALSE);  //@
-	keypad(stdscr, TRUE);  //@ enable directional arrows, keypad, home, etc
+	nodelay(stdscr, FALSE); //@ use a blocking getch() (already the default)
+	keypad(stdscr, TRUE);   //@ enable directional arrows, keypad, home, etc
 #endif
 }
 
