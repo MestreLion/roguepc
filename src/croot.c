@@ -86,7 +86,7 @@ void croot_exit(status)
 	unsetup();
 	free_ds();
 #ifdef ROGUE_DEBUG
-	printf("exit\n");
+	printf("Exited normally\n");
 #endif
 	exit(status);
 }

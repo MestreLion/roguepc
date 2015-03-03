@@ -889,7 +889,11 @@ one_tick()
 	}
 }
 
-
+/*@
+ * The message will never be seen, as printw() is after endwin(), and also
+ * because there's no other blocking call after printw(), so any messages will
+ * be cleared instantly after exit.
+ */
 /*
  *  fatal: exit with a message
  *  @ moved from main.c

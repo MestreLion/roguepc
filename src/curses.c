@@ -32,6 +32,9 @@ int tab_size = 8;
 int ch_attr = 0x7;
 char savewin[2048 * sizeof(chtype)];  //@ originally 4096 bytes
 int page_no = 0;
+#ifdef ROGUE_DEBUG
+int closed = 0;  //@ how many times wclose() was invoked
+#endif
 
 
 #define MAXATTR 17
@@ -842,6 +845,9 @@ wclose()
 		switch_page(old_page_no);
 #else
 	endwin();
+#ifdef ROGUE_DEBUG
+	printf("Properly closed %u curses window\n", ++closed);
+#endif
 #endif
 }
 
