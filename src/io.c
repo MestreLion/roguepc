@@ -200,7 +200,7 @@ putmsg(msgline,msg)
 
 	curmsg = msg;
 	do {
-		scrl(msgline,lastmsg,curmsg);
+		scrlmsg(msgline,lastmsg,curmsg);
 		newpos = curlen = strlen(curmsg);
 		if (curlen > COLS) {
 			more(" Cont ");
@@ -223,10 +223,12 @@ putmsg(msgline,msg)
 }
 
 /*
- * scrl:  scroll a message accross the line
+ * scrlmsg:  scroll a message accross the line
+ * @ renamed to avoid conflict with <curses.h>.
+ * @ Purpose is completely unrelated to curses
  */
 void
-scrl(msgline,str1,str2)
+scrlmsg(msgline,str1,str2)
 	int msgline;
 	char *str1, *str2;
 {
@@ -251,13 +253,14 @@ scrl(msgline,str1,str2)
 				clrtoeol();
 		}
 }
-
 /*
- * unctrl:
+ * io_unctrl:
  *	Print a readable version of a certain character
+ *	@ renamed to avoid conflict with <curses.h>
+ *	@ same purpose but different behavior, so not using the curses version
  */
 char *
-unctrl(ch)
+io_unctrl(ch)
 unsigned char ch;
 {
 	static char chstr[9];		/* Defined in curses library */

@@ -617,9 +617,9 @@ void	msg(const char *fmt, ...);
 void	vmsg(const char *fmt, va_list argp);
 void	addmsg(const char *fmt, ...);
 void	doadd(const char *fmt, va_list argp);
-void	endmsg(), more(), putmsg(), scrl(), status(), wait_for(),
+void	endmsg(), more(), putmsg(), scrlmsg(), status(), wait_for(),
 		show_win(), backspace(), str_attr(), SIG2();
-char	*unctrl(), *noterse();
+char	*io_unctrl(), *noterse();
 int	getinfo();
 
 //@ list.c

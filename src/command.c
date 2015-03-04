@@ -253,7 +253,7 @@ execcom()
 		otherwise:
 			after = FALSE;
 			save_msg = FALSE;
-			msg("illegal command '%s'", unctrl(ch));
+			msg("illegal command '%s'", io_unctrl(ch));
 			count = 0;
 			save_msg = TRUE;
 		}

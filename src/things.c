@@ -128,7 +128,7 @@ inv_name(obj, drop)
 	when GOLD:
 		sprintf(pb, "Gold at %d,%d", obj->o_pos.y, obj->o_pos.x);
 	otherwise:
-		debug("Picked up someting bizzare %s", unctrl(obj->o_type));
+		debug("Picked up someting bizzare %s", io_unctrl(obj->o_type));
 		sprintf(pb, "Something bizarre %c(%d)", obj->o_type, obj->o_type);
 #endif
 		break;
