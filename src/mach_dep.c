@@ -882,6 +882,8 @@ fatal(const char *msg, ...)
 {
 	va_list argp;
 
+	cur_endwin();
+
 	va_start(argp, msg);
 	vprintf(msg, argp);
 	va_end(argp);
