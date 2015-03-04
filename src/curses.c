@@ -34,6 +34,10 @@ int ch_attr = 0x7;
 char savewin[2048 * sizeof(chtype)];  //@ originally 4096 bytes
 int page_no = 0;
 bool init_curses = FALSE;  //@ if curses is active or not
+#ifdef ROGUE_DOS_CURSES
+int c_row, c_col;   /*  Save cursor positions so we don't ask dos */
+int scr_row[25];
+#endif
 
 
 #define MAXATTR 17
@@ -80,9 +84,6 @@ byte monoc_attr[] = {
 } ;
 
 byte *at_table;
-
-int c_row, c_col;   /*  Save cursor positions so we don't ask dos */
-int scr_row[25];
 
 byte dbl_box[BX_SIZE] = {
 	ULWALL, URWALL, LLWALL, LRWALL, VWALL, HWALL, HWALL
@@ -262,10 +263,10 @@ cur_move(row, col)
 	int row;
 	int col;
 {
+#ifdef ROGUE_DOS_CURSES
 	c_row = row;
 	c_col = col;
 
-#ifdef ROGUE_DOS_CURSES
 	if (iscuron)
 	{
 		regs->ax = HIGH(2);
@@ -1134,8 +1135,12 @@ repchr(chr,cnt)
 	int chr, cnt;
 {
 	while(cnt-- > 0) {
+#ifdef ROGUE_DOS_CURSES
 		putchr(chr);
 		c_col++;
+#else
+		waddch(stdscr, chr);
+#endif
 	}
 }
 
