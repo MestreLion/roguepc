@@ -31,12 +31,14 @@ int tab_size = 8;
 
 //@ private
 int ch_attr = 0x7;
-char savewin[2048 * sizeof(chtype)];  //@ originally 4096 bytes
 int page_no = 0;
 bool init_curses = FALSE;  //@ if curses is active or not
 #ifdef ROGUE_DOS_CURSES
 int c_row, c_col;   /*  Save cursor positions so we don't ask dos */
 int scr_row[25];
+char savewin[2048 * sizeof(chtype)];  //@ originally 4096 bytes
+#else
+chtype savewin[MAXLINES][MAXCOLS + 1];
 #endif
 
 
@@ -907,6 +909,7 @@ forcebw()
 	at_table = monoc_attr;
 }
 
+#ifdef ROGUE_DOS_CURSES
 /*
  *  wdump(windex)
  *		dump the screen off to disk, the window is save so that
@@ -950,6 +953,43 @@ wrestor()
 	res_win();
 	is_saved = FALSE;
 }
+#else
+/*@
+ * Dump the screen to the savewin buffer
+ */
+void
+wdump(void)
+{
+	int line;
+	int c_row, c_col;
+
+	getyx(stdscr, c_row, c_col);
+
+	for (line = 0; line < LINES; line++)
+	{
+		mvinchnstr(line, 0, savewin[line], COLS);
+	}
+
+	wmove(stdscr, c_row, c_col);
+}
+
+/*@
+ * Restore the screen from the savewin buffer
+ */
+void
+wrestor(void)
+{
+	int line;
+	int c_row, c_col;
+
+	getyx(stdscr, c_row, c_col);
+	for (line = 0; line < LINES; line++)
+	{
+		mvaddchnstr(line, 0, savewin[line], COLS);
+	}
+	wmove(stdscr, c_row, c_col);
+}
+#endif
 
 /*
  * wclose()
