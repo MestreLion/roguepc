@@ -871,6 +871,7 @@ winit()
 	scr_ds   = 0xB800;
 	svwin_ds = 0;
 
+	setenv("ESCDELAY", "25", FALSE);
 	initscr();
 	if ((LINES < lines) || (COLS < cols))
 	{
