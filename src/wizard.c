@@ -246,14 +246,15 @@ passwd()
 /*
  * show_map:
  *	Print out the map for the wizard
+ *	@unused, which is a shame...
  */
 void
 show_map()
 {
 	register int y, x, real;
 
-	wdump(0);
-	wclear(hw);
+	wdump();
+	clear();
 	for (y = 1; y < maxrow; y++)
 	for (x = 0; x < COLS; x++)
 	{
@@ -264,7 +265,7 @@ show_map()
 		standend();
 	}
 	show_win(hw, "---More (level map)---");
-	wrestor(0);
+	wrestor();
 }
 
 get_num(place)

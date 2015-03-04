@@ -45,7 +45,6 @@ char *startmem = dummier + sizeof(dummier);  /* Pointer to the start of static m
 #define MIDSIZE 10
 char *msaveid = "AI Design";
 
-#define printf printw
 /*
  * BLKSZ: size of block read/written on each io operation
  *        Has to be less than 4096 and a factor of 4096
@@ -205,7 +204,7 @@ restore(savefile)
 	if ((file = fopen(savefile, "r")) == NULL)
 		fatal("%s not found\n",savefile);
 	else
-		printf("Restoring %s",savefile);  //@ this will never be seen
+		printw("Restoring %s",savefile);
 	strcpy(save_name, savefile);
 	nbytes = &_Uend - &_lowmem;
 	if (fread(idbuf, MIDSIZE, 1, file) || strcmp(idbuf,msaveid) )

@@ -27,6 +27,7 @@ fakedos()
 	} while (dodos(comhead));
 	dodos(savedir);
 	cursor(FALSE);
+	clear();
 	wrestor();
 }
 

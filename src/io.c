@@ -417,6 +417,7 @@ wait_for(ch)
 /*
  * show_win:
  *	Function used to display a window and wait before returning
+ *	@ a window? looks like a single message to me!
  */
 void
 show_win(scr, message)
@@ -619,6 +620,12 @@ SIG2()
 	if (tick < ntick)
 		return;
 	ntick = tick + 6;
+
+	/*@
+	 * Do not update between wdump()/wrestor() operations
+	 * (when the user is in a non-game screen like inventory or discoveries)
+	 * Or if the screen is not yet initialized.
+	 */
 	if (is_saved || scr_type < 0)
 		return;
 	regs->ax = 0x200;

@@ -577,12 +577,12 @@ credits()
 	mvaddch(22,COLS-1,VLEFT);
 	standend();
 	mvaddstr(23,2,"Rogue's Name? ");
-	is_saved = TRUE;		/*  status line hack  */
+	is_saved = TRUE;		/*  status line hack @ to disable updates */
 	high();
 	getinfo(tname,23);
 	if (*tname && *tname != ESCAPE)
 		strcpy(whoami, tname);
-	is_saved = FALSE;
+	is_saved = FALSE;  //@ re-enable status line updates
 #ifdef ROGUE_DOS_CURSES
 	blot_out(23,0,24,COLS-1);
 #else

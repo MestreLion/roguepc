@@ -16,7 +16,7 @@
  *  (extern'ed in curses.h)
  */
 int LINES=25, COLS=80;
-int is_saved = FALSE;
+int is_saved = FALSE;  //@ in practice, TRUE disables status updates in SIG2()
 int old_page_no;  //@ this is public, but page_no is not. Weird. See rip.c
 int no_check = FALSE;
 int scr_ds=0xB800;
@@ -964,13 +964,13 @@ wdump(void)
 	int c_row, c_col;
 
 	getyx(stdscr, c_row, c_col);
-
 	for (line = 0; line < LINES; line++)
 	{
 		mvinchnstr(line, 0, savewin[line], COLS);
 	}
-
 	wmove(stdscr, c_row, c_col);
+
+	is_saved = TRUE;
 }
 
 /*@
@@ -988,12 +988,14 @@ wrestor(void)
 		mvaddchnstr(line, 0, savewin[line], COLS);
 	}
 	wmove(stdscr, c_row, c_col);
+
+	is_saved = FALSE;
 }
 #endif
 
 /*
- * wclose()
  *   close the window file
+ *   @renamed from wclose()
  */
 void
 cur_endwin()
