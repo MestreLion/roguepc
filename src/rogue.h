@@ -618,9 +618,8 @@ void	vmsg(const char *fmt, va_list argp);
 void	addmsg(const char *fmt, ...);
 void	doadd(const char *fmt, va_list argp);
 void	endmsg(), more(), putmsg(), scrlmsg(), status(), wait_for(),
-		show_win(), backspace(), str_attr(), SIG2();
+		show_win(), str_attr(), SIG2();
 char	*io_unctrl(), *noterse();
-int	getinfo();
 
 //@ list.c
 THING	*new_item();

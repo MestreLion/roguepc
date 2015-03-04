@@ -1335,3 +1335,82 @@ video_mode(type)
 	swint(SW_SCR,&regs);
 	return regs.ax;
 }
+
+
+/*@
+ * Possible return values:
+ * - ESCAPE, if user canceled input
+ * - '\n' for successful input
+ * Callers currently only test for ESCAPE
+ */
+/*
+ * This routine reads information from the keyboard
+ * It should do all the strange processing that is
+ * needed to retrieve sensible data from the user
+ */
+int
+getinfo(str,size)
+	char *str;
+	int size;
+{
+	register char *retstr;
+	int ch;
+	int readcnt = 0;
+	int wason, ret = 1;
+	char buf[160];
+
+	dmain(buf, 80, scr_ds, 0);
+	retstr = str;
+	*str = 0;
+	wason = cursor(TRUE);
+	while(ret == 1)
+	{
+		switch(ch = getch()) {
+			case ESCAPE:
+				while(str != retstr) {
+					backspace();
+					readcnt--;
+					str--;
+				}
+				ret = *str = ESCAPE;
+				cursor(wason);
+				break;
+			case '\b':
+				if (str != retstr) {
+					backspace();
+					readcnt--;
+					str--;
+				}
+				break;
+			default:
+				if ( readcnt >= size) {
+					beep();
+					break;
+				}
+				readcnt++;
+				addch(ch);
+				*str++ = ch;
+				if ((ch & 0x80) == 0)  //@ same as: if (isascii(ch))
+					break;
+				/* no break */
+			case '\n':
+				*str = 0;
+				cursor(wason);
+				ret = ch;  //@ any value different than ESCAPE or 1 would do.
+				break;
+		}
+	}
+	dmaout(buf, 80, scr_ds, 0);
+	return ret;
+}
+
+void
+backspace()
+{
+	int x, y;
+	getyx(stdscr, x, y);
+	if (--y<0)
+		y = 0;
+	move(x,y);
+	putchr(' ');
+}

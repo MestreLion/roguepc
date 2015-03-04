@@ -190,3 +190,7 @@ int 	cur_getch(void);
 void	cur_move(int row, int col);
 void	putchr(byte ch);
 byte	curch(void);
+
+//@ moved from io.c
+int 	getinfo(char *str, int size);
+void	backspace(void);
