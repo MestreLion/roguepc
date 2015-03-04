@@ -341,7 +341,7 @@ putchr(byte ch)
 	putchar(ch);
 #endif
 #else
-	addch(ch);
+	waddch(stdscr, ch);
 #endif
 }
 
@@ -394,7 +394,7 @@ curch(void)
 	}
 	return (byte)LOW(chrattr);
 #else
-	return (byte)(A_CHARTEXT & inch());
+	return (byte)(A_CHARTEXT & winch(stdscr));
 #endif
 }
 
@@ -439,7 +439,7 @@ cur_clear(void)
 	else
 		blot_out(0,0,LINES-1,COLS-1);
 #else
-	clear();
+	wclear(stdscr);
 #endif
 }
 
@@ -536,7 +536,7 @@ cur_clrtoeol(void)
 	getrc(&r,&c);
 	blot_out(r,c,r,COLS-1);
 #else
-	clrtoeol();
+	wclrtoeol(stdscr);
 #endif
 }
 
@@ -658,7 +658,7 @@ cur_addch(byte chr)
 	putchr(chr);
 	cur_move(r,c+1);
 #else
-	addch(attr_get_from_dos(ch_attr) | chr);
+	waddch(stdscr, attr_get_from_dos(ch_attr) | chr);
 #endif
 	ch_attr = old_attr;
 	/*
