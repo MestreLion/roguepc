@@ -213,7 +213,7 @@ cur_getch(void)
 	//@ not a true replacement, as asm version has no echo and no buffering
 	return getchar();
 #else
-	return getch();
+	return wgetch(stdscr);
 #endif
 }
 
@@ -644,26 +644,32 @@ cur_addch(byte chr)
 	}
 
 #ifdef ROGUE_DOS_CURSES
+	/*@
+	 * For '\n', perform a cursor CR+LF if not on last line (off-screen),
+	 * or just CR and scroll the whole window content up.
+	 * Otherwise just put the char and advance the cursor.
+	 */
 	getrc(&r,&c);
 	if (chr == '\n') {
-		if (r == LINES-1) {
+		if (r == LINES-1)
+		{
 			scroll_up(0, LINES-1, 1);
 			cur_move(LINES-1, 0);
-		} else
+		}
+		else
+		{
 			cur_move(r+1, 0);
-			ch_attr = old_attr;
-		return;
+		}
 	}
-	putchr(chr);
-	cur_move(r,c+1);
+	else
+	{
+		putchr(chr);
+		cur_move(r,c+1);
+	}
 #else
 	waddch(stdscr, attr_get_from_dos(ch_attr) | chr);
 #endif
 	ch_attr = old_attr;
-	/*
-	 * if you have gone of the screen scroll the whole window
-	 * @ ... or don't, as no one checked the former c_row return value
-	 */
 	return;
 }
 
@@ -1333,16 +1339,27 @@ video_mode(type)
 }
 
 
-/*@
- * Possible return values:
- * - ESCAPE, if user canceled input
- * - '\n' for successful input
- * Callers currently only test for ESCAPE
- */
 /*
  * This routine reads information from the keyboard
  * It should do all the strange processing that is
  * needed to retrieve sensible data from the user
+ *
+ * @ "Strange processing" indeed:
+ * - ESCAPE abort the input, set the first character of str to ESCAPE but leave
+ *   all other typed characters there. It does *NOT* null-terminate str!!!
+ *   Like in printw(), it couldn't care less about buffer exploits. Fixed now.
+ *   Return ESCAPE.
+ * - '\n' finishes input and null-terminate str. '\n' is not included in str.
+ *   Return '\n'
+ * - A non-ascii char (>127) also finishes input, but it *does* get included
+ *   in str, which is properly null-terminated.
+ *   Return the non-ascii char.
+ * - All other chars are accepted as normal input, including symbols (< 32).
+ *
+ * In a sane, safe API this function would return a bool, FALSE if aborted
+ * by ESCAPE and TRUE otherwise, and it would always null-terminate str
+ * regardless of its initial contents. In case of abortion, str could either
+ * keep typed string or set first char to '\0', effectively blanking str.
  */
 int
 getinfo(str,size)
@@ -1353,9 +1370,22 @@ getinfo(str,size)
 	int ch;
 	int readcnt = 0;
 	int wason, ret = 1;
+#ifdef ROGUE_DOS_CURSES
+	/*@
+	 * Save the line state before typing begins, and restore it after user ends
+	 * typing, effectively deleting from the screen only the user input. Seems
+	 * a nice polishing touch, but it has some drawbacks: Cursor position was
+	 * not restored; it is hard coded to line 0, so not useful for fakedos()
+	 * and credits(); If fixed, it would disrupt fakedos() where user input
+	 * should persist on screen. fakedos() starts on line 1, perhaps also
+	 * because of this; And all other callers clear the whole line right after
+	 * the call, defeating the whole purpose of this save/restore. All things
+	 * considered, this should not be performed in the non-DOS curses version.
+	 */
 	char buf[160];
 
 	dmain(buf, 80, scr_ds, 0);
+#endif
 	retstr = str;
 	*str = 0;
 	wason = cursor(TRUE);
@@ -1368,7 +1398,9 @@ getinfo(str,size)
 					readcnt--;
 					str--;
 				}
-				ret = *str = ESCAPE;
+				//@ null-termination was not in original
+				ret = *str++ = ESCAPE;
+				*str = 0;
 				cursor(wason);
 				break;
 #ifndef ROGUE_DOS_CURSES
@@ -1399,7 +1431,9 @@ getinfo(str,size)
 				break;
 		}
 	}
+#ifdef ROGUE_DOS_CURSES
 	dmaout(buf, 80, scr_ds, 0);
+#endif
 	return ret;
 }
 
