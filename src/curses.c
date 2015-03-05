@@ -1347,19 +1347,25 @@ video_mode(type)
  * @ "Strange processing" indeed:
  * - ESCAPE abort the input, set the first character of str to ESCAPE but leave
  *   all other typed characters there. It does *NOT* null-terminate str!!!
- *   Like in printw(), it couldn't care less about buffer exploits. Fixed now.
+ *   Like in printw(), it couldn't care less about buffer exploits.
  *   Return ESCAPE.
  * - '\n' finishes input and null-terminate str. '\n' is not included in str.
  *   Return '\n'
  * - A non-ascii char (>127) also finishes input, but it *does* get included
- *   in str, which is properly null-terminated.
+ *   in str, probably unintentionally. srt is properly null-terminated.
  *   Return the non-ascii char.
  * - All other chars are accepted as normal input, including symbols (< 32).
+ *
+ * Original behavior is changed:
+ * - Aborted input are null-terminated (ESCAPE + '\0')
+ * - Only printable ASCII chars accepted (32 <= ch <= 126). This is universally
+ *   compatible, until proper CP437 and UTF-8 support is implemented.
  *
  * In a sane, safe API this function would return a bool, FALSE if aborted
  * by ESCAPE and TRUE otherwise, and it would always null-terminate str
  * regardless of its initial contents. In case of abortion, str could either
  * keep typed string or set first char to '\0', effectively blanking str.
+ *
  */
 int
 getinfo(str,size)
@@ -1418,12 +1424,14 @@ getinfo(str,size)
 					beep();
 					break;
 				}
+				if (!isprint(ch))
+				{
+					break;
+				}
 				readcnt++;
 				addch(ch);
 				*str++ = ch;
-				if ((ch & 0x80) == 0)  //@ same as: if (isascii(ch))
-					break;
-				/* no break */
+				break;
 			case '\n':
 				*str = 0;
 				cursor(wason);
