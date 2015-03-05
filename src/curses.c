@@ -876,6 +876,7 @@ winit()
 
 	setenv("ESCDELAY", "25", FALSE);
 	initscr();
+	init_curses = TRUE;
 	if ((LINES < lines) || (COLS < cols))
 	{
 		fatal("%u-column mode requires a %u x %u screen\n"
@@ -903,7 +904,6 @@ winit()
 	immedok(stdscr, TRUE);  //@ immediately refresh() screen on *add{ch,str}()
 	nodelay(stdscr, FALSE); //@ use a blocking getch() (already the default)
 	keypad(stdscr, TRUE);   //@ enable directional arrows, keypad, home, etc
-	init_curses = TRUE;
 #endif
 }
 
