@@ -172,6 +172,7 @@ void	cur_endwin(void);
 void	cur_box(int ul_r, int ul_c, int lr_r, int lr_c);
 void	center(int row, char *string);
 void	cur_printw(const char *msg, ...);
+void	repchr(byte chr, int cnt);
 void	implode();
 void	drop_curtain();
 void	raise_curtain();
@@ -188,7 +189,6 @@ int 	cur_getch(void);
 
 //@ originally in zoom.asm
 void	cur_move(int row, int col);
-void	putchr(byte ch);
 byte	curch(void);
 
 //@ moved from io.c

@@ -523,7 +523,6 @@ flush_type()
 void
 credits()
 {
-	int i;
 	char tname[25];
 
 	cursor(FALSE);
@@ -569,12 +568,10 @@ credits()
 	center(21,"All Rights Reserved");
 	if (is_color)
 		brown();
-	for(i=1;i<(COLS-1);i++) {
-		move(22,i);
-		putchr(HWALL);
-	}
-	mvaddch(22,0,VRIGHT);
-	mvaddch(22,COLS-1,VLEFT);
+	move(22, 0);
+	addch(VRIGHT);
+	repchr(HWALL, COLS-2);
+	addch(VLEFT);
 	standend();
 	mvaddstr(23,2,"Rogue's Name? ");
 	is_saved = TRUE;		/*  status line hack @ to disable updates */

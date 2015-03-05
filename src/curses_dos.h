@@ -35,7 +35,6 @@ typedef uint16_t	chtype;  // character with attributes
 char	*sav_win(void);
 void	res_win(void);
 void	vbox(byte box[BX_SIZE], int ul_r, int ul_c, int lr_r, int lr_c);
-void	repchr(int chr, int cnt);
 #ifdef ROGUE_DOS_CURSES
 void	real_rc(int pn, int *rp, int *cp);
 void	error(int mline, char *msg, int a1, int a2, int a3, int a4, int a5);
@@ -44,6 +43,9 @@ void	scroll_up(int start_row, int end_row, int nlines);
 void	scroll_dn(int start_row, int end_row, int nlines);
 void	scroll(void);
 void	fixup(void);
+
+//@ originally in zoom.asm
+void	putchr(byte ch);
 
 //@ originally in dos.asm
 void	wsetmem(void *buffer, int count, chtype attrchar);

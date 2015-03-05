@@ -282,6 +282,7 @@ cur_move(row, col)
 }
 
 
+#ifdef ROGUE_DOS_CURSES
 /*@
  * Put the given character on the screen
  *
@@ -291,12 +292,11 @@ cur_move(row, col)
  * Works as a stripped-down <curses.h> addch(), or as an improved <stdio.h>
  * putchar(): it uses attributes but always operate on current ch_attr instead
  * of extracting attributes from ch, and put at cursor position but does not
- * update its location, nor has any special scroll handling for '\n'. It has
- * no direct counterpart and should not be used when working with <curses.h>.
+ * update its location, nor has any special CR/LF/scroll up handling for '\n'.
  *
- * Currently credits() and backspace() do. credits() set ch_attr via set_attr()
- * macros, so for now it may be fine for this to call <curses.h> addch(),
- * but be aware that this makes putchr() do more than what it's supposed to.
+ * A curses replacement could be:
+ *    delch();
+ *    insch(ch);
  *
  * Originally in zoom.asm
  *
@@ -318,7 +318,6 @@ cur_move(row, col)
 void
 putchr(byte ch)
 {
-#ifdef ROGUE_DOS_CURSES
 	if (iscuron)
 	{
 		// Use BIOS call
@@ -342,10 +341,8 @@ putchr(byte ch)
 #ifdef ROGUE_DEBUG
 	putchar(ch);
 #endif
-#else
-	waddch(stdscr, ch);
-#endif
 }
+#endif
 
 
 /*@
@@ -1174,8 +1171,7 @@ fixup(void)
 #endif
 
 void
-repchr(chr,cnt)
-	int chr, cnt;
+repchr(byte chr, int cnt)
 {
 	while(cnt-- > 0) {
 #ifdef ROGUE_DOS_CURSES
