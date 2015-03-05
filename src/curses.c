@@ -1375,6 +1375,9 @@ getinfo(str,size)
 				ret = *str = ESCAPE;
 				cursor(wason);
 				break;
+#ifndef ROGUE_DOS_CURSES
+			case KEY_BACKSPACE:
+#endif
 			case '\b':
 				if (str != retstr) {
 					backspace();
@@ -1404,13 +1407,19 @@ getinfo(str,size)
 	return ret;
 }
 
+/*@
+ * No need of #ifdef ROGUE_DOS_CURSES here as the non-curses input of getch()
+ * used by getinfo() is performed by <stdio.h> getchar(), which is line
+ * buffered anyway, so a backspace char will never be seen and this will never
+ * be called.
+ */
 void
-backspace()
+backspace(void)
 {
-	int x, y;
-	getyx(stdscr, x, y);
-	if (--y<0)
-		y = 0;
-	move(x,y);
-	putchr(' ');
+	int r, c;
+	getyx(stdscr, r, c);
+	if (c > 0)
+		wmove(stdscr, r, c-1);
+	wdelch(stdscr);
+	winsch(stdscr, ' ');
 }
