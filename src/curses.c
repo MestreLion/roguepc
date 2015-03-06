@@ -30,7 +30,7 @@ bool iscuron = TRUE;
 int tab_size = 8;
 
 //@ private
-int ch_attr = 0x7;
+int ch_attr = A_DOS_NORMAL;
 int page_no = 0;
 bool init_curses = FALSE;  //@ if curses is active or not
 #ifdef ROGUE_DOS_CURSES
@@ -38,13 +38,14 @@ int c_row, c_col;   /*  Save cursor positions so we don't ask dos */
 int scr_row[25];
 char savewin[2048 * sizeof(chtype)];  //@ originally 4096 bytes
 #else
-chtype savewin[MAXLINES][MAXCOLS + 1];
+chtype	savewin[MAXLINES][MAXCOLS + 1];  // temp buffer to hold screen contents
+int 	colors;  // number of basic colors
 #endif
 
 
 #define MAXATTR 17
 byte color_attr[] = {
-	7,  /*  0 normal         */
+	A_DOS_NORMAL,  /*  0 normal         */
 	2,  /*  1 green          */
 	3,  /*  2 cyan           */
 	4,  /*  3 red            */
@@ -65,24 +66,24 @@ byte color_attr[] = {
 } ;
 
 byte monoc_attr[] = {
-	  7,  /*  0 normal         */
-	 7,  /*  1 green          */
-	 7,  /*  2 cyan           */
-	 7,  /*  3 red            */
-	 7,  /*  4 magenta        */
-	 7,  /*  5 brown          */
-	 7,  /*  6 dark grey      */
-	 7,  /*  7 light blue     */
-	 7,  /*  8 light green    */
-	 7,  /*  9 light red      */
-	 7,  /* 10 light magenta  */
-	 7,  /* 11 yellow         */
-	 17,  /* 12 uline          */
-	 7,  /* 13 blue           */
-	120,  /* 14 reverse        */
-	 7,  /* 15 white/hight    */
-	120,  /* 16 bold		   */
-	0     /* no more           */
+	A_DOS_NORMAL,  /*  0 normal         */
+	A_DOS_NORMAL,  /*  1 green          */
+	A_DOS_NORMAL,  /*  2 cyan           */
+	A_DOS_NORMAL,  /*  3 red            */
+	A_DOS_NORMAL,  /*  4 magenta        */
+	A_DOS_NORMAL,  /*  5 brown          */
+	A_DOS_NORMAL,  /*  6 dark grey      */
+	A_DOS_NORMAL,  /*  7 light blue     */
+	A_DOS_NORMAL,  /*  8 light green    */
+	A_DOS_NORMAL,  /*  9 light red      */
+	A_DOS_NORMAL,  /* 10 light magenta  */
+	A_DOS_NORMAL,  /* 11 yellow         */
+	17,            /* 12 uline          */
+	A_DOS_NORMAL,  /* 13 blue           */
+	120,           /* 14 reverse        */
+	A_DOS_NORMAL,  /* 15 white/hight    */
+	120,           /* 16 bold		   */
+	0              /* no more           */
 } ;
 
 byte *at_table;
@@ -580,7 +581,7 @@ cur_addch(byte chr)
 	if (at_table == color_attr)
 	{
 		/* if it is inside a room */
-		if (ch_attr == 7)
+		if (ch_attr == A_DOS_NORMAL)
 		switch(chr)
 		{
 			case DOOR:
@@ -667,7 +668,7 @@ cur_addch(byte chr)
 		cur_move(r,c+1);
 	}
 #else
-	waddch(stdscr, attr_get_from_dos(ch_attr) | chr);
+	waddch(stdscr, attr_from_dos(ch_attr) | chr);
 #endif
 	ch_attr = old_attr;
 	return;
@@ -691,14 +692,115 @@ cur_addstr(s)
 }
 
 #ifndef ROGUE_DOS_CURSES
-/*@
+byte swap_bits(
+	byte data,
+	unsigned i,      // positions of bit sequences to swap
+	unsigned j,
+	unsigned length  // number of consecutive bits in each sequence
+)
+{
+	byte x = ((data >> i) ^ (data >> j)) & ((1U << length) - 1);
+	return data ^ ((x << i) | (x << j));
+}
+
+attr_t
+color_from_dos(byte dos_attr, bool fg)
+{
+	byte color = (dos_attr >> (fg ? A_DOS_FG_COLOR : A_DOS_BG_COLOR)) & \
+			A_DOS_COLOR_MASK;
+
+	// swap red and blue
+	return swap_bits(color, 0, 2, 1);
+}
+
+/*
  * Convert a DOS/CGA character attribute to its curses equivalent
- * Dummy for now, always return A_NORMAL
  */
 attr_t
-attr_get_from_dos(byte attr)
+attr_from_dos(byte dos_attr)
 {
-	return A_NORMAL;
+	attr_t attr = A_NORMAL;
+	int fg, bg;
+
+	// shortcut to avoid setting (and calculating) a spurious color pair
+	if (dos_attr == A_DOS_NORMAL)
+		return attr;
+
+	if (dos_attr & A_DOS_BLINK)
+		attr |= A_BLINK;
+
+	if (dos_attr & A_DOS_BRIGHT)
+		attr |= A_BOLD;
+
+	fg = color_from_dos(dos_attr, TRUE);
+	bg = color_from_dos(dos_attr, FALSE);
+
+	attr |= COLOR_PAIR_N(fg, bg);
+
+	return attr;
+}
+
+
+void
+init_curses_colors(void)
+{
+	int fg, dos_fg, dfg;
+	int bg, dos_bg, dbg;
+
+	start_color();
+
+	/*
+	 * DOS only uses 8 basic colors, bumped to 16 via bright attribute.
+	 * For now, we do the same, but this could be changed to 16 (if the A_BOLD
+	 * method does not work), or even 256. Always respecting color capability
+	 * reported by curses via COLORS.
+	 */
+	colors = min(8, COLORS);
+
+	dos_fg = color_from_dos(A_DOS_NORMAL, TRUE);
+	dos_bg = color_from_dos(A_DOS_NORMAL, FALSE);
+
+#ifdef NCURSES_VERSION
+	use_default_colors();
+	dfg = dbg = -1;
+#else
+	dfg = COLOR_WHITE;
+	dbg = COLOR_BLACK;
+#endif
+
+	/*@
+	 * Notes on color assumptions, mappings and pairs:
+	 *
+	 * - Foreground and background colors used by DOS are indexed from 0 to 7.
+	 *   Index is actually an RGB bitmap, blue being the least significant bit,
+	 *   so in all colors the Red and Blue components are swapped compared to
+	 *   curses named constants (which are the ANSI color indexes).
+	 *
+	 * - Color pairs are set in a way the macro COLOR_PAIR_N(fg, bg) can
+	 *   retrieve a curses color pair attribute by foreground and background
+	 *   index instead of pair index.
+	 *
+	 * - Color pair 0 is neither initialized nor used, per portability
+	 *   recommendation in curses documentation.
+	 *
+	 * - The default foreground and background colors used by DOS, as defined
+	 *   by A_DOS_NORMAL, were mapped to (COLOR_WHITE, COLOR_BLACK). If the
+	 *   curses implementation is ncurses, they are mapped to (-1, -1) instead,
+	 *   the user default foreground and background terminal colors.
+	 *
+	 * - Only 8 colors are being used for now. It is expected, but not hard-
+	 *   coded, that any color terminal has at least that. If 1983 CGA can, I'm
+	 *   sure a 2015 terminal can as well ;)
+	 */
+	for (bg = 0; bg < colors; bg++)
+	{
+		for (fg = colors - (bg ? 2 : 1); fg >= 0; fg--)
+		{
+			init_pair(PAIR_INDEX(fg, bg),
+					(fg == dos_fg) ? dfg : fg,
+					(bg == dos_bg) ? dbg : bg);
+		}
+	}
 }
 #endif
 
@@ -711,7 +813,7 @@ set_attr(bute)
 	else
 		ch_attr = bute;
 #ifndef ROGUE_DOS_CURSES
-	attrset(attr_get_from_dos(ch_attr));
+	attrset(attr_from_dos(ch_attr));
 #endif
 }
 
@@ -904,8 +1006,12 @@ winit()
 	immedok(stdscr, TRUE);  //@ immediately refresh() screen on *add{ch,str}()
 	nodelay(stdscr, FALSE); //@ use a blocking getch() (already the default)
 	keypad(stdscr, TRUE);   //@ enable directional arrows, keypad, home, etc
+
+	if (has_colors())
+		init_curses_colors();
 #endif
 }
+
 
 void
 forcebw()

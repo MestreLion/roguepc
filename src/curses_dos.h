@@ -3,6 +3,9 @@
  *
  * It is hereby considered private implementation details and as such it
  * should NOT be included curses.h or any game files.
+ *
+ * And despite the header name, it also contains new defines and functions
+ * meant for <curses.h>. Perhaps this should be called curses_private.h instead
  */
 
 #ifndef ROGUE_SCR_TYPE
@@ -51,7 +54,27 @@ void	putchr(byte ch);
 void	wsetmem(void *buffer, int count, chtype attrchar);
 #endif
 
-//@ not in original Rogue
+//@ new stuff
 #ifndef ROGUE_DOS_CURSES
-attr_t	attr_get_from_dos(byte attr);
+#define A_DOS_FG_BLUE	  1
+#define A_DOS_FG_GREEN	  2
+#define A_DOS_FG_RED	  4
+#define A_DOS_BRIGHT	  8
+#define A_DOS_BG_BLUE	 16
+#define A_DOS_BG_GREEN	 32
+#define A_DOS_BG_RED	 64
+#define A_DOS_BLINK 	128
+
+#define A_DOS_COLOR_MASK  7
+#define A_DOS_FG_COLOR    0
+#define A_DOS_BG_COLOR    4
+
+#define PAIR_INDEX(fg, bg)	(bg * colors + fg + 1)
+#define COLOR_PAIR_N(fg, bg)	COLOR_PAIR(PAIR_INDEX(fg, bg))
+
+
+byte	swap_bits(byte data, unsigned i, unsigned j, unsigned width);
+attr_t	color_from_dos(byte dos_attr, bool fg);
+attr_t	attr_from_dos(byte dos_attr);
+void	init_curses_colors(void);
 #endif

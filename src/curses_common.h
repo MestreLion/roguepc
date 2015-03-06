@@ -78,6 +78,12 @@
 #define high() set_attr(15)
 #define bold() set_attr(16)
 
+/*@
+ * The DOS attribute set on standend(), also the initial value of ch_attr
+ * Gray on Black
+ */
+#define A_DOS_NORMAL	0x07
+
 /*
  * Things that appear on the screens
  * @ moved from rogue.h
