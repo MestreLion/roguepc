@@ -1155,12 +1155,14 @@ vbox(box, ul_r,ul_c,lr_r,lr_c)
 	byte box[BX_SIZE];
 	int ul_r,ul_c,lr_r,lr_c;
 {
-	register int i, wason;
+	bool wason;
+	int i;
 	int r,c;
 
 	wason = cursor(FALSE);
 	getrc(&r,&c);
 
+#ifdef ROGUE_DOS_CURSES
 	/*
 	 * draw horizontal boundry
 	 */
@@ -1182,6 +1184,18 @@ vbox(box, ul_r,ul_c,lr_r,lr_c)
 	cur_mvaddch(ul_r,lr_c,box[BX_UR]);
 	cur_mvaddch(lr_r,ul_c,box[BX_LL]);
 	cur_mvaddch(lr_r,lr_c,box[BX_LR]);
+#else
+	mvhline(ul_r, ul_c+1, box[BX_HT], i = (lr_c - ul_c - 1));
+	mvhline(lr_r, ul_c+1, box[BX_HB], i);
+	mvvline(ul_r+1, ul_c, box[BX_VW], i = (lr_r - ul_r - 1));
+	mvvline(ul_r+1, lr_c, box[BX_VW], i);
+
+	//@ corners - do not go through cur_addch() processing
+	mvaddch(ul_r,ul_c,box[BX_UL]);
+	mvaddch(ul_r,lr_c,box[BX_UR]);
+	mvaddch(lr_r,ul_c,box[BX_LL]);
+	mvaddch(lr_r,lr_c,box[BX_LR]);
+#endif
 
 	cur_move(r,c);
 	cursor(wason);
@@ -1288,17 +1302,25 @@ fixup(void)
 }
 #endif
 
+
+/*@
+ * Repeat a character cnt times, advancing the cursor
+ * Use current attribute, and do not go through cur_addch() processing
+ */
 void
 repchr(byte chr, int cnt)
 {
-	while(cnt-- > 0) {
 #ifdef ROGUE_DOS_CURSES
+	while(cnt-- > 0) {
 		putchr(chr);
 		c_col++;
-#else
-		waddch(stdscr, chr);
-#endif
 	}
+#else
+	int c_row, c_col;
+	getyx(stdscr, c_row, c_col);
+	whline(stdscr, chr, cnt);
+	wmove(stdscr, c_row, c_col + cnt);
+#endif
 }
 
 /*
@@ -1324,10 +1346,16 @@ implode()
 #endif
 	for (r = 0,c = 0,ec = COLS-1; r < 10; r++,c += cinc,er--,ec -= cinc) {
 		vbox(sng_box, r, c, er, ec);
+		wrefresh(stdscr);
 		msleep(delay);
 		for (j = r+1; j <= er-1; j++) {
+#ifdef ROGUE_DOS_CURSES
 			cur_move(j, c+1); repchr(' ', cinc-1);
 			cur_move(j, ec-cinc+1); repchr(' ', cinc-1);
+#else
+			mvhline(j, c+1, ' ', cinc-1);
+			mvhline(j, ec-cinc+1, ' ', cinc-1);
+#endif
 		}
 		vbox(spc_box, r, c, er, ec);
 	}
@@ -1419,8 +1447,7 @@ drop_curtain(void)
 	mvinchnstr(0, 0, curtain[0], COLS);
 	yellow();
 	for (r = 1; r < LINES-1; r++) {
-		wmove(stdscr, r, 1);
-		repchr(PASSAGE, COLS-2);
+		mvhline(r, 1, PASSAGE, COLS-2);
 		mvinchnstr(r, 0, curtain[r], COLS);
 		msleep(delay);
 	}

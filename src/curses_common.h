@@ -182,7 +182,7 @@ void	cur_box(int ul_r, int ul_c, int lr_r, int lr_c);
 void	center(int row, char *string);
 void	cur_printw(const char *msg, ...);
 void	repchr(byte chr, int cnt);
-void	implode();
+void	implode(void);
 void	drop_curtain(void);
 void	raise_curtain(void);
 void	switch_page(int pn);
