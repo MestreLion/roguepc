@@ -94,9 +94,14 @@ byte dbl_box[BX_SIZE] = {
 };
 
 byte sng_box[BX_SIZE] = {
-	0xda, 0xbf, 0xc0, 0xd9, 0xb3, 0xc4, 0xc4
+#ifdef ROGUE_ASCII
+		'/', '\\', '\\', '/', '|', '-', '-'  //@ lame, I know
+#else
+		0xda, 0xbf, 0xc0, 0xd9, 0xb3, 0xc4, 0xc4
+#endif
 };
 
+//@ unused
 byte fat_box[BX_SIZE] = {
 	0xdb, 0xdb, 0xdb, 0xdb, 0xdb, 0xdf, 0xdc
 };
@@ -1302,36 +1307,30 @@ repchr(byte chr, int cnt)
 void
 implode()
 {
-#ifdef ROGUE_ASCII
-	cur_clear();
-#else
 	int j, delay, r, c, cinc = COLS/10/2, er, ec;
 
 	er = (COLS == 80 ? LINES-3 : LINES-4);
+#ifdef ROGUE_DOS_CURSES
 	/*
 	 * If the curtain is down, just clear the memory
 	 */
 	if (scr_ds == svwin_ds) {
-#ifdef ROGUE_DOS_CURSES
 		wsetmem(savewin, (er + 1) * COLS, 0x0720);
-#else
-		//@ actually should only clear up to the er-th line
-		cur_clear();
-#endif
 		return;
 	}
 	delay = scr_type == 7 ? 500 : 10;
+#else
+	delay = 50;
+#endif
 	for (r = 0,c = 0,ec = COLS-1; r < 10; r++,c += cinc,er--,ec -= cinc) {
 		vbox(sng_box, r, c, er, ec);
-		for (j = delay; j--; )
-			;
+		msleep(delay);
 		for (j = r+1; j <= er-1; j++) {
 			cur_move(j, c+1); repchr(' ', cinc-1);
 			cur_move(j, ec-cinc+1); repchr(' ', cinc-1);
 		}
 		vbox(spc_box, r, c, er, ec);
 	}
-#endif
 }
 
 
@@ -1416,11 +1415,7 @@ drop_curtain(void)
 
 	cursor(FALSE);
 	green();
-#ifdef ROGUE_ASCII
-	vbox(dbl_box, 0, 0, LINES-1, COLS-1);
-#else
 	vbox(sng_box, 0, 0, LINES-1, COLS-1);
-#endif
 	mvinchnstr(0, 0, curtain[0], COLS);
 	yellow();
 	for (r = 1; r < LINES-1; r++) {
