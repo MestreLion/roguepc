@@ -89,6 +89,7 @@ reread:
 	printw("[Press Enter to exit]");
 	flush_type();
 	wait_for('\n');
+	printw("\n");
 #endif
 #endif //WIZARD
 #endif //DEMO
@@ -243,8 +244,10 @@ death(monst)
 
 	purse -= purse / 10;
 
+#ifdef ROGUE_DOS_CURSES
 	switch_page(old_page_no);
 	clear();
+#endif
 	drop_curtain();
 	if (is_color)
 		brown();

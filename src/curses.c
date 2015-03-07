@@ -1433,6 +1433,7 @@ drop_curtain(void)
 	cur_move(0,0);
 	cur_standend();
 	immedok(stdscr, FALSE);
+	wclear(stdscr);
 }
 
 

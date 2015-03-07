@@ -55,6 +55,7 @@ new_level()
 	 */
 	free_list(lvl_obj);
 	do_rooms();				/* Draw rooms */
+#ifdef ROGUE_DOS_CURSES
 	if (max_level == 1) {
 		reinit = TRUE;
 		if (svwin_ds == -1) {
@@ -64,6 +65,12 @@ new_level()
 			clear();
 	}
 	implode();
+#else
+	if (max_level > 1)
+	{
+		implode();
+	}
+#endif
 	status();
 	do_passages();			/* Draw passages */
 	no_food++;
