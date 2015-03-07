@@ -303,6 +303,13 @@ status()
 	if (is_color)
 		yellow();
 
+	/*@
+	 * Rogue used a rudimentary custom sprintf() that didn't fully support
+	 * the (quite sophisticated) numeric formatting strings used on status.
+	 * As <stdio.h>'s sprintf() does, formatting was simplified so the output
+	 * matches the original.
+	 */
+
 	/*
 	 * Level:
 	 */
@@ -310,7 +317,7 @@ status()
 	{
 		s_lvl = level;
 	move(PT(22,23),0);
-	printw("Level:%-4.4d", level);
+	printw("Level:%-4d", level);
 	}
 
 	/*
@@ -320,7 +327,7 @@ status()
 	{
 		s_hp = pstats.s_hpt;
 		move(PT(22,23),12);
-		printw("Hits:%.3d(%.3d) ", pstats.s_hpt, max_hp);
+		printw("Hits:%d(%d) ", pstats.s_hpt, max_hp);
 		/* just in case they get wraithed with 3 digit max hits */
 		if (pstats.s_hpt < 100)
 			addch(' ');
@@ -333,7 +340,7 @@ status()
 	{
 		s_str = pstats.s_str;
 		move(PT(22,23),26);
-		printw("Str:%.3d(%.3d) ", pstats.s_str, max_stats.s_str);
+		printw("Str:%d(%d) ", pstats.s_str, max_stats.s_str);
 	}
 
 	/*
@@ -343,7 +350,7 @@ status()
 	{
 		s_pur = purse;
 		move(23, PT(0,40));
-		printw("Gold:%-5.5u",purse);
+		printw("Gold:%-5u",purse);
 	}
 
 	/*
@@ -357,7 +364,7 @@ status()
 		if (ISRING(RIGHT,R_PROTECT))
 			s_ac -= cur_ring[RIGHT]->o_ac;
 		move(23,PT(12,52));
-		printw("Armor:%-2.2d",
+		printw("Armor:%-2d",
 		AC(cur_armor != NULL ? cur_armor->o_ac : pstats.s_arm));
 	}
 
