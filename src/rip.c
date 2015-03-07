@@ -134,7 +134,9 @@ pr_scores(newrank,top10)
 	char dthstr[30];
 	char *altmsg;
 
+#ifdef ROGUE_DOS_CURSES
 	switch_page(old_page_no);
+#endif
 	clear();
 	high();
 	if (scr_type == 7)
@@ -324,7 +326,9 @@ total_winner()
 	register byte c;
 	register int oldpurse;
 
+#ifdef ROGUE_DOS_CURSES
 	switch_page(old_page_no);
+#endif
 	clear();
 #ifdef MINROG
 	if (!terse)
@@ -502,7 +506,9 @@ demo(endtype)
 	register int i;
 	char demobuf[81];
 
+#ifdef ROGUE_DOS_CURSES
 	switch_page(old_page_no);
+#endif
 	clear();
 	if (is_color)
 		brown();

@@ -1495,6 +1495,7 @@ raise_curtain(void)
 #endif
 
 
+#ifdef ROGUE_DOS_CURSES
 void
 switch_page(pn)
 	int pn;
@@ -1514,9 +1515,11 @@ switch_page(pn)
 	scr_ds = 0xb800 + ((pgsize * pn) >> 4);
 	page_no = pn;
 }
+#endif
+
 
 byte
-get_mode()
+get_mode(void)
 /*@
  * Get current video mode using software interrupt 10h, AH=0Fh
  *
