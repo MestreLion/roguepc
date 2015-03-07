@@ -1336,10 +1336,11 @@ implode()
 /*
  * drop_curtain:
  *	Close a door on the screen and redirect output to the temporary buffer
+ *	@ requires a later call to raise_curtain()
  */
 static int old_ds;
 void
-drop_curtain()
+drop_curtain(void)
 {
 	register int r, j, delay;
 
@@ -1348,6 +1349,10 @@ drop_curtain()
 	old_ds = scr_ds;
 	dmain(savewin, LINES * COLS, scr_ds, 0);
 	cursor(FALSE);
+	/*@
+	 * The different delay for mono and color adapters implies the BIOS call
+	 * used by repchr()->putchr() is significantly faster under mono video mode,
+	 */
 	delay = (scr_type == 7 ? 3000 : 2000);
 	green();
 #ifdef ROGUE_ASCII
@@ -1368,7 +1373,7 @@ drop_curtain()
 }
 
 void
-raise_curtain()
+raise_curtain(void)
 {
 	register int i, j, o, delay;
 
