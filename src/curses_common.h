@@ -80,7 +80,7 @@
 
 /*@
  * The DOS attribute set on standend(), also the initial value of ch_attr
- * Gray on Black
+ * Light Gray ("non-bright White") on Black
  */
 #define A_DOS_NORMAL	0x07
 
@@ -154,6 +154,9 @@
 
 //@ same as ERR, but different semantics
 #define NOCHAR	(-1)
+
+//@ total time, in milliseconds, for each drop and raise curtain animation
+#define CURTAIN_TIME	1500
 
 /*@
  * Function prototypes

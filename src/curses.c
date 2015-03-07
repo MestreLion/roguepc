@@ -39,6 +39,7 @@ int scr_row[25];
 char savewin[2048 * sizeof(chtype)];  //@ originally 4096 bytes
 #else
 chtype	savewin[MAXLINES][MAXCOLS + 1];  // temp buffer to hold screen contents
+chtype	curtain[MAXLINES][MAXCOLS + 1];  // temp buffer for curtain animations
 int 	colors;  // number of basic colors
 #endif
 
@@ -278,7 +279,7 @@ cur_move(row, col)
 		swint(SW_SCR, regs);
 	}
 #else
-	move(row, col);
+	wmove(stdscr, row, col);
 #endif
 }
 
@@ -1402,7 +1403,7 @@ raise_curtain(void)
  *
  * So, for simplicity's sake, currently drop_curtain() merely disables screen
  * (immediate) refresh, and all drawing is still performed stdscr, the curses
- * virtual screen. raise_curtain() will take care of the rest.
+ * virtual screen. raise_curtain() takes care of the rest.
  */
 /*@
  * Display a curtain down animation and disable screen refresh
@@ -1411,7 +1412,7 @@ void
 drop_curtain(void)
 {
 	int r;
-	int delay = 1500 / LINES;  //@ 1.5 seconds for the whole animation
+	int delay = CURTAIN_TIME / LINES;
 
 	cursor(FALSE);
 	green();
@@ -1420,31 +1421,53 @@ drop_curtain(void)
 #else
 	vbox(sng_box, 0, 0, LINES-1, COLS-1);
 #endif
+	mvinchnstr(0, 0, curtain[0], COLS);
 	yellow();
 	for (r = 1; r < LINES-1; r++) {
-		cur_move(r, 1);
+		wmove(stdscr, r, 1);
 		repchr(PASSAGE, COLS-2);
+		mvinchnstr(r, 0, curtain[r], COLS);
 		msleep(delay);
 	}
+	mvinchnstr(LINES-1, 0, curtain[LINES-1], COLS);
 	cur_move(0,0);
 	cur_standend();
 	immedok(stdscr, FALSE);
 }
 
 
+/*@
+ * Display a curtain up animation and re-enable screen refresh
+ */
 void
 raise_curtain(void)
 {
 	int line;
-	int delay = 1500 / LINES;
+	int c_row, c_col;
+	int delay = CURTAIN_TIME / LINES;
 
-	immedok(stdscr, TRUE);
-	return;  //@ to be removed on next commit
+	// save current screen
+	getyx(stdscr, c_row, c_col);
+	wdump();
 
+	// restore and display the curtain
 	for (line = 0; line < LINES; line++)
 	{
+		mvaddchnstr(line, 0, curtain[line], COLS);
+	}
+	wrefresh(stdscr);
+
+	// progressively restore screen
+	for (line = LINES-1; line >= 0; line--)
+	{
+		mvaddchnstr(line, 0, savewin[line], COLS);
+		wrefresh(stdscr);
 		msleep(delay);
 	}
+	wmove(stdscr, c_row, c_col);
+	is_saved = FALSE;
+
+	immedok(stdscr, TRUE);
 }
 #endif
 
