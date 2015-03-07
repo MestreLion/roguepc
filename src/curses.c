@@ -1333,6 +1333,8 @@ implode()
 #endif
 }
 
+
+#ifdef ROGUE_DOS_CURSES
 /*
  * drop_curtain:
  *	Close a door on the screen and redirect output to the temporary buffer
@@ -1355,11 +1357,7 @@ drop_curtain(void)
 	 */
 	delay = (scr_type == 7 ? 3000 : 2000);
 	green();
-#ifdef ROGUE_ASCII
-	vbox(dbl_box, 0, 0, LINES-1, COLS-1);
-#else
 	vbox(sng_box, 0, 0, LINES-1, COLS-1);
-#endif
 	yellow();
 	for (r = 1; r < LINES-1; r++) {
 		cur_move(r, 1);
@@ -1387,6 +1385,69 @@ raise_curtain(void)
 			;
 	}
 }
+#else
+/*@
+ * I am breaking a tradition here by replacing the whole function with a new
+ * one instead of changing just the necessary bits of the original.
+ * But with <curses.h> and md_nanosleep() the original would be severely
+ * mutilated with at least 4 additional #ifdefs blocks, destroying readability,
+ * for very little gain. So new it is.
+ *
+ * Note on the new version: "proper" drop/raise curtain routine should actually
+ * redirect all output from addch() and possibly many others, to a buffer such
+ * as savewin, just like the original, or to a new curses window/panel/screen.
+ * This would require a somewhat complex mechanism of an "effective WINDOW"
+ * pointer much similar to the very scr_ds / svwin_ds / old_page_no low level
+ * juggling I'm trying to remove from the project.
+ *
+ * So, for simplicity's sake, currently drop_curtain() merely disables screen
+ * (immediate) refresh, and all drawing is still performed stdscr, the curses
+ * virtual screen. raise_curtain() will take care of the rest.
+ */
+/*@
+ * Display a curtain down animation and disable screen refresh
+ */
+void
+drop_curtain(void)
+{
+	int r;
+	int delay = 1500 / LINES;  //@ 1.5 seconds for the whole animation
+
+	cursor(FALSE);
+	green();
+#ifdef ROGUE_ASCII
+	vbox(dbl_box, 0, 0, LINES-1, COLS-1);
+#else
+	vbox(sng_box, 0, 0, LINES-1, COLS-1);
+#endif
+	yellow();
+	for (r = 1; r < LINES-1; r++) {
+		cur_move(r, 1);
+		repchr(PASSAGE, COLS-2);
+		msleep(delay);
+	}
+	cur_move(0,0);
+	cur_standend();
+	immedok(stdscr, FALSE);
+}
+
+
+void
+raise_curtain(void)
+{
+	int line;
+	int delay = 1500 / LINES;
+
+	immedok(stdscr, TRUE);
+	return;  //@ to be removed on next commit
+
+	for (line = 0; line < LINES; line++)
+	{
+		msleep(delay);
+	}
+}
+#endif
+
 
 void
 switch_page(pn)
