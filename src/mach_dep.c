@@ -469,6 +469,17 @@ md_localtime()
 
 
 /*@
+ * Sleep for nanoseconds
+ */
+void
+md_nanosleep(long nanoseconds)
+{
+	struct timespec ts = {0, nanoseconds};
+	nanosleep(&ts, NULL);
+}
+
+
+/*@
  * Renamed from srand() to avoid collision with <stdlib.h>
  * Signature and usage completely different from srand()
  *

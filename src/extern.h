@@ -59,7 +59,7 @@
 #define daemon	start_daemon
 #define access(f)	access(f, F_OK)
 
-//@ time()
+//@ time(), nanosleep()
 #include <time.h>
 #define clock	md_clock
 
@@ -78,6 +78,8 @@
 //@ moved from curses.h so it's close to 'bool' definition
 #define TRUE 	1
 #define FALSE	0
+
+#define msleep(ms)	md_nanosleep(1000000L * ms)
 
 typedef uintptr_t	intptr;  //@ size of a real pointer
 typedef uint16_t	dosptr;  //@ size of a pointer in DOS, as Rogue relies on
@@ -98,7 +100,10 @@ void	setup(), clock_on(), no_clock(), flush_type(), credits(),
 char	*newmem();
 byte	readchar();
 bool	isjr(), set_ctrlb();
-struct tm	*md_localtime();
+
+//@ new functions
+struct tm	*md_localtime(void);
+void	md_nanosleep(long nanoseconds);
 
 //@ dos.asm
 int 	csum();
