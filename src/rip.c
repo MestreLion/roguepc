@@ -288,9 +288,14 @@ death(monst)
 	sprintf(buf, "%u Au", purse);
 	center(18, buf);
 
+#ifdef ROGUE_DOS_TIME
 	regs->ax = 0x2a << 8;
 	swint(SW_DOS,regs);
 	year = regs->cx;
+#else
+	struct tm * local = md_localtime();
+	year = local->tm_year + 1900;
+#endif
 	sprintf(buf, "%u", year);
 	center(19, buf);
 	raise_curtain();
