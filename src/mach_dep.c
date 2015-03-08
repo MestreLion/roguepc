@@ -531,6 +531,7 @@ flush_type()
 	typebuf = "";
 }
 
+//@ I wonder why this is here instead of main.c (or *anywhere* else)
 void
 credits()
 {
@@ -580,9 +581,9 @@ credits()
 	if (is_color)
 		brown();
 	move(22, 0);
-	addch(VRIGHT);
-	repchr(HWALL, COLS-2);
-	addch(VLEFT);
+	addch(DVRIGHT);
+	repchr(DHLINE, COLS-2);
+	addch(DVLEFT);
 	standend();
 	mvaddstr(23,2,"Rogue's Name? ");
 	is_saved = TRUE;		/*  status line hack @ to disable updates */

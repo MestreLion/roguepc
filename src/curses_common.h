@@ -89,6 +89,17 @@
  * @ moved from rogue.h
  */
 #ifdef ROGUE_ASCII
+/*@
+ * Changes from Unix Rogue (and roguelike ASCII tradition):
+ * AMULET: ',' to '&'. Needed ',' for corners; Not meant to be subtle in DOS
+ * xxWALL: '-' to ",`;\'". DOS code requires unique values (for switch cases)
+ * BMAGIC: '+' to '}'. Needed '+' for door. BMAGIC is a DOS-only extension.
+ *
+ * Note: Swapping '+' with '}' would yield a better visual result, as '}' is
+ * great as door and it better matches DOS CP437 char 0xCE. But I will not be
+ * the one to break such a well-known convention, and get flamed for heresy.
+ * You do it.
+ */
 #define PASSAGE		'#'
 #define DOOR		'+'
 #define FLOOR		'.'
@@ -99,24 +110,41 @@
 #define POTION		'!'
 #define SCROLL		'?'
 #define MAGIC		'$'
-#define BMAGIC		'&'
+#define BMAGIC		'}'
 #define FOOD		':'
 #define STICK		'/'
 #define ARMOR		']'
-#define AMULET		','
+#define AMULET		'&'
 #define RING		'='
 #define WEAPON		')'
 #define CALLABLE	-1
 
+//@ dungeon room walls. must be unique
 #define VWALL	'|'
 #define HWALL	'-'
-#define ULWALL	'1'
-#define URWALL	'2'
-#define LLWALL	'3'
-#define LRWALL	'4'
+#define ULWALL	','
+#define URWALL	';'
+#define LLWALL	'`'
+#define LRWALL	'\''
 
-#define VLEFT	'6'
-#define VRIGHT	'5'
+//@ single-width box glyphs
+#define HLINE	'-'
+#define VLINE	'|'
+#define CORNER	'+'  //@ "generic" corner
+#define ULCORNER	'.'
+#define URCORNER	'.'
+#define LLCORNER	'`'
+#define LRCORNER	'\''
+
+//@ double-width box glyphs
+#define DHLINE	'='
+#define DVLINE	'H'
+#define DCORNER	'#'
+
+//@ only used in credits()
+#define DVLEFT	'X'
+#define DVRIGHT	'K'
+
 #else
 #define PASSAGE		(0xb1)
 #define DOOR		(0xce)
@@ -144,8 +172,10 @@
 #define LLWALL	(0xc8)
 #define LRWALL	(0xbc)
 
-#define VLEFT	(0xb9)  //@ 185
-#define VRIGHT	(0xcc)  //@ 204
+//@ not in original - decimals were hard-coded
+#define DHLINE	(0xcd)  //@ 205
+#define DVLEFT	(0xb9)  //@ 185
+#define DVRIGHT	(0xcc)  //@ 204
 #endif
 
 

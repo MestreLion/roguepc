@@ -168,7 +168,7 @@ pr_scores(newrank,top10)
 	printw("%s",top10->sc_name);
 	if ((newrank) - 1 != i)
 		brown();
-		if (top10->sc_level >= 26)
+		if (top10->sc_level >= 26)  //@ There is AMULETLEVEL, you know?
 			altmsg = " Honored by the Guild";
 	if (isalpha(top10->sc_fate))
 		{

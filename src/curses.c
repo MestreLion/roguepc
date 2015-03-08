@@ -90,12 +90,17 @@ byte monoc_attr[] = {
 byte *at_table;
 
 byte dbl_box[BX_SIZE] = {
-	ULWALL, URWALL, LLWALL, LRWALL, VWALL, HWALL, HWALL
+#ifdef ROGUE_ASCII
+		DCORNER, DCORNER, DCORNER, DCORNER, DVLINE, DHLINE, DHLINE
+#else
+		//@ could be replaced with corresponding *WALL constants
+		0xc9, 0xbb, 0xc8, 0xbc, 0xba, 0xcd, 0xcd
+#endif
 };
 
 byte sng_box[BX_SIZE] = {
 #ifdef ROGUE_ASCII
-		'/', '\\', '\\', '/', '|', '-', '-'  //@ lame, I know
+		ULCORNER, URCORNER, LLCORNER, LRCORNER, VLINE, HLINE
 #else
 		0xda, 0xbf, 0xc0, 0xd9, 0xb3, 0xc4, 0xc4
 #endif
