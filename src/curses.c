@@ -17,13 +17,13 @@
  */
 int LINES=25, COLS=80;
 int is_saved = FALSE;  //@ in practice, TRUE disables status updates in SIG2()
-int old_page_no;  //@ this is public, but page_no is not. Weird. See rip.c
 int no_check = FALSE;
-int scr_ds=0xB800;
-int svwin_ds;
 int scr_type = -1;
 #ifdef ROGUE_DOS_CURSES
 bool iscuron = TRUE;
+int old_page_no;  //@ this is public, but page_no is not. Weird. See rip.c
+int scr_ds=0xB800;
+int svwin_ds;
 #endif
 
 //@ unused
@@ -979,13 +979,11 @@ winit()
 	if (init_curses)
 		return;
 
+	//@ this should be in init_curses_colors() and integrated with rogue.opt
 	at_table = color_attr;
 
-	//@ these still affect the game. the goal is to remove them all
-	old_page_no = 0;
+	//@ this still affect the game. the goal is to remove it
 	scr_type = ROGUE_SCR_TYPE;
-	scr_ds   = 0xB800;
-	svwin_ds = 0;
 
 	setenv("ESCDELAY", "25", FALSE);
 	initscr();

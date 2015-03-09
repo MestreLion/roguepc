@@ -54,13 +54,13 @@
  */
 extern int LINES, COLS;
 extern int is_saved;
-extern int old_page_no;
 extern int no_check;
-extern int scr_ds;
-extern int svwin_ds;
 extern int scr_type;
 #ifdef ROGUE_DOS_CURSES
 extern bool iscuron;
+extern int old_page_no;
+extern int scr_ds;
+extern int svwin_ds;
 #endif
 
 /*
