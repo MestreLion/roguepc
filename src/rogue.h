@@ -27,7 +27,11 @@
  * might as well recompile everything
  */
 #define HELP
+#ifdef ROGUE_DEMO
+#define DEMO
+#else
 #undef DEMO
+#endif
 #define DEMOTIME 10
 /*
  * DEMO

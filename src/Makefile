@@ -16,6 +16,9 @@ LDLIBS:=-lcurses
 ifdef ROGUE_DEBUG
 CFLAGS+=-DROGUE_DEBUG -g3
 endif
+ifdef ROGUE_DEMO
+CFLAGS+=-DROGUE_DEMO
+endif
 
 OBJS=armor.o new_leve.o command.o mach_dep.o main.o rip.o save.o \
 	chase.o curses.o daemon.o daemons.o env.o extern.o fakedos.o fight.o \
