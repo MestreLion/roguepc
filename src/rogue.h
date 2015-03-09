@@ -308,10 +308,10 @@
 
 /*
  * Help list
+ * @ this was unused in original. Now improved and put to good use
  */
-
 struct h_list {
-	char h_ch;
+	char h_chstr[6];  //@ either (ch) or (ch,sep,ch2) appended with ": "
 	char *h_desc;
 };
 
@@ -483,9 +483,11 @@ bool wizard;
 
 extern bool p_know[], r_know[], s_know[], ws_know[];
 
-extern char *a_names[], *flashmsg, *he_man[], *helpcoms[], *helpobjs[], huh[],
+extern char *a_names[], *flashmsg, *he_man[], huh[],
 		*intense, *p_colors[], *r_stones[], runch, *typebuf, take,
 		*w_names[], *ws_made[], *ws_type[];
+
+extern struct h_list helpcoms[], helpobjs[];
 
 extern int	a_chances[], a_class[], count, dnum, food_left,
 		fung_hit, group, hungry_state, inpack,

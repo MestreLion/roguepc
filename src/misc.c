@@ -597,7 +597,7 @@ goodch(obj)
  */
 void
 help(helpscr)
-	char **helpscr;
+	struct h_list *helpscr;
 {
 #ifdef HELP
 	register int hcount = 0;
@@ -606,7 +606,7 @@ help(helpscr)
 	byte answer = 0;
 
 	wdump();
-	while (*helpscr && answer != ESCAPE)
+	while (*helpscr->h_desc && answer != ESCAPE)
 	{
 		isfull = FALSE;
 		if ((hcount % (terse?23:46)) == 0)
@@ -632,14 +632,16 @@ help(helpscr)
 
 		move (hrow,hcol);
 
-		addstr(*helpscr++);
+		addstr(helpscr->h_chstr);
+		addstr(helpscr->h_desc);
+		helpscr++;
 
 		/*
 		 * decide if we need print a continue type message
 		 */
-		if ( (*helpscr == 0) || isfull)
+		if ( (*helpscr->h_desc == 0) || isfull)
 		{
-			if (*helpscr == 0)
+			if (*helpscr->h_desc == 0)
 				mvaddstr (24,0,"--press space to continue--");
 			else if (terse)
 				mvaddstr (24,0,"--Space for more, Esc to continue--");
