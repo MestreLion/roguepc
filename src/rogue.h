@@ -619,6 +619,7 @@ void	msg(const char *fmt, ...);
 void	vmsg(const char *fmt, va_list argp);
 void	addmsg(const char *fmt, ...);
 void	doadd(const char *fmt, va_list argp);
+void	wait_msg(const char *msg);
 void	endmsg(), more(), putmsg(), scrlmsg(), status(), wait_for(),
 		show_win(), str_attr(), SIG2();
 char	*io_unctrl(), *noterse();

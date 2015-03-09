@@ -424,6 +424,29 @@ wait_for(ch)
 		continue;
 }
 
+/*@
+ * Wait with a message until user press Enter
+ * New function, used to block before leaving the game
+ */
+void
+wait_msg(const char *msg)
+{
+	standend();
+	move(LINES-1,0);
+	cursor(TRUE);
+	if (*msg)
+	{
+		printw("[Press Enter to %s]", msg);
+	}
+	else
+	{
+		printw("[Press Enter]");
+	}
+	flush_type();
+	wait_for('\n');
+	move(LINES-1,0);
+}
+
 /*
  * show_win:
  *	Function used to display a window and wait before returning
@@ -542,7 +565,7 @@ SIG2()
 	md_clock();
 #endif
 #ifdef DEMO
-	static tot_time = 0;
+	static int tot_time = 0;
 #endif //DEMO
 
 	//@ only update every 6 ticks, ~3 times per second

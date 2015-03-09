@@ -8,7 +8,9 @@
 #include "rogue.h"
 #include "curses.h"
 
+#ifndef DEMO
 static FILE *file;
+#endif
 
 /*
  * score:
@@ -31,14 +33,7 @@ score(amount, flags, monst)
 
 	if (amount || flags || monst)
 	{
-		move(LINES-1,0);
-		cursor(TRUE);
-
-		printw("[Press Enter to see rankings]");
-		flush_type();
-		wait_for('\n');
-
-		move(LINES-1,0);
+		wait_msg("see rankings");
 	}
 	while ((file = fopen(s_score, "r")) == NULL)
 	{
@@ -84,11 +79,7 @@ reread:
 	}
 	pr_scores(rank,&top_ten);
 #ifndef ROGUE_DOS_CURSES
-	move(LINES-1,0);
-	cursor(TRUE);
-	printw("[Press Enter to exit]");
-	flush_type();
-	wait_for('\n');
+	wait_msg("exit");
 	printw("\n");
 #endif
 #endif //WIZARD
@@ -241,8 +232,8 @@ death(monst)
 	register char monst;
 {
 	char buf[MAXSTR];
-	register int year;
 #ifndef DEMO
+	register int year;
 
 	purse -= purse / 10;
 
@@ -313,6 +304,10 @@ death(monst)
 	else
 		center(6, buf);
 	move(LINES-2,0);
+#ifndef ROGUE_DOS_CURSES
+	wait_msg("exit");
+	printw("\n");
+#endif
 #endif //DEMO
 	md_exit(EXIT_SUCCESS);
 }
@@ -507,7 +502,6 @@ void
 demo(endtype)
 	int endtype;
 {
-	register int i;
 	char demobuf[81];
 
 #ifdef ROGUE_DOS_CURSES
@@ -567,6 +561,10 @@ demo(endtype)
 	if (endtype == 0)
 		return;
 	move(LINES-2,0);
+#ifndef ROGUE_DOS_CURSES
+	wait_msg("exit");
+	printw("\n");
+#endif
 	md_exit(EXIT_SUCCESS);
 }
 #endif //DEMO
