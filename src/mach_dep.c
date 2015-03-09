@@ -460,11 +460,19 @@ md_clock()
 /*@
  * Return current local time as a pointer to a struct
  */
-struct tm *
+TM *
 md_localtime()
 {
+	static TM md_local;
 	time_t secs = time(NULL);
-	return localtime(&secs);
+	struct tm *local = localtime(&secs);
+	md_local.second = local->tm_sec;
+	md_local.minute = local->tm_min;
+	md_local.hour   = local->tm_hour;
+	md_local.day    = local->tm_mday;
+	md_local.month  = local->tm_mon;
+	md_local.year   = local->tm_year + 1900;
+	return &md_local;
 }
 
 

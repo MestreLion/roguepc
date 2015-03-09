@@ -537,9 +537,6 @@ SIG2()
 	static int bighand, littlehand;
 	int showtime = FALSE, spare;
 	int x, y;
-#ifndef ROGUE_DOS_TIME
-	struct tm *local;
-#endif
 #ifndef ROGUE_DOS_CLOCK
 	//@ manually tick the clock, for now
 	md_clock();
@@ -581,9 +578,9 @@ SIG2()
 		bighand = (regs->cx >> 8) % 12;  //@ force 12-hour display format
 		littlehand = regs->cx & 0xFF;
 #else
-		local = md_localtime();
-		bighand = local->tm_hour % 12;
-		littlehand = local->tm_min;
+		TM *local = md_localtime();
+		bighand = local->hour % 12;
+		littlehand = local->minute;
 #endif
 		showtime = TRUE;
 	}

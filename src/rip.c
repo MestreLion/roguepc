@@ -293,8 +293,7 @@ death(monst)
 	swint(SW_DOS,regs);
 	year = regs->cx;
 #else
-	struct tm * local = md_localtime();
-	year = local->tm_year + 1900;
+	year = md_localtime()->year;
 #endif
 	sprintf(buf, "%u", year);
 	center(19, buf);

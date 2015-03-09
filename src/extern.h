@@ -81,6 +81,20 @@
 
 #define msleep(ms)	md_nanosleep(1000000L * ms)
 
+/*@
+ * Simplified version of <time.h> struct tm, to wrap and abstract it,
+ * so local time source is opaque and easily replaceable.
+ */
+struct md_tm {
+	int second;		/* Seconds	[0-60] (1 leap second) */
+	int minute;		/* Minutes	[0-59] */
+	int hour;		/* Hours	[0-23] */
+	int day;		/* Day		[1-31] */
+	int month;		/* Month	[0-11] */
+	int year;		/* Year */
+};
+typedef struct md_tm TM;
+
 typedef uintptr_t	intptr;  //@ size of a real pointer
 typedef uint16_t	dosptr;  //@ size of a pointer in DOS, as Rogue relies on
 /*
@@ -102,7 +116,7 @@ byte	readchar();
 bool	isjr(), set_ctrlb();
 
 //@ new functions
-struct tm	*md_localtime(void);
+TM  	*md_localtime(void);
 void	md_nanosleep(long nanoseconds);
 
 //@ dos.asm
