@@ -326,9 +326,12 @@ fallpos(obj, newpos)
 		return(cnt != 0);
 }
 
+//@ pause for a tick, ie, 1/18.2 secs (about 55ms)
 void
 tick_pause()
 {
+/*@ no more busy loops! :)
+
 	register int otick;
 
 	otick = tick;
@@ -338,4 +341,6 @@ tick_pause()
 #else
 		md_clock();
 #endif
+*/
+	msleep(55);
 }
