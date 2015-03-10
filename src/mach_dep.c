@@ -35,6 +35,19 @@ struct sw_regs *regs;
 bool print_int_calls = TRUE;
 #endif
 
+
+byte swap_bits(
+	byte data,
+	unsigned i,      // positions of bit sequences to swap
+	unsigned j,
+	unsigned length  // number of consecutive bits in each sequence
+)
+{
+	byte x = ((data >> i) ^ (data >> j)) & ((1U << length) - 1);
+	return data ^ ((x << i) | (x << j));
+}
+
+
 /*@
  * Checksum of the game executable
  *

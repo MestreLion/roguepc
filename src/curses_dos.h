@@ -73,7 +73,6 @@ void	wsetmem(void *buffer, int count, chtype attrchar);
 #define COLOR_PAIR_N(fg, bg)	COLOR_PAIR(PAIR_INDEX(fg, bg))
 
 
-byte	swap_bits(byte data, unsigned i, unsigned j, unsigned width);
 attr_t	color_from_dos(byte dos_attr, bool fg);
 attr_t	attr_from_dos(byte dos_attr);
 void	init_curses_colors(void);

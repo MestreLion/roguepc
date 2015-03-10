@@ -116,6 +116,7 @@ byte	readchar();
 bool	isjr(), set_ctrlb();
 
 //@ new functions
+byte	swap_bits(byte data, unsigned i, unsigned j, unsigned width);
 long	md_time(void);
 TM  	*md_localtime(void);
 void	md_nanosleep(long nanoseconds);
