@@ -52,6 +52,17 @@ static struct sw_regs sig2_read = {
 	DONTCARE,
 	UNDEFINED
 } ;
+
+/*@
+ * Current value of the Data Segment register DS
+ * Return a dummy value of 0
+ * Originally in dos.asm
+ */
+int
+getds(void)
+{
+	return 0;
+}
 #endif
 
 void

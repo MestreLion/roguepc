@@ -7,43 +7,17 @@
 #include	"rogue.h"
 #include	"curses.h"
 
-#define ULINE() if(is_color) lmagenta();else uline();
 #ifdef ROGUE_DOS_CLOCK
 #define TICK_ADDR 0x70  //@ RTC Interrupt handler. See clock_on()
 static dosptr clk_vec[2];
-#else
-/*
- * time_t constant to disable the clock
- * Chosen to match error value returned by time()
- */
-#define CLOCK_OFF	-1
-/*
- * Clock rate in ticks per second, as expected by Rogue
- * Matches the clock rate of the IBM-PC 8253 PIT as set by BIOS and used in DOS
- * Actual frequency is 3579545Hz / 3 / 65536 = 18.206507365
- */
-#define CLOCK_RATE	18.2
-/*
- * Current wall time, used to update in-game ticks
- */
-time_t	current_time = CLOCK_OFF;
-#endif
-static int ocb;
-
-/*@
- * Initial values of the CS and DS registers
- * Set to dummy values of a "Hello World!" program as reported by gdb
- * Originally set by begin.asm
- */
-int _dsval = 0x00;
-dosptr _csval = 0x33;  /*@ dummy */
-
 /*@
  * Global tick counter
  * Automatically incremented by clock() 18.2 times per second
  * Originally set by dos.asm
  */
 unsigned int tick = 0;
+#endif
+static int ocb;
 
 /*
  * Permanent stack data
@@ -101,21 +75,6 @@ int
 csum()
 {
 	return -1632;
-}
-
-
-/*@
- * Current value of the Data Segment register DS
- * Used in copy protection, see protect()
- *
- * Return the current (dummy) value of DS
- *
- * Originally in dos.asm
- */
-int
-getds()
-{
-	return _dsval;  // hey, it's still the same!
 }
 
 
@@ -216,9 +175,8 @@ dmaout(data, wordlength, segment, offset)
 {
 #ifdef ROGUE_DOS_CURSES
 #ifdef ROGUE_DEBUG
-	if (segment != scr_ds || wordlength > 1)  // if not single char to screen
-		printf("dmaout(%p, %d, %04x:%04x)\n",
-				data, wordlength, segment, offset);
+	printf("dmaout(%p, %d, %04x:%04x)\n",
+			data, wordlength, segment, offset);
 #endif
 #endif
 	; // blazing fast!
@@ -256,7 +214,7 @@ dmain(buffer, wordlength, segment, offset)
 void
 _halt()
 {
-	endwin();
+	cur_endwin();
 	printf("HALT!\n");
 	pause();
 }
@@ -280,9 +238,9 @@ void
 COFF()
 {
 	struct sw_regs reg;
-	reg.ax = 0x2523;  // hooking to INT 23h
-	reg.ds = _csval;  // technically this should be CS from dos.asm or main.c
-	reg.dx = (dosptr)(intptr)quit;  // see clock_on() for note on casting
+	reg.ax = 0x2523;  //@ hooking to INT 23h
+	reg.ds = 0x33;  //@ dummy value for dos.asm's CS register
+	reg.dx = (dosptr)(intptr)quit;  //@ see clock_on() for note on casting
 	swint(SW_DOS, &reg);
 }
 
@@ -341,15 +299,20 @@ void (*cls_)() = noper;
  * I could not find any clock rate reprogramming in Rogue, so I'm quite puzzled
  * on how tick works, and what its actual and expected rates are.
  *
- * In any case, this function must be replaced with a portable way of hooking
- * clock() to a timer that does not rely on ancient real mode ISR/IVT model.
- * Meanwhile, md_clock() should be manually called in key loops such as waiting
- * for (or after) user input.
+ * In any case, if clock() was still being used for timing, this function
+ * should provide a portable way of hooking it to a timer that does not rely on
+ * ancient real mode ISR/IVT model.
  */
 void
 clock_on()
 {
 #ifdef ROGUE_DOS_CLOCK
+	/*@
+	 * CS register value. Originally an extern set by begin.asm
+	 * Set to dummy value of a "Hello World!" program as reported by gdb
+	 */
+	dosptr _csval = 0x33;
+
 	/*@
 	 * Craft the 4-byte CS:offset function pointer for clock()
 	 * Array indexes are swapped (CS=1, offset=0) as it writes directly to IVT
@@ -370,23 +333,19 @@ clock_on()
 	dmain(clk_vec, 2, 0, TICK_ADDR);
 	dmaout(new_vec, 2, 0, TICK_ADDR);
 	cls_ = no_clock;
-#else
-	current_time = time(NULL);
 #endif
 }
 
 
 /*@
  * Restore INT 70h ISR to its original value, as saved by clock_on()
- * clock() will no longer be called, and thus tick will not be updated.
+ * clock() would no longer be called, and thus tick will not be updated.
  */
 void
 no_clock()
 {
 #ifdef ROGUE_DOS_CLOCK
 	dmaout(clk_vec, 2, 0, TICK_ADDR);
-#else
-	current_time = CLOCK_OFF;
 #endif
 }
 
@@ -394,26 +353,12 @@ no_clock()
 /*@
  * Increment the global tick
  *
- * This is supposed to be called 18.2 times per second, to maintain the tick
- * rate found in DOS system timer expected by Rogue. The game heavily relies
+ * This was supposed to be called 18.2 times per second, to maintain the tick
+ * rate found in DOS system timer expected by Rogue. The game originally relied
  * on clock() being periodically (and automatically) called via some triggering
- * mechanism such as an IRQ timer or signal, as made by clock_on(). If tick is
- * not incremented some Bad Things will happen: Rogue will _halt() on the first
+ * mechanism such as an IRQ timer or signal, as made by clock_on(). If tick was
+ * not incremented some Bad Things would happen: Rogue could _halt() on first
  * one_tick() call, or enter infinite loop on tick_pause() and epyx_yuck().
- *
- * This should be changed to a sane API where code explicitly calls clock() to
- * get current tick instead of expecting a value to be magically updated by
- * an external interrupt.
- *
- * Besides, a C function could never be directly assigned as an ISR, as calling
- * and return conventions for an interrupt handler are different from a normal
- * function (requires IRET, preserving AX, etc)
- *
- * Meanwhile, tick is updated based on real time via time(), so it does not
- * require being automatically called at regular intervals. It can be called at
- * any time, will calculate elapsed time since last call and adjust tick
- * accordingly. Currently, with time resolution of a second, for maximum
- * portability.
  *
  * Originally in dos.asm, renamed from clock() to avoid conflict in <time.h>
  *
@@ -421,6 +366,9 @@ no_clock()
  * The copy-protection is fully reproduced to the extent of my knowledge.
  * The anti-debugger tests, if failed, lead to _halt(), and are only partially
  * reproduced here. See protect.c for details.
+ *
+ * With md_time(), tick is no longer used and this function now only serves to
+ * unlock the copy protection on one_tick().
  */
 void
 md_clock()
@@ -428,14 +376,6 @@ md_clock()
 #ifdef ROGUE_DOS_CLOCK
 	//@ tick the old clock
 	tick++;
-#else
-	time_t	new_time;
-	if (current_time != CLOCK_OFF)
-	{
-		new_time = time(NULL);
-		tick += (new_time - current_time) * CLOCK_RATE;
-		current_time = new_time;
-	}
 #endif
 
 	//@ anti debugging: halt after 20 ticks if no_step is set
@@ -443,9 +383,9 @@ md_clock()
 		_halt();
 
 	/*@
-	 * copy protection: set tombstone strings (name, killed by) to actual
-	 * player name and death reason, and restore hit multiplier, only if
-	 * floppy check succeeded. Only a single (successful) tick was required.
+	 * Unlock copy protection if floppy check succeeded: set tombstone strings
+	 * (name, killed by) to actual player name and death reason, and restore
+	 * hit multiplier. Only a single tick is required to unlock.
 	 * See death()
 	 */
 	if (hit_mul != 1 && goodchk == 0xD0D)
@@ -524,12 +464,12 @@ md_srand()
 	/*
 	 * Get Time
 	 */
-#ifdef ROGUE_DOS_TIME
+#ifdef ROGUE_DOS_CLOCK
 	bdos(0x2C);
 	return(regs->cx + regs->dx);
 #else
-	return (int)time(NULL);
-#endif  // ROGUE_DOS_TIME
+	return (int)md_time();
+#endif  // ROGUE_DOS_CLOCK
 #endif  // DEMO
 }
 
@@ -553,6 +493,8 @@ flush_type()
 void
 credits()
 {
+	#define ULINE() if(is_color) lmagenta();else uline();
+
 	char tname[25];
 
 	cursor(FALSE);
@@ -776,6 +718,9 @@ swint(intno, rp)
 	int intno;
 	struct sw_regs *rp;
 {
+	//@ DS register value. Originally an extern set by begin.asm, now a dummy
+	int _dsval = 0x00;
+
 	rp->ds = rp->es = _dsval;
 	sysint(intno, rp, rp);
 	return rp->ax;

@@ -279,7 +279,7 @@ death(monst)
 	sprintf(buf, "%u Au", purse);
 	center(18, buf);
 
-#ifdef ROGUE_DOS_TIME
+#ifdef ROGUE_DOS_CLOCK
 	regs->ax = 0x2a << 8;
 	swint(SW_DOS,regs);
 	year = regs->cx;

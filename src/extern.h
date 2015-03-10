@@ -122,7 +122,6 @@ void	md_nanosleep(long nanoseconds);
 
 //@ dos.asm
 int 	csum();
-int 	getds();
 byte 	peekb();
 void	pokeb();
 void	out();
@@ -132,7 +131,6 @@ void	dmain();
 void	_halt();
 void	md_clock();
 void	COFF();
-bool	no_char();
 
 //@ moved from main.c
 void	fatal(const char *msg, ...);
@@ -144,10 +142,9 @@ void	md_exit(int status);
 /*@
  * Global vars
  */
-#ifdef ROGUE_DOS_TIME
+#ifdef ROGUE_DOS_CLOCK
 extern unsigned int tick;  //@ from dos.asm
 #endif
-extern int  _dsval;  //@ from begin.asm
 extern struct sw_regs *regs; //@ from main.c, originally declared in swint.h
 #ifdef ROGUE_DEBUG
 extern bool print_int_calls;

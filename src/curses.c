@@ -23,7 +23,7 @@ int scr_type = -1;
 bool iscuron = TRUE;
 int old_page_no;  //@ this is public, but page_no is not. Weird. See rip.c
 int scr_ds=0xB800;
-int svwin_ds;
+int svwin_ds = 0;
 #endif
 
 //@ unused
@@ -969,6 +969,8 @@ winit(void)
 	 */
 	real_rc(old_page_no, &c_row, &c_col);
 	/*@ savewin is now a fixed size array.
+	 * _dsval is an extern set by begin.asm with its DS register value
+	 *
 	if ((savewin = sbrk(4096)) == (void *)-1) {
 		svwin_ds = -1;
 		savewin = (char *) _flags;
@@ -979,7 +981,6 @@ winit(void)
 		svwin_ds = (((intptr) savewin >> 4) & 0xfff) + _dsval;
 	}
 	*/
-	svwin_ds = (((intptr) savewin >> 4) & 0xfff) + _dsval;
 
 	for (i = 0, cnt = 0; i < 25; cnt += 2*COLS, i++)
 		scr_row[i] = cnt;

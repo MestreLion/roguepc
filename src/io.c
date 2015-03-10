@@ -562,7 +562,7 @@ SIG2()
 #ifdef DEMO
 	static int tot_time = 0;
 #endif //DEMO
-#ifdef ROGUE_DOS_TIME
+#ifdef ROGUE_DOS_CLOCK
 	static unsigned int ntick = 0;
 
 	//@ only update every 6 ticks, ~3 times per second
@@ -587,7 +587,7 @@ SIG2()
 	new_capsl = new_numl & 0x40;
 	new_fmode = new_numl & 0x10;  //@ scroll lock
 	new_numl &= 0x20;
-#ifdef ROGUE_DOS_TIME
+#ifdef ROGUE_DOS_CLOCK
 	/*
 	 * set up the clock the first time here
 	 */
