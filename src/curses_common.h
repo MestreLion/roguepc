@@ -58,7 +58,9 @@
 #define is_bw (scr_type==0 || scr_type==2)
 
 //@ moved from rogue.h
+#ifndef CTRL
 #define CTRL(ch)	((ch) & 037)
+#endif
 
 #define cur_standend() set_attr(0)
 #define green() set_attr(1)

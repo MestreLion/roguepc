@@ -45,6 +45,7 @@
 #define setmem(dest,length,ch)	memset(dest,ch,length)
 
 //@ sprintf(), f{open,read,seek,write,close}(), remove(), access(), putchar()
+//@ popen(), fgets(), pclose()
 #include <stdio.h>
 
 //@ exit(), atoi(), NULL, EXIT_*, malloc(), free(), abs(), setenv(), getenv()
@@ -54,7 +55,7 @@
 //@ errno, originally in begin.asm
 #include <errno.h>
 
-//@ pause(), access(), sleep()
+//@ pause(), access(), sleep(), close()
 #include <unistd.h>
 #define daemon	start_daemon
 #define access(f)	access(f, F_OK)
@@ -68,6 +69,15 @@
 
 //@ bool type, originally typedef unsigned char
 #include <stdbool.h>
+
+#ifdef __linux__
+//@ open()
+#include <fcntl.h>
+//@ ioctl()
+#include <sys/ioctl.h>
+//@ KDGKBLED
+#include <linux/kd.h>
+#endif
 
 
 /*@
@@ -117,6 +127,7 @@ bool	isjr(), set_ctrlb();
 
 //@ new functions
 byte	swap_bits(byte data, unsigned i, unsigned j, unsigned width);
+int 	md_keyboard_leds(void);
 long	md_time(void);
 TM  	*md_localtime(void);
 void	md_nanosleep(long nanoseconds);

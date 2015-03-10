@@ -581,9 +581,13 @@ SIG2()
 	 */
 	if (is_saved || scr_type < 0)
 		return;
+#ifndef __linux__
 	regs->ax = 0x200;
 	swint(SW_KEY, regs);
 	new_numl = regs->ax;
+#else
+	new_numl = md_keyboard_leds();
+#endif
 	new_capsl = new_numl & 0x40;
 	new_fmode = new_numl & 0x10;  //@ scroll lock
 	new_numl &= 0x20;

@@ -48,6 +48,48 @@ byte swap_bits(
 }
 
 
+int md_keyboard_leds(void)
+{
+	int state = 0;
+	int fd;
+	char *cmd, buf[BUFSIZE];
+	FILE *fp;
+
+	if (getenv("DISPLAY"))
+	{
+		//@ terminal emulator under X, such as xterm / gnome-terminal
+		cmd = "xset -q | grep 'LED mask' | cut -d: -f4 2>/dev/null";
+		if ((fp = popen(cmd, "r")) != NULL)
+		{
+			while (fgets(buf, sizeof(buf), fp) != NULL)
+			{
+				//@ swap num and scr lock
+				state = swap_bits(atoi(buf), 0, 2, 1);
+				break;
+			}
+			if(pclose(fp))
+			{
+				//@ command not found or exited with status != 0
+				state = 0;
+			}
+		}
+	}
+	else
+	{
+#ifdef __linux__
+		//@ TTY such as getty / linux console
+		if ((fd = open("/dev/tty", O_RDONLY | O_NOCTTY)) == -1 ||
+				ioctl(fd, KDGKBLED, &state) == -1)
+		{
+			state = 0;
+		}
+		close(fd);
+#endif
+	}
+	return state << 4;
+}
+
+
 /*@
  * Checksum of the game executable
  *
