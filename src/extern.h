@@ -116,6 +116,7 @@ byte	readchar();
 bool	isjr(), set_ctrlb();
 
 //@ new functions
+long	md_time(void);
 TM  	*md_localtime(void);
 void	md_nanosleep(long nanoseconds);
 
@@ -143,7 +144,9 @@ void	md_exit(int status);
 /*@
  * Global vars
  */
+#ifdef ROGUE_DOS_TIME
 extern unsigned int tick;  //@ from dos.asm
+#endif
 extern int  _dsval;  //@ from begin.asm
 extern struct sw_regs *regs; //@ from main.c, originally declared in swint.h
 #ifdef ROGUE_DEBUG

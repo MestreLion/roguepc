@@ -552,7 +552,6 @@ str_attr(str)
 void
 SIG2()
 {
-	static unsigned ntick = 0;
 	static int key_init = TRUE;
 	static int numl, capsl;
 	static int nspot, cspot, tspot;
@@ -560,18 +559,20 @@ SIG2()
 	static int bighand, littlehand;
 	int showtime = FALSE, spare;
 	int x, y;
-#ifndef ROGUE_DOS_CLOCK
-	//@ manually tick the clock, for now
-	md_clock();
-#endif
 #ifdef DEMO
 	static int tot_time = 0;
 #endif //DEMO
+#ifdef ROGUE_DOS_TIME
+	static unsigned int ntick = 0;
 
 	//@ only update every 6 ticks, ~3 times per second
 	if (tick < ntick)
 		return;
 	ntick = tick + 6;
+#else
+	static long cur_time = 0;
+	long new_time = md_time();
+#endif
 
 	/*@
 	 * Do not update between wdump()/wrestor() operations
@@ -586,6 +587,7 @@ SIG2()
 	new_capsl = new_numl & 0x40;
 	new_fmode = new_numl & 0x10;  //@ scroll lock
 	new_numl &= 0x20;
+#ifdef ROGUE_DOS_TIME
 	/*
 	 * set up the clock the first time here
 	 */
@@ -595,16 +597,10 @@ SIG2()
 	 * CL = minutes (0-59)
 	 */
 	if (key_init) {
-#ifdef ROGUE_DOS_TIME
 		regs->ax = 0x2c << 8;
 		swint(SW_DOS, regs);
 		bighand = (regs->cx >> 8) % 12;  //@ force 12-hour display format
 		littlehand = regs->cx & 0xFF;
-#else
-		TM *local = md_localtime();
-		bighand = local->hour % 12;
-		littlehand = local->minute;
-#endif
 		showtime = TRUE;
 	}
 	//@ 1092 ticks = 1 minute @ 18.2 ticks per second rate
@@ -620,6 +616,16 @@ SIG2()
 		ntick = tick + 6;
 		showtime = TRUE;
 	}
+#else
+	if (new_time - cur_time >= 60)
+	{
+		TM *local = md_localtime();
+		bighand = local->hour % 12;
+		littlehand = local->minute;
+		cur_time = new_time - local->second;
+		showtime = TRUE;
+	}
+#endif
 
 	/*
 	 * this is built for speed so set up once first time this

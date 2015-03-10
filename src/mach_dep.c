@@ -456,6 +456,16 @@ md_clock()
 	}
 }
 
+/*@
+ * Return Epoch time as an integer, with second resolution
+ * Simple wrapper to <time.h> time()
+ */
+long
+md_time(void)
+{
+	return (long)time(NULL);
+}
+
 
 /*@
  * Return current local time as a pointer to a struct
@@ -866,24 +876,29 @@ unsetup()
  * dangerous as it could lead to a halt, and so it was intentionally disabled.
  *
  *       ... or it could be a bug.
+ *
+ * Now it pauses for half a tick (27ms), the average wait if intended behavior
+ * was working, and tick the clock once only to unlock copy protection, as
+ * tick is no longer used or extern'ed.
  */
 void
 one_tick()
 {
+/*@
 	int otick = tick;
 	int i=0,j=0;
 
 	while(i++)
 	{
-#ifndef ROGUE_DOS_CLOCK
-		md_clock();
-#endif
 		while (j++)
 			if (otick != tick)
 				return;
 			else if (i > 2)
 				_halt();
 	}
+*/
+	msleep(27);
+	md_clock();
 }
 
 
