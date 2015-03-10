@@ -54,7 +54,7 @@
 //@ errno, originally in begin.asm
 #include <errno.h>
 
-//@ pause(), access()
+//@ pause(), access(), sleep()
 #include <unistd.h>
 #define daemon	start_daemon
 #define access(f)	access(f, F_OK)

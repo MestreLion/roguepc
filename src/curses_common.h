@@ -224,7 +224,7 @@ void	blot_out(int ul_row, int ul_col, int lr_row, int lr_col);
 
 //@ originally in dos.asm
 void	cur_beep(void);
-int 	cur_getch(void);
+int 	cur_getch_timeout(int msdelay);
 
 //@ originally in zoom.asm
 void	cur_move(int row, int col);

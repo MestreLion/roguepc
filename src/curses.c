@@ -172,7 +172,7 @@ static struct xlate {
 	{KEY_F(8),	'^'},
 	{KEY_F(9),	CTRL('F')},
 	{KEY_F(10),	'!'},
-	{KEY_F(57),	'F'}
+	{KEY_F(57),	'F'}  //@ ALT+F9
 #endif
 };
 
@@ -218,14 +218,32 @@ cur_beep(void)
 }
 
 
+/*@
+ * Read a character from user input. getch() with non-blocking capability
+ *
+ * msdelay has same meaning as delay in timeout(): If no key was pressed after
+ * msdelay milliseconds, return ERR. Negative values will block until a key
+ * is pressed.
+ *
+ * After the wgetch() call, input will always restore to blocking mode using
+ * nodelay(FALSE);
+ */
 int
-cur_getch(void)
+cur_getch_timeout(int msdelay)
 {
 #ifdef ROGUE_DOS_CURSES
-	//@ not a true replacement, as asm version has no echo and no buffering
+	/*@
+	 * getchar() is not a true replacement, as asm version has no echo and no
+	 * buffering. Asm was also non-blocking, but only used after no_char(),
+	 * a combination that effectively blocks until input.
+	 */
 	return getchar();
 #else
-	return wgetch(stdscr);
+	int ch;
+	wtimeout(stdscr, msdelay);
+	ch = wgetch(stdscr);
+	nodelay(stdscr, FALSE);
+	return ch;
 #endif
 }
 
@@ -868,7 +886,7 @@ set_cursor(void)
  *						  -- determine screen memory location for dma
  */
 void
-winit()
+winit(void)
 {
 #ifdef ROGUE_DOS_CURSES
 	register int i, cnt;
@@ -996,13 +1014,13 @@ winit()
 	}
 #ifdef ROGUE_DEBUG
 	printw("Real terminal size: LINES: %u\tCOLS: %u", LINES, COLS);
-	getch();
+	wgetch(stdscr);
 #endif
 	if ((LINES != lines) || (COLS != cols))
 	{
 		if (resizeterm(lines, cols) == OK)
 		{
-			getch();  //@ eat up the generated KEY_RESIZE
+			wgetch(stdscr);  //@ eat up the generated KEY_RESIZE
 		}
 		else
 		{
@@ -1586,10 +1604,8 @@ video_mode(type)
  *   compatible, until proper CP437 and UTF-8 support is implemented.
  *
  * In a sane, safe API this function would return a bool, FALSE if aborted
- * by ESCAPE and TRUE otherwise, and it would always null-terminate str
- * regardless of its initial contents. In case of abortion, str could either
+ * by ESCAPE and TRUE otherwise. In case of abortion, str could either
  * keep typed string or set first char to '\0', effectively blanking str.
- *
  */
 int
 getinfo(str,size)
@@ -1621,7 +1637,8 @@ getinfo(str,size)
 	wason = cursor(TRUE);
 	while(ret == 1)
 	{
-		switch(ch = getch()) {
+		//@ Blocking getch() is fine, as SIG2() is not called anyway
+		switch(ch = wgetch(stdscr)) {
 			case ESCAPE:
 				while(str != retstr) {
 					backspace();

@@ -21,7 +21,6 @@ command()
 		ntimes = 1;
 	while (ntimes--) {
 		status();
-		SIG2();
 #ifdef WIZARD
 		if (wizard)
 			noscore = TRUE;

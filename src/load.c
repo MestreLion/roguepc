@@ -79,23 +79,15 @@ epyx_yuck()
 
 	scr_load();
 	fclose(file);
-	tick = 0;
 #ifdef LOGFILE
-	while (tick < 18 * 10)
-		;
+	//@ originally a busy loop of 18 * 10 ticks
+	sleep(10);
 #else
-	while(no_char() && tick < 18 * 60 * 5)  //@ ~5 minutes
-#ifdef ROGUE_DOS_CLOCK
-		;
-#else
-	md_clock();
-#endif  // ROGUE_DOS_CLOCK
-	if (!no_char())
-		readchar();  //@ consume the input character, if any, before leaving
+	//@ originally a busy loop of 18 * 60 * 5 ticks with no_char() shortcut
+	getch_timeout(1000 * 60 * 5);
 #endif  // LOGFILE
 	video_mode(type); //@ restore previous mode
 	free(store);
-	tick = 0;
 }
 
 /*@

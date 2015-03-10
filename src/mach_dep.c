@@ -627,8 +627,9 @@ credits()
  * Originally in dos.asm, calling a BIOS INT, which is reproduced here.
  *
  * But as sysint() is just a stub that returns ax = 0, this function will
- * always return FALSE, indicating a key was pressed. Not a problem as the main
- * caller, readchar(), is a blocking function.
+ * always return FALSE, indicating a key was pressed.
+ *
+ * No longer used, as readchar() now uses non-blocking input internally.
  *
  * BIOS INT 16h/AH=1, Get Keyboard Status
  * Return:
@@ -636,7 +637,7 @@ credits()
  * AH = scan code. 0 if no key was pressed
  * AL = ASCII character. 0 if special function key or no key pressed
  * So AX = 0 for no key pressed
- */
+
 bool
 no_char()
 {
@@ -644,6 +645,7 @@ no_char()
 	reg.ax = HIGH(1);
 	return !(swint(SW_KEY, &reg) == 0);
 }
+ */
 
 
 /*
@@ -666,7 +668,7 @@ readchar()
 	 */
 	do
 		SIG2();				/* Rogue spends a lot of time here */
-	while ((xch = getch()) == NOCHAR);
+	while ((xch = getch_timeout(250)) == NOCHAR);
 	ch = xlate_ch(xch);
 	if (ch == ESCAPE)
 		count = 0;
