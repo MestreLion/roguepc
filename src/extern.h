@@ -36,6 +36,7 @@
 #ifndef toascii
 //@ Marked obsolescent in POSIX-2008, so not in <ctype.h> if C99 is used
 #define toascii(c)	((c) & 0x7f)
+#define isascii(c)	((c) < 0x80)
 #endif
 
 //@ str{len,cat,cpy,cmp,chr}() and possibly others
@@ -79,6 +80,9 @@
 #include <linux/kd.h>
 #endif
 
+//@ setlocale()
+#include <locale.h>
+
 
 /*@
  * Project includes, defines and typedefs
@@ -86,8 +90,10 @@
 #include "swint.h"
 
 //@ moved from curses.h so it's close to 'bool' definition
+#ifndef TRUE
 #define TRUE 	1
 #define FALSE	0
+#endif
 
 #define msleep(ms)	md_nanosleep(1000000L * ms)
 

@@ -40,6 +40,8 @@ main(argc, argv)
 	long junk = 0L;
 	int sl;
 
+	setlocale(LC_ALL, "");
+
 	regs = &_treg;
 	dmaout(&junk,2,0,4);
 	clock_on();

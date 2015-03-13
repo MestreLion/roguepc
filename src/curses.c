@@ -3,10 +3,23 @@
  */
 
 #include	"extern.h"
-#include	"curses_common.h"
+
 #ifndef ROGUE_DOS_CURSES
+/*@
+ * Enables wide-character support ("complex renditions") in curses
+ * In theory _XOPEN_SOURCE 500 would suffice, but it does not seem to work with
+ * ncursesw even when including <features.h>. Also, most sources on the 'net
+ * recommend including <ncursesw/curses.h> directly, but I feel this is a task
+ * for the Makefile/build system, not source code.
+ */
+#ifndef _XOPEN_SOURCE_EXTENDED
+#define _XOPEN_SOURCE_EXTENDED
+#endif
+
 #include	<curses.h>
 #endif
+
+#include	"curses_common.h"
 #include	"curses_dos.h"
 #include	"keypad.h"
 
@@ -720,8 +733,9 @@ cur_addstr(s)
 #endif
 }
 
+
 #ifndef ROGUE_DOS_CURSES
-attr_t
+short
 color_from_dos(byte dos_attr, bool fg)
 {
 	byte color = (dos_attr >> (fg ? A_DOS_FG_COLOR : A_DOS_BG_COLOR)) & \
@@ -731,14 +745,37 @@ color_from_dos(byte dos_attr, bool fg)
 	return swap_bits(color, 0, 2, 1);
 }
 
+
 /*
  * Convert a DOS/CGA character attribute to its curses equivalent
+ *
+ * The attribute model used by addch() and attrset() has no distinct type for
+ * attributes: addch() expects a chtype OR'ed with A_* constants, and attrset()
+ * expects an int, hinting that all A_* constants, as well as any chtype AND'ed
+ * with A_ATTRIBUTES, fit int range.
+ *
+ * Return type chtype was chosen for consistency with termattrs() and vidattr(),
+ * which are the only known functions dealing with an isolated set of OR'ed A_*
+ * attributes. int could also have been chosen, as per attrset() usage.
+ *
+ * Return type could be attr_t, a dedicated type for attributes. In ncurses it
+ * is typedef'd to chtype, but they are semantically different: attr_t expects
+ * to be manipulated using the WA_* constants, and it's not expected to contain
+ * color pair information: functions with a attr_t argument also have another
+ * argument for color pair of type short.
+ *
+ * The only functions that deal exclusively with the attr_t model and have no
+ * counterpart using the old model are the ones working with cchar_t wide chars
+ * ("complex renditions" in ncurses docs).
+ *
+ * For those, a distinct function could be created with a signature such as
+ * `void attrw_from_dos(byte dos_attr, attr_t *attrs, short *color_pair)`
  */
-attr_t
+chtype
 attr_from_dos(byte dos_attr)
 {
-	attr_t attr = A_NORMAL;
-	int fg, bg;
+	chtype attr = A_NORMAL;
+	short fg, bg;
 
 	// shortcut to avoid setting (and calculating) a spurious color pair
 	if (dos_attr == A_DOS_NORMAL)
