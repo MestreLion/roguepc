@@ -65,14 +65,19 @@ getds(void)
 }
 #endif
 
+#ifndef ROGUE_NOGOOD
+void
+protect(drive)
+	int UNUSED(drive);
+{
+	goodchk = 0xD0D;  //@ success marker: 0xD0D stands for "Dungeons Of Doom"
+	no_step = 0;
+}
+#else
 void
 protect(drive)
 	int drive;
 {
-#ifndef ROGUE_NOGOOD
-	goodchk = 0xD0D;  //@ success marker: 0xD0D stands for "Dungeons Of Doom"
-	no_step = 0;
-#else
 	int i, flags;
 	struct sw_regs rgs;
 	char buf2[512];
@@ -129,5 +134,5 @@ protect(drive)
 		}
 	}
 	no_step = 0;
-#endif
 }
+#endif

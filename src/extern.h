@@ -97,6 +97,14 @@
 
 #define msleep(ms)	md_nanosleep(1000000L * ms)
 
+#ifdef __GNUC__
+//@ macro for dummy arguments in stub functions
+#define UNUSED(arg) __attribute__((unused))arg
+#else
+#define UNUSED(arg) arg
+#endif
+
+
 /*@
  * Simplified version of <time.h> struct tm, to wrap and abstract it,
  * so local time source is opaque and easily replaceable.

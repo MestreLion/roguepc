@@ -149,9 +149,9 @@ csum()
  */
 void
 pokeb(segment, offset, value)
-	int segment;
-	int offset;
-	byte value;
+	int UNUSED(segment);
+	int UNUSED(offset);
+	byte UNUSED(value);
 {
 	;  // it was written, I promise!
 }
@@ -166,8 +166,8 @@ pokeb(segment, offset, value)
  */
 byte
 peekb(segment, offset)
-	int segment;
-	int offset;
+	int UNUSED(segment);
+	int UNUSED(offset);
 {
 	return 0;  // we just rebooted, so...
 }
@@ -186,8 +186,8 @@ peekb(segment, offset)
  */
 void
 out(port, value)
-	int port;
-	byte value;
+	int UNUSED(port);
+	byte UNUSED(value);
 {
 	;  // and it's out! :)
 }
@@ -200,7 +200,7 @@ out(port, value)
  */
 byte
 in(port)
-	int port;
+	int UNUSED(port);
 {
 	return 0;  // maybe it's not connected :P
 }
@@ -221,6 +221,7 @@ in(port)
  * writer that happens to be most often used to write to video memory address.
  * Asm works by setting the arguments and calling REP MOVSW
  */
+#if defined(ROGUE_DOS_CURSES) && defined(ROGUE_DEBUG)
 void
 dmaout(data, wordlength, segment, offset)
 	void * data;
@@ -228,14 +229,20 @@ dmaout(data, wordlength, segment, offset)
 	unsigned int segment;
 	unsigned int offset;
 {
-#ifdef ROGUE_DOS_CURSES
-#ifdef ROGUE_DEBUG
 	printf("dmaout(%p, %d, %04x:%04x)\n",
 			data, wordlength, segment, offset);
-#endif
-#endif
-	; // blazing fast!
 }
+#else
+void
+dmaout(data, wordlength, segment, offset)
+	void UNUSED(*data);
+	unsigned int UNUSED(wordlength);
+	unsigned int UNUSED(segment);
+	unsigned int UNUSED(offset);
+{
+		; // blazing fast!
+}
+#endif
 
 
 /*@
@@ -249,10 +256,10 @@ dmaout(data, wordlength, segment, offset)
  */
 void
 dmain(buffer, wordlength, segment, offset)
-	void * buffer;
-	unsigned int wordlength;
-	unsigned int segment;
-	unsigned int offset;
+	void UNUSED(*buffer);
+	unsigned int UNUSED(wordlength);
+	unsigned int UNUSED(segment);
+	unsigned int UNUSED(offset);
 {
 	;
 }
@@ -790,11 +797,14 @@ swint(intno, rp)
  */
 int
 sysint(intno, inregs, outregs)
+#if defined(ROGUE_DOS_CURSES) && defined(ROGUE_DEBUG)
 	int intno;
+#else
+	int UNUSED(intno);
+#endif
 	struct sw_regs *inregs, *outregs;
 {
-#ifdef ROGUE_DOS_CURSES
-#ifdef ROGUE_DEBUG
+#if defined(ROGUE_DOS_CURSES) && defined(ROGUE_DEBUG)
 	if(print_int_calls)
 		printf("INT %x,%2X\t"
 				"al=%2X\t"
@@ -815,7 +825,6 @@ sysint(intno, inregs, outregs)
 				inregs->di,
 				inregs->ds,
 				inregs->es);
-#endif
 #endif
 	outregs->ax = 0;
 	outregs->bx = 0;
