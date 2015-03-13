@@ -180,7 +180,7 @@ pr_scores(newrank,top10)
 					strcpy(dthstr," wierded out");
 					break;
 		}
-	if ((strlen(top10->sc_name) + 10 +
+	if ((signed)(strlen(top10->sc_name) + 10 +
 		strlen(he_man[top10->sc_rank-1])) < COLS)
 	{
 		if (top10->sc_rank > 1 && (strlen(top10->sc_name)))

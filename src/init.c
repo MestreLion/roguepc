@@ -247,7 +247,7 @@ init_things()
 void
 init_colors()
 {
-	register int i, j;
+	unsigned int i, j;
 	bool used[NCOLORS];
 
 	for (i = 0; i < NCOLORS; i++)
@@ -344,7 +344,7 @@ rchr(string)
 void
 init_stones()
 {
-	register int i, j;
+	unsigned int i, j;
 	bool used[NSTONES];
 
 	for (i = 0; i < NSTONES; i++)
@@ -371,7 +371,7 @@ init_stones()
 void
 init_materials()
 {
-	register int i, j;
+	unsigned int i, j;
 	register char *str;
 	bool metused[NMETAL], woodused[NWOOD];
 

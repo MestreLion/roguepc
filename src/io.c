@@ -214,7 +214,7 @@ putmsg(msgline,msg)
 					curmsg = &lastmsg[COLS];
 					break;
 				}
-				if ((tmpmsg >= (lastmsg+COLS)) || (strlen(curmsg) < COLS))
+				if ((tmpmsg >= (lastmsg+COLS)) || ((signed)strlen(curmsg) < COLS))
 					break;
 				curmsg = tmpmsg + 1;
 			} while (1);
@@ -241,7 +241,7 @@ scrlmsg(msgline,str1,str2)
 
 	if (str1 == 0) {
 		move(msgline,0);
-		if (strlen(str2) < COLS)
+		if ((signed)strlen(str2) < COLS)
 			clrtoeol();
 		printw(fmt,str2);
 	}
@@ -249,7 +249,7 @@ scrlmsg(msgline,str1,str2)
 		while (str1 <= str2) {
 			move(msgline,0);
 			printw(fmt,str1++);
-			if (strlen(str1) < (COLS-1))
+			if ((signed)strlen(str1) < (COLS-1))
 				clrtoeol();
 		}
 }
