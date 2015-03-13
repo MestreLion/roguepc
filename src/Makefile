@@ -10,7 +10,7 @@
 #	speed.  Don't load in csav.o
 #
 TARGET:=rogue
-CFLAGS:=-Wall -O0 -std=c99 -pedantic
+CFLAGS:=-Wall -Wextra -D_FORTIFY_SOURCE=2 -O0 -std=c99 -pedantic
 LDLIBS:=-lcurses
 
 ifdef ROGUE_DEBUG
