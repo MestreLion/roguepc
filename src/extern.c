@@ -405,53 +405,69 @@ THING player;				/* The rogue */
 THING *lvl_obj = NULL;			/* List of objects on this level */
 THING *mlist = NULL;			/* List of monsters on the level */
 
+/*@
+ * Original code did not define a value for s_maxhp member of stats struct.
+ * s_maxhp from this monster template is unused, just like s_hpt, as its value
+ * was randomly chosen for each new generated monster. To make compilers happy,
+ * value is now set to a dummy ___ value, the same convention used in original
+ * code for s_hpt.
+ */
 #define ___ 1
 #define XX 10
 struct monster monsters[26] =
 {
-	/* Name		 CARRY	FLAG    str, exp, lvl, amr, hpt, dmg */
-	{ "aquator",	0,	ISMEAN,	{ XX, 20,   5,   2, ___, "0d0/0d0" } },
-	{ "bat",	 	0,	ISFLY,	{ XX,  1,   1,   3, ___, "1d2" } },
-	{ "centaur",	 15,	0,	{ XX, 25,   4,   4, ___, "1d6/1d6" } },
-	{ "dragon",	 100,	ISMEAN,	{ XX,6800, 10,  -1, ___, "1d8/1d8/3d10" } },
-	{ "emu",	 0,	ISMEAN,	{ XX,  2,   1,   7, ___, "1d2" } },
+	/* Name		 CARRY	FLAG    str, exp, lvl, amr, hpt, dmg, maxhp */
+	{ "aquator",	0,	ISMEAN,	{ XX, 20,   5,   2, ___, "0d0/0d0", ___ } },
+	{ "bat",	 	0,	ISFLY,	{ XX,  1,   1,   3, ___, "1d2", ___ } },
+	{ "centaur",	 15,	0,	{ XX, 25,   4,   4, ___, "1d6/1d6", ___ } },
+	{ "dragon",	 100,	ISMEAN,	{ XX,6800, 10,  -1, ___, "1d8/1d8/3d10", ___ } },
+	{ "emu",	 0,	ISMEAN,	{ XX,  2,   1,   7, ___, "1d2", ___ } },
 		/* NOTE: the damage is %%% so that xstr won't merge this */
 		/* string with others, since it is written on in the program */
-	{ "venus flytrap",0,	ISMEAN,	{ XX, 80,   8,   3, ___, "%%%d0" } },
-	{ "griffin",	 20,	ISMEAN|ISFLY|ISREGEN,	{XX,2000, 13, 2,___, "4d3/3d5/4d3" } },
-	{ "hobgoblin",	 0,	ISMEAN,	{ XX,  3,   1,   5, ___, "1d8" } },
-	{ "ice monster", 0,	ISMEAN,	{ XX,  15,   1,   9, ___, "1d2" } },
-	{ "jabberwock",  70,	0,	{ XX,4000, 15,   6, ___, "2d12/2d4" } },
-	{ "kestral",	 0,	ISMEAN|ISFLY, { XX,  1,   1,   7, ___, "1d4" } },
-	{ "leprechaun",	 ISGREED,	0,	{ XX, 10,   3,   8, ___, "1d2" } },
-	{ "medusa",	 40,	ISMEAN,	{ XX,200,   8,   2, ___, "3d4/3d4/2d5" } },
-	{ "nymph",	 100,	0,	{ XX, 37,   3,   9, ___, "0d0" } },
-	{ "orc",	 15,	ISGREED,{ XX,  5,   1,   6, ___, "1d8" } },
-	{ "phantom",	 0,ISINVIS,{ XX,120,   8,   3, ___, "4d4" } },
-	{ "quagga",	 30,	ISMEAN,	{ XX, 32,   3,   2, ___, "1d2/1d2/1d4" } },
-	{ "rattlesnake", 0,	ISMEAN,	{ XX,  9,   2,   3, ___, "1d6" } },
-	{ "slime",	 	 0,	ISMEAN,	{ XX,  1,   2,   8, ___, "1d3" } },
-	{ "troll",	 50,	ISREGEN|ISMEAN,{ XX, 120, 6, 4, ___, "1d8/1d8/2d6" } },
-	{ "ur-vile",	 0,	ISMEAN,	{ XX,190,   7,  -2, ___, "1d3/1d3/1d3/4d6" } },
-	{ "vampire",	 20,	ISREGEN|ISMEAN,{ XX,350,   8,   1, ___, "1d10" } },
-	{ "wraith",	 0,	0,	{ XX, 55,   5,   4, ___, "1d6" } },
-	{ "xeroc",30,	0,	{ XX,100,   7,   7, ___, "3d4" } },
-	{ "yeti",	 30,	0,	{ XX, 50,   4,   6, ___, "1d6/1d6" } },
-	{ "zombie",	 0,	ISMEAN,	{ XX,  6,   2,   8, ___, "1d8" } }
+	{ "venus flytrap",0,	ISMEAN,	{ XX, 80,   8,   3, ___, "%%%d0", ___ } },
+	{ "griffin",	 20,	ISMEAN|ISFLY|ISREGEN,	{XX,2000, 13, 2,___, "4d3/3d5/4d3", ___ } },
+	{ "hobgoblin",	 0,	ISMEAN,	{ XX,  3,   1,   5, ___, "1d8", ___ } },
+	{ "ice monster", 0,	ISMEAN,	{ XX,  15,   1,   9, ___, "1d2", ___ } },
+	{ "jabberwock",  70,	0,	{ XX,4000, 15,   6, ___, "2d12/2d4", ___ } },
+	{ "kestral",	 0,	ISMEAN|ISFLY, { XX,  1,   1,   7, ___, "1d4", ___ } },
+	{ "leprechaun",	 ISGREED,	0,	{ XX, 10,   3,   8, ___, "1d2", ___ } },
+	{ "medusa",	 40,	ISMEAN,	{ XX,200,   8,   2, ___, "3d4/3d4/2d5", ___ } },
+	{ "nymph",	 100,	0,	{ XX, 37,   3,   9, ___, "0d0", ___ } },
+	{ "orc",	 15,	ISGREED,{ XX,  5,   1,   6, ___, "1d8", ___ } },
+	{ "phantom",	 0,ISINVIS,{ XX,120,   8,   3, ___, "4d4", ___ } },
+	{ "quagga",	 30,	ISMEAN,	{ XX, 32,   3,   2, ___, "1d2/1d2/1d4", ___ } },
+	{ "rattlesnake", 0,	ISMEAN,	{ XX,  9,   2,   3, ___, "1d6", ___ } },
+	{ "slime",	 	 0,	ISMEAN,	{ XX,  1,   2,   8, ___, "1d3", ___ } },
+	{ "troll",	 50,	ISREGEN|ISMEAN,{ XX, 120, 6, 4, ___, "1d8/1d8/2d6", ___ } },
+	{ "ur-vile",	 0,	ISMEAN,	{ XX,190,   7,  -2, ___, "1d3/1d3/1d3/4d6", ___ } },
+	{ "vampire",	 20,	ISREGEN|ISMEAN,{ XX,350,   8,   1, ___, "1d10", ___ } },
+	{ "wraith",	 0,	0,	{ XX, 55,   5,   4, ___, "1d6", ___ } },
+	{ "xeroc",30,	0,	{ XX,100,   7,   7, ___, "3d4", ___ } },
+	{ "yeti",	 30,	0,	{ XX, 50,   4,   6, ___, "1d6/1d6", ___ } },
+	{ "zombie",	 0,	ISMEAN,	{ XX,  6,   2,   8, ___, "1d8", ___ } }
 };
 char f_damage[10];
 #undef ___
 #undef XX
 
+/*@
+ * Not to be confused with _things[], which is an array of THINGS on the level
+ * This one serves to choose the type of random items. The actual probability
+ * is redefined in init_things(), and the only user is new_thing().
+ * To make compilers happy, the unused mi_worth is set using ___, as per
+ * original code convention.
+ */
+#define ___ 1
 struct magic_item things[NUMTHINGS] = {
-	{ 0,			27 },	/* potion */
-	{ 0,			30 },	/* scroll */
-	{ 0,			17 },	/* food */
-	{ 0,			 8 },	/* weapon */
-	{ 0,			 8 },	/* armor */
-	{ 0,			 5 },	/* ring */
-	{ 0,			 5 }	/* stick */
+	{ 0,			27, ___ },	/* potion */
+	{ 0,			30, ___ },	/* scroll */
+	{ 0,			17, ___ },	/* food */
+	{ 0,			 8, ___ },	/* weapon */
+	{ 0,			 8, ___ },	/* armor */
+	{ 0,			 5, ___ },	/* ring */
+	{ 0,			 5, ___ }	/* stick */
 };
+#undef ___
 
 /*
  * Common strings
