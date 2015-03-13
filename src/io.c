@@ -453,8 +453,7 @@ wait_msg(const char *msg)
  *	@ a window? looks like a single message to me!
  */
 void
-show_win(scr, message)
-	int *scr;
+show_win(message)
 	char *message;
 {
 	mvaddstr(0,0,message);

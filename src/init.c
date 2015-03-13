@@ -435,8 +435,7 @@ byte *_flags;
  *   Allocate things data space
  */
 void
-init_ds(clrflag)
-	int clrflag;
+init_ds(void)
 {
 	register long *ep;
 

@@ -195,9 +195,8 @@ roll(number, sides)
  *	refreshing things and looking at the proper times.
  */
 void
-playit(sname,bw)
+playit(sname)
 	char *sname;
-	int bw;
 {
 	if (sname) {
 		restore(sname);

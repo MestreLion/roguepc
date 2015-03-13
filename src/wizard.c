@@ -264,7 +264,7 @@ show_map()
 		if (!real)
 		standend();
 	}
-	show_win(hw, "---More (level map)---");
+	show_win("---More (level map)---");
 	wrestor();
 }
 
