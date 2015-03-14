@@ -29,7 +29,7 @@
 #define getxy	getrc
 
 //@ Modified macros
-#define inch	curch
+#define inch	cur_inch
 #define standend	cur_standend
 #define standout	cur_standout
 #define endwin	cur_endwin

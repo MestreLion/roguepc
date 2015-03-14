@@ -400,13 +400,13 @@ putchr(byte ch)
  * stripping is now performed here, and it returns a character of type byte,
  * the type consistently used by Rogue to indicate a CP850 character.
  *
- * Originally in zoom.asm
+ * Originally in zoom.asm by the name curch()
  *
  * By my understanding, asm function works very similar to putchr():
  * If iscuron, invokes BIOS INT 10h/AH=02h to set cursor position from cache
  * and 10h/AH=08h to read character, else wait retrace (unless no_check) and
  * read directly from Video Memory. The set cursor BIOS call seems quite
- * redundant, as virtually all calls to curch(), from both the inch() macro and
+ * redundant, as virtually all calls to this, from both the inch() macro and
  * the mvinch() wrapper, are preceded by a move().
  *
  * This function replicates this behavior, except the redundant move.
@@ -418,7 +418,7 @@ putchr(byte ch)
  * AL = character
  */
 byte
-curch(void)
+cur_inch(void)
 {
 #ifdef ROGUE_DOS_CURSES
 	chtype chrattr = 0;
@@ -603,8 +603,9 @@ cur_mvinch(r, c)
 	int r, c;
 {
 	cur_move(r, c);
-	return curch();
+	return cur_inch();
 }
+
 
 /*
  * put the character on the screen and update the

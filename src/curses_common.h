@@ -230,7 +230,7 @@ int 	cur_getch_timeout(int msdelay);
 
 //@ originally in zoom.asm
 void	cur_move(int row, int col);
-byte	curch(void);
+byte	cur_inch(void);
 
 //@ moved from io.c
 int 	getinfo(char *str, int size);
