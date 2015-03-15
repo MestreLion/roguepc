@@ -17,7 +17,7 @@
 #endif
 
 #include	<curses.h>
-#endif
+#endif  // ROGUE_DOS_CURSES
 
 #include	"curses_common.h"
 #include	"curses_dos.h"
@@ -53,8 +53,11 @@ char savewin[2048 * sizeof(chtype)];  //@ originally 4096 bytes
 #else
 chtype	savewin[MAXLINES][MAXCOLS + 1];  // temp buffer to hold screen contents
 chtype	curtain[MAXLINES][MAXCOLS + 1];  // temp buffer for curtain animations
+int 	charset = ROGUE_CHARSET;  // allow run-time / env file selection
 int 	colors;  // number of basic colors
-#endif
+wchar_t	ccunicode[2];  // temp buffer
+CCODE	ccode = {'\0', ccunicode, '\0'};  // temp charcode
+#endif  // ROGUE_DOS_CURSES
 
 
 #define MAXATTR 17
@@ -101,6 +104,79 @@ byte monoc_attr[] = {
 } ;
 
 byte *at_table;
+
+/*@
+ * Changes in ASCII chars from Unix Rogue (and roguelike ASCII tradition):
+ * AMULET: ',' to '&'. Needed ',' for corners; Not meant to be subtle in DOS
+ * xxWALL: '-' to ",`;\'". DOS code requires unique values (for switch cases)
+ * BMAGIC: '+' to '{'. Needed '+' for door. BMAGIC is a DOS-only extension.
+ *
+ * Note: Swapping '+' with '}' would yield a better visual result, as '}' is
+ * great as door and it better matches DOS CP437 char 0xCE. But I will not be
+ * the one to break such a well-known convention, and get flamed for heresy.
+ * You do it.
+ */
+CCODE ctab[] = {
+		{'@', L"\x263A", 0x01},  // ☺ PLAYER
+		{'^', L"\x2666", 0x04},  // ♦ TRAP
+		{':', L"\x2663", 0x05},  // ♣ FOOD
+		{']', L"\x25D8", 0x08},  // ◘ ARMOR
+		{'=', L"\x25CB", 0x09},  // ○ RING
+		{'&', L"\x2640", 0x0C},  // ♀ AMULET
+		{'?', L"\x266A", 0x0D},  // ♪ SCROLL
+		{'*', L"\x263C", 0x0F},  // ☼ GOLD
+		{')', L"\x2191", 0x18},  // ↑ WEAPON
+		{'!', L"\x00A1", 0xAD},  // ¡ POTION
+		{'#', L"\x2592", 0xB1},  // ▒ PASSAGE
+		{'+', L"\x256C", 0xCE},  // ╬ DOOR
+		{'/', L"\x03C4", 0xE7},  // τ STICK
+		{'.', L"\x00B7", 0xFA},  // · FLOOR
+		{'%', L"\x2261", 0xF0},  // ≡ STAIRS
+
+		{'{', L"+",    '+'},     // + BMAGIC
+
+		// dungeon room walls. must be unique
+		{'|', L"\x2551", 0xBA},  // ║ VWALL
+		{'-', L"\x2550", 0xCD},  // ═ HWALL
+		{',', L"\x2554", 0xC9},  // ╔ ULWALL
+		{';', L"\x2557", 0xBB},  // ╗ URWALL
+		{'`', L"\x255A", 0xC8},  // ╚ LLWALL
+		{'\'',L"\x255D", 0xBC},  // ╝ LRWALL
+
+		{'X', L"\x2563", 0xB9},  // ╣ DVLEFT
+		{'K', L"\x2560", 0xCC},  // ╠ DVRIGHT
+
+		{'<', L"\x25C4", 0x11},  // ◄ 'Enter' char 1
+		{'/', L"\x2518", 0xD9},  // ┘ 'Enter' char 2
+
+	//	{'^', L"\x2191", 0x18},  // ↑ up (same as WEAPON)
+		{'v', L"\x2193", 0x19},  // ↓ down
+		{'>', L"\x2192", 0x1A},  // → right
+		{'<', L"\x2190", 0x1B},  // ← left
+
+		{'~', L"~", 0}  // if ~ appears on screen, something went wrong!
+};
+
+CCODE btab[] = {
+		// single-width box glyphs
+		{'|', L"\x2502", 0xB3},  // │ VLINE
+		{'-', L"\x2500", 0xC4},  // ─ HLINE
+		{'.', L"\x250C", 0xDA},  // ┌ ULCORNER
+		{'.', L"\x2510", 0xBF},  // ┐ URCORNER
+		{'`', L"\x2514", 0xC0},  // └ LLCORNER
+		{'\'',L"\x2518", 0xD9},  // ┘ LRCORNER
+
+		//same as *WALL set, but used in boxes, with different ASCII
+		{'H', L"\x2551", 0xBA},  // ║ DVLINE
+		{'=', L"\x2550", 0xCD},  // ═ DHLINE
+		{'#', L"\x2554", 0xC9},  // ╔ DULCORNER
+		{'#', L"\x2557", 0xBB},  // ╗ DURCORNER
+		{'#', L"\x255A", 0xC8},  // ╚ DLLCORNER
+		{'#', L"\x255D", 0xBC},  // ╝ DLRCORNER
+
+		{'\0', L"", 0}
+};
+
 
 byte dbl_box[BX_SIZE] = {
 	DULCORNER, DURCORNER, DLLCORNER, DLRCORNER, DVLINE, DHLINE, DHLINE
@@ -294,7 +370,7 @@ xlate_ch(int ch)
  * DH = row
  * DL = col
  */
-void
+int
 cur_move(row, col)
 	int row;
 	int col;
@@ -311,7 +387,7 @@ cur_move(row, col)
 		swint(SW_SCR, regs);
 	}
 #else
-	wmove(stdscr, row, col);
+	return wmove(stdscr, row, col);
 #endif
 }
 
@@ -427,8 +503,36 @@ cur_inch(void)
 	}
 	return (byte)LOW(chrattr);
 #else
-	return (byte)(A_CHARTEXT & winch(stdscr));
-#endif
+	byte chd = 0;
+	CCODE *ccp;
+	wchar_t wch;  // character on screen
+	wchar_t wcr;  // reference character on ctab mapping
+
+	wch = (wchar_t)(A_CHARTEXT & winch(stdscr));
+
+	if (charset == CP437)
+	{
+		return (byte)wch;
+	}
+	for(ccp = ctab; ccp->dos; ccp++)
+	{
+		switch (charset)
+		{
+		default:      wcr = L'\0';
+		break;
+		case ASCII:   wcr = (wchar_t)ccp->ascii;
+		break;
+		case UNICODE: wcr = *ccp->unicode;
+		break;
+		}
+		if (wch == wcr)
+		{
+			chd = ccp->dos;
+			break;
+		}
+	}
+	return chd;
+#endif  // ROGUE_DOS_CURSES
 }
 
 
@@ -706,11 +810,21 @@ cur_addch(byte chr)
 		cur_move(r,c+1);
 	}
 #else
-	waddch(stdscr, attr_from_dos(ch_attr) | chr);
-#endif
+	switch (charset)
+	{
+	// ASCII, and also UNICODE if wide not available
+	default:
+		chr = ascii_from_dos(chr, ctab);
+		/* no break */
+	case CP437:
+		waddch(stdscr, chr | attr_from_dos(ch_attr));
+		break;
+	}
+#endif  // ROGUE_DOS_CURSES
 	ch_attr = old_attr;
 	return;
 }
+
 
 void
 cur_addstr(s)
@@ -727,6 +841,37 @@ cur_addstr(s)
 #endif
 	print_int_calls = TRUE;
 #endif
+}
+
+
+byte
+ascii_from_dos(byte chd, CCODE *mapping)
+{
+	return charcode_from_dos(chd, mapping)->ascii;
+}
+
+
+CCODE *
+charcode_from_dos(byte chd, CCODE *mapping)
+{
+	CCODE *ccp;
+
+	// Shortcut for "ordinary" chars - printable ASCII not in ctab
+	if (chd=='\n' || (isascii(chd) && isprint(chd) && chd != '+'))
+	{
+		ccode.ascii = ccode.dos = *ccode.unicode = chd;
+		return &ccode;
+	}
+
+	for(ccp = mapping; ccp->dos; ccp++)
+	{
+		if (chd == ccp->dos)
+		{
+			return ccp;
+		}
+	}
+	// if not found, will return the sentinel
+	return ccp;
 }
 
 
@@ -1192,6 +1337,30 @@ cur_endwin()
 /*
  *  Some general drawing routines
  */
+int
+cur_line(byte chd, int length, bool orientation)
+{
+	chtype ch;
+
+	switch (charset)
+	{
+	// ASCII, and also UNICODE if wide not available
+	default:
+		ch = ascii_from_dos(chd, btab);
+		if (ch == '\0')
+			ch = ascii_from_dos(chd, ctab);
+		chd = (byte)ch;
+		/* no break */
+	case CP437:
+		ch = chd | attr_from_dos(ch_attr);
+		if (orientation == VERTICAL)
+			wvline(stdscr, ch, length);
+		else
+			whline(stdscr, ch, length);
+		break;
+	}
+	return OK;
+}
 
 void
 cur_box(int ul_r, int ul_c, int lr_r, int lr_c)
@@ -1238,18 +1407,17 @@ vbox(box, ul_r,ul_c,lr_r,lr_c)
 	cur_mvaddch(lr_r,ul_c,box[BX_LL]);
 	cur_mvaddch(lr_r,lr_c,box[BX_LR]);
 #else
-	mvhline(ul_r, ul_c+1, box[BX_HT], i = (lr_c - ul_c - 1));
-	mvhline(lr_r, ul_c+1, box[BX_HB], i);
-	mvvline(ul_r+1, ul_c, box[BX_VW], i = (lr_r - ul_r - 1));
-	mvvline(ul_r+1, lr_c, box[BX_VW], i);
+	cur_mvhline(ul_r, ul_c+1, box[BX_HT], i = (lr_c - ul_c - 1));
+	cur_mvhline(lr_r, ul_c+1, box[BX_HB], i);
+	cur_mvvline(ul_r+1, ul_c, box[BX_VW], i = (lr_r - ul_r - 1));
+	cur_mvvline(ul_r+1, lr_c, box[BX_VW], i);
 
-	//@ corners - do not go through cur_addch() processing
-	mvaddch(ul_r,ul_c,box[BX_UL]);
-	mvaddch(ul_r,lr_c,box[BX_UR]);
-	mvaddch(lr_r,ul_c,box[BX_LL]);
-	mvaddch(lr_r,lr_c,box[BX_LR]);
+	//@ corners - do not go through cur_addch(), different mapping
+	cur_mvhline(ul_r,ul_c,box[BX_UL], 1);
+	cur_mvhline(ul_r,lr_c,box[BX_UR], 1);
+	cur_mvhline(lr_r,ul_c,box[BX_LL], 1);
+	cur_mvhline(lr_r,lr_c,box[BX_LR], 1);
 #endif
-
 	cur_move(r,c);
 	cursor(wason);
 }
@@ -1371,7 +1539,7 @@ repchr(byte chr, int cnt)
 #else
 	int c_row, c_col;
 	getyx(stdscr, c_row, c_col);
-	whline(stdscr, chr, cnt);
+	cur_hline(chr, cnt);
 	wmove(stdscr, c_row, c_col + cnt);
 #endif
 }
@@ -1406,8 +1574,8 @@ implode()
 			cur_move(j, c+1); repchr(' ', cinc-1);
 			cur_move(j, ec-cinc+1); repchr(' ', cinc-1);
 #else
-			mvhline(j, c+1, ' ', cinc-1);
-			mvhline(j, ec-cinc+1, ' ', cinc-1);
+			cur_mvhline(j, c+1, ' ', cinc-1);
+			cur_mvhline(j, ec-cinc+1, ' ', cinc-1);
 #endif
 		}
 		vbox(spc_box, r, c, er, ec);
@@ -1503,7 +1671,7 @@ drop_curtain(void)
 	wrefresh(stdscr);
 	yellow();
 	for (r = 1; r < LINES-1; r++) {
-		mvhline(r, 1, PASSAGE, COLS-2);
+		cur_mvhline(r, 1, FILLER, COLS-2);
 		mvinchnstr(r, 0, curtain[r], COLS);
 		wrefresh(stdscr);
 		msleep(delay);

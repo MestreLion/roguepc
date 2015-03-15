@@ -72,8 +72,25 @@ void	wsetmem(void *buffer, int count, chtype attrchar);
 #define PAIR_INDEX(fg, bg)	(bg * colors + fg + 1)
 #define COLOR_PAIR_N(fg, bg)	COLOR_PAIR(PAIR_INDEX(fg, bg))
 
+#define HORIZONTAL TRUE
+#define VERTICAL   FALSE
 
+#define cur_hline(chd, length)	cur_line(chd, length, HORIZONTAL)
+#define cur_vline(chd, length)	cur_line(chd, length, VERTICAL)
+#define cur_mvhline(y,x,c,n)	(cur_move(y,x) == ERR ? ERR : cur_hline(c, n))
+#define cur_mvvline(y,x,c,n)	(cur_move(y,x) == ERR ? ERR : cur_vline(c, n))
+
+struct charcode {
+	byte ascii;
+	wchar_t *unicode;
+	byte dos;
+};
+typedef struct charcode CCODE;
+
+byte	ascii_from_dos(byte chd, CCODE *mapping);
+CCODE	*charcode_from_dos(byte chd, CCODE *mapping);
 short	color_from_dos(byte dos_attr, bool fg);
 chtype	attr_from_dos(byte dos_attr);
 void	init_curses_colors(void);
+int	cur_line(byte chd, int length, bool orientation);
 #endif
