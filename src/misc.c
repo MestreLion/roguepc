@@ -632,7 +632,7 @@ help(helpscr)
 
 		move (hrow,hcol);
 
-		addstr(helpscr->h_chstr);
+		addstr((char *)helpscr->h_chstr);
 		addstr(helpscr->h_desc);
 		helpscr++;
 

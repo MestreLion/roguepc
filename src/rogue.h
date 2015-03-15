@@ -315,7 +315,7 @@
  * @ this was unused in original. Now improved and put to good use
  */
 struct h_list {
-	char h_chstr[6];  //@ either (ch) or (ch,sep,ch2) appended with ": "
+	byte h_chstr[6];  //@ either (ch) or (ch,sep,ch2) appended with ": "
 	char *h_desc;
 };
 
