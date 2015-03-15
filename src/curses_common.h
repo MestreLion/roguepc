@@ -13,7 +13,7 @@
 #define UNICODE	3
 
 // User-selected charset
-#ifndef ROGUE_CHARSET
+#if !(ROGUE_CHARSET == ASCII || ROGUE_CHARSET == CP437 || ROGUE_CHARSET == UNICODE)
 	// Factory default charset
 	#define ROGUE_CHARSET	UNICODE
 #endif
@@ -21,22 +21,6 @@
 #if ROGUE_CHARSET == UNICODE && !defined (_XOPEN_CURSES)
 	#undef  ROGUE_CHARSET
 	#define ROGUE_CHARSET	ASCII
-#endif
-
-
-// Convenience defines
-#if   ROGUE_CHARSET == ASCII
-	#define ROGUE_ASCII   1
-	#undef  ROGUE_CP437
-	#undef  ROGUE_UNICODE
-#elif ROGUE_CHARSET == CP437
-	#undef  ROGUE_ASCII
-	#define ROGUE_CP437   1
-	#undef  ROGUE_UNICODE
-#elif ROGUE_CHARSET == UNICODE
-	#undef  ROGUE_ASCII
-	#undef  ROGUE_CP437
-	#define ROGUE_UNICODE 1
 #endif
 
 //@ Columns mode
