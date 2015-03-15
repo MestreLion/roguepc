@@ -60,8 +60,11 @@ void
 save_game()
 {
 #ifndef DEMO
-	register int retcode;
+	int retcode;
 	char savename[20];
+
+	printw("Sorry, saving games is disabled. Patches are welcome!");
+	return;
 
 	msg("");
 	mpos = 0;
@@ -70,6 +73,18 @@ save_game()
 	else
 		printw("Save file (press enter (\x11\xd9) to default to \"%s\") ? ",
 				s_save );
+	/*@
+	 * FIXME
+	 * Previous message length + 19 input chars > 80 columns, message will
+	 * wrap to 2nd line, overwriting the dungeon. This bug happened in
+	 * original too, if "savefile" entry in ROGUE.OPT had length 14.
+	 * Not a problem if save is successful, as game will exit afterwards,
+	 * but in case of any non-fatal error dungeon will be corrupt.
+	 *
+	 * In any case, this UI must be redesigned for filenames beyond DOS 8+3.
+	 * Possible approach: save 2nd line, use it for input (80/40 char limit
+	 * is acceptable), then restore line on errors.
+	 */
 	retcode = getinfo(savename,19);
 	if (*savename == 0)
 		strcpy(savename,s_save);
@@ -82,7 +97,7 @@ save_game()
 			if (remove(savename) == 0)
 				ifterse1("out of space?","out of space, can not write %s",savename);
 			msg("Sorry, you can't save the game just now");
-			is_saved = FALSE;
+			//@ is_saved = FALSE;  //@ wrestor() did that already
 		}
 		else if (retcode > 0)
 			fatal("\nGame saved as %s.", savename);
@@ -120,7 +135,7 @@ save_ds(savename)
 		msg("Could not create %s",savename);
 		return (-2);
 	}
-	is_saved = TRUE;
+	//@ is_saved = TRUE;  //@ wdump() will do that
 	mpos = 0;
 
 	errno = 1;
@@ -164,9 +179,16 @@ wr_err:
  *		dump into memory all saved data.
  */
 void
-restore(savefile)
-	char *savefile;
+restore(char *savefile)
 {
+	fatal("Sorry, restoring games is disabled. Patches are welcome!\n");
+
+/*@
+ *  I wonder how the original Demo handled a restore attempt. Function is
+ *  stubbed, but it's still called by playit(), which always assume a restore
+ *  was successful and simply move on! In this case, many key initializations
+ *  will be missing. This can't be good...
+ */
 #ifndef DEMO
 	int oldrev, oldver, old_check;
 	register int oldcols;
