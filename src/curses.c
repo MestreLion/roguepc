@@ -625,8 +625,9 @@ cur_addch(byte chr)
 	{
 		/* if it is inside a room */
 		if (ch_attr == A_DOS_NORMAL)
-		switch(chr)
 		{
+			switch(chr)
+			{
 			case DOOR:
 			case VWALL:
 			case HWALL:
@@ -661,11 +662,13 @@ cur_addch(byte chr)
 			case FOOD:
 				ch_attr = 4;
 				break;
+			}
 		}
 		/* if inside a passage or a maze */
 		else if (ch_attr == 112)
-		switch(chr)
 		{
+			switch(chr)
+			{
 			case FOOD:
 				ch_attr = 116;   /* red */
 				break;
@@ -682,6 +685,7 @@ cur_addch(byte chr)
 			case WEAPON:
 				ch_attr = 113;    /* blue on white */
 				break;
+			}
 		}
 		else if (ch_attr == 15 && chr == STAIRS)
 			ch_attr = 160;
@@ -922,6 +926,7 @@ winit(void)
 	 * Get monitor type
 	 */
 #ifdef ROGUE_DOS_SCREEN
+	//@ if get_mode() also returned BH, it could be used here
 	regs->ax = 15 << 8;
 	swint(SW_SCR, regs);
 	old_page_no = regs->bx >> 8;
@@ -1048,7 +1053,7 @@ winit(void)
 	{
 		if (resizeterm(lines, cols) == OK)
 		{
-			wgetch(stdscr);  //@ eat up the generated KEY_RESIZE
+			flushinp();  //@ eat up the generated KEY_RESIZE
 		}
 		else
 		{
@@ -1058,9 +1063,16 @@ winit(void)
 	}
 	cbreak();  //@ do not buffer input until ENTER
 	noecho();  //@ do not echo typed characters
-	immedok(stdscr, TRUE);  //@ immediately refresh() screen on *add{ch,str}()
 	nodelay(stdscr, FALSE); //@ use a blocking getch() (already the default)
 	keypad(stdscr, TRUE);   //@ enable directional arrows, keypad, home, etc
+
+	/*@
+	 * Immediately refresh() screen on *add{ch,str}() and friends.
+	 * Needed for arrow/bolt animations. See tick_pause() and its callers.
+	 * May also be needed in other places, as original did not have refresh()
+	 * If this is ever removed, adjust {drop,raise}_curtain() accordingly.
+	 */
+	immedok(stdscr, TRUE);
 
 	if (has_colors())
 		init_curses_colors();
@@ -1490,20 +1502,23 @@ drop_curtain(void)
 	int r;
 	int delay = CURTAIN_TIME / LINES;
 
+	immedok(stdscr, FALSE);
+
 	cursor(FALSE);
 	green();
 	vbox(sng_box, 0, 0, LINES-1, COLS-1);
 	mvinchnstr(0, 0, curtain[0], COLS);
+	wrefresh(stdscr);
 	yellow();
 	for (r = 1; r < LINES-1; r++) {
 		mvhline(r, 1, PASSAGE, COLS-2);
 		mvinchnstr(r, 0, curtain[r], COLS);
+		wrefresh(stdscr);
 		msleep(delay);
 	}
 	mvinchnstr(LINES-1, 0, curtain[LINES-1], COLS);
 	cur_move(0,0);
 	cur_standend();
-	immedok(stdscr, FALSE);
 	wclear(stdscr);
 }
 
