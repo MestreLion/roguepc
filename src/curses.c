@@ -103,20 +103,11 @@ byte monoc_attr[] = {
 byte *at_table;
 
 byte dbl_box[BX_SIZE] = {
-#ifdef ROGUE_ASCII
-		DCORNER, DCORNER, DCORNER, DCORNER, DVLINE, DHLINE, DHLINE
-#else
-		//@ could be replaced with corresponding *WALL constants
-		0xc9, 0xbb, 0xc8, 0xbc, 0xba, 0xcd, 0xcd
-#endif
+	DULCORNER, DURCORNER, DLLCORNER, DLRCORNER, DVLINE, DHLINE, DHLINE
 };
 
 byte sng_box[BX_SIZE] = {
-#ifdef ROGUE_ASCII
-		ULCORNER, URCORNER, LLCORNER, LRCORNER, VLINE, HLINE
-#else
-		0xda, 0xbf, 0xc0, 0xd9, 0xb3, 0xc4, 0xc4
-#endif
+	ULCORNER, URCORNER, LLCORNER, LRCORNER, VLINE, HLINE, HLINE
 };
 
 //@ unused
@@ -779,7 +770,7 @@ color_from_dos(byte dos_attr, bool fg)
 chtype
 attr_from_dos(byte dos_attr)
 {
-	chtype attr = A_NORMAL;
+	chtype attr = A_NORMAL | COLOR_PAIR(0);
 	short fg, bg;
 
 	// shortcut to avoid setting (and calculating) a spurious color pair
@@ -840,8 +831,9 @@ init_curses_colors(void)
 	 *   retrieve a curses color pair attribute by foreground and background
 	 *   index instead of pair index.
 	 *
-	 * - Color pair 0 is neither initialized nor used, per portability
-	 *   recommendation in curses documentation.
+	 * - Color pair 0 is not initialized, as per recommendation in curses
+	 *   documentation, and it is only used when DOS attributes are set to
+	 *   A_DOS_NORMAL, for example by cur_standend().
 	 *
 	 * - The default foreground and background colors used by DOS, as defined
 	 *   by A_DOS_NORMAL, were mapped to (COLOR_WHITE, COLOR_BLACK). If the

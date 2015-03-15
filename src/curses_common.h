@@ -7,29 +7,36 @@
  * kept together here for consistency and completeness.
  */
 
-//@ Available charsets
+// Available charsets
 #define ASCII	1
 #define CP437	2
-#define UTF8	3
+#define UNICODE	3
 
-//@ Selected charset
+// User-selected charset
 #ifndef ROGUE_CHARSET
+	// Factory default charset
+	#define ROGUE_CHARSET	UNICODE
+#endif
+// UNICODE is subject to curses wide char availability
+#if ROGUE_CHARSET == UNICODE && !defined (_XOPEN_CURSES)
+	#undef  ROGUE_CHARSET
 	#define ROGUE_CHARSET	ASCII
 #endif
 
-//@ Convenience defines
+
+// Convenience defines
 #if   ROGUE_CHARSET == ASCII
-	#define ROGUE_ASCII  1
+	#define ROGUE_ASCII   1
 	#undef  ROGUE_CP437
-	#undef  ROGUE_UTF8
+	#undef  ROGUE_UNICODE
 #elif ROGUE_CHARSET == CP437
 	#undef  ROGUE_ASCII
-	#define ROGUE_CP437  1
-	#undef  ROGUE_UTF8
-#elif ROGUE_CHARSET == UTF8
+	#define ROGUE_CP437   1
+	#undef  ROGUE_UNICODE
+#elif ROGUE_CHARSET == UNICODE
 	#undef  ROGUE_ASCII
 	#undef  ROGUE_CP437
-	#define ROGUE_UTF8   1
+	#define ROGUE_UNICODE 1
 #endif
 
 //@ Columns mode
@@ -132,7 +139,7 @@
 //@ single-width box glyphs
 #define HLINE	'-'
 #define VLINE	'|'
-#define CORNER	'+'  //@ "generic" corner
+#define CORNER	'+'  //@ "generic" corner, unused
 #define ULCORNER	'.'
 #define URCORNER	'.'
 #define LLCORNER	'`'
@@ -142,6 +149,10 @@
 #define DHLINE	'='
 #define DVLINE	'H'
 #define DCORNER	'#'
+#define DULCORNER	DCORNER
+#define DURCORNER	DCORNER
+#define DLLCORNER	DCORNER
+#define DLRCORNER	DCORNER
 
 //@ only used in credits()
 #define DVLEFT	'X'
@@ -174,8 +185,27 @@
 #define LLWALL	(0xc8)
 #define LRWALL	(0xbc)
 
-//@ not in original - decimals were hard-coded
-#define DHLINE	(0xcd)  //@ 205
+//@ The following were not in original - values were hard-coded
+
+//@ single-width box glyphs
+#define HLINE	(0xc4)
+#define VLINE	(0xb3)
+#define CORNER	'+'  //@ unused, added just for completeness
+#define ULCORNER	(0xda)
+#define URCORNER	(0xbf)
+#define LLCORNER	(0xc0)
+#define LRCORNER	(0xd9)
+
+//@ double-width box glyphs
+#define DHLINE	HWALL  // 205 in credits()
+#define DVLINE	VWALL
+#define DCORNER	'#'  //@ also unused
+#define DULCORNER	ULWALL
+#define DURCORNER	URWALL
+#define DLLCORNER	LLWALL
+#define DLRCORNER	LRWALL
+
+//@ only used in credits()
 #define DVLEFT	(0xb9)  //@ 185
 #define DVRIGHT	(0xcc)  //@ 204
 #endif
