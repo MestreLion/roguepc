@@ -80,6 +80,14 @@ void	wsetmem(void *buffer, int count, chtype attrchar);
 #define cur_mvhline(y,x,c,n)	(cur_move(y,x) == ERR ? ERR : cur_hline(c, n))
 #define cur_mvvline(y,x,c,n)	(cur_move(y,x) == ERR ? ERR : cur_vline(c, n))
 
+#ifdef _XOPEN_CURSES
+#define cur_mvaddchnstr	mvadd_wchnstr
+#define cur_mvinchnstr	mvin_wchnstr
+#else
+#define cur_mvaddchnstr	mvaddchnstr
+#define cur_mvinchnstr	mvinchnstr
+#endif  // _XOPEN_CURSES
+
 struct charcode {
 	byte ascii;
 	wchar_t *unicode;
@@ -87,6 +95,10 @@ struct charcode {
 };
 typedef struct charcode CCODE;
 
+#ifdef _XOPEN_CURSES
+cchar_t *unicode_from_dos(byte chd, byte dos_attr, CCODE *mapping);
+void	attrw_from_dos(byte dos_attr, attr_t *attrs, short *color_pair);
+#endif
 byte	ascii_from_dos(byte chd, CCODE *mapping);
 CCODE	*charcode_from_dos(byte chd, CCODE *mapping);
 short	color_from_dos(byte dos_attr, bool fg);

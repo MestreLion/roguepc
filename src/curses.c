@@ -16,6 +16,8 @@
 #define _XOPEN_SOURCE_EXTENDED
 #endif
 
+//@ <curses.h> will set _XOPEN_CURSES if wide chars are available
+#undef _XOPEN_CURSES
 #include	<curses.h>
 #endif  // ROGUE_DOS_CURSES
 
@@ -51,11 +53,17 @@ int c_row, c_col;   /*  Save cursor positions so we don't ask dos */
 int scr_row[25];
 char savewin[2048 * sizeof(chtype)];  //@ originally 4096 bytes
 #else
+#ifndef _XOPEN_CURSES
 chtype	savewin[MAXLINES][MAXCOLS + 1];  // temp buffer to hold screen contents
 chtype	curtain[MAXLINES][MAXCOLS + 1];  // temp buffer for curtain animations
+#else
+cchar_t	savewin[MAXLINES][MAXCOLS + 1];
+cchar_t	curtain[MAXLINES][MAXCOLS + 1];
+cchar_t	cctemp;
+#endif // _XOPEN_CURSES
 int 	charset = ROGUE_CHARSET;  // allow run-time / env file selection
 int 	colors;  // number of basic colors
-wchar_t	ccunicode[2];  // temp buffer
+wchar_t	ccunicode[2] = L" ";  // temp buffer
 CCODE	ccode = {'\0', ccunicode, '\0'};  // temp charcode
 #endif  // ROGUE_DOS_CURSES
 
@@ -507,8 +515,19 @@ cur_inch(void)
 	CCODE *ccp;
 	wchar_t wch;  // character on screen
 	wchar_t wcr;  // reference character on ctab mapping
+#ifdef _XOPEN_CURSES
+	cchar_t cch;
+	wchar_t wcha[CCHARW_MAX + 1];
+	attr_t dummya;
+	short dummyc;
+
+	win_wch(stdscr, &cch);
+	getcchar(&cch, wcha, &dummya, &dummyc, NULL);
+	wch = wcha[0];
+#else
 
 	wch = (wchar_t)(A_CHARTEXT & winch(stdscr));
+#endif  // _XOPEN_CURSES
 
 	if (charset == CP437)
 	{
@@ -819,6 +838,11 @@ cur_addch(byte chr)
 	case CP437:
 		waddch(stdscr, chr | attr_from_dos(ch_attr));
 		break;
+#ifdef _XOPEN_CURSES
+	case UNICODE:
+		wadd_wch(stdscr, unicode_from_dos(chr, ch_attr, ctab));
+		break;
+#endif
 	}
 #endif  // ROGUE_DOS_CURSES
 	ch_attr = old_attr;
@@ -842,6 +866,26 @@ cur_addstr(s)
 	print_int_calls = TRUE;
 #endif
 }
+
+
+#ifdef _XOPEN_CURSES
+cchar_t *
+unicode_from_dos(byte chd, byte dos_attr, CCODE *mapping)
+{
+	short color;
+	attr_t attrs;
+
+	CCODE *ccp = charcode_from_dos(chd, mapping);
+	attrw_from_dos(dos_attr, &attrs, &color);
+
+	setcchar(&cctemp,
+			ccp->unicode,
+			attrs,
+			color,
+			NULL);
+	return &cctemp;
+}
+#endif
 
 
 byte
@@ -907,10 +951,7 @@ color_from_dos(byte dos_attr, bool fg)
  *
  * The only functions that deal exclusively with the attr_t model and have no
  * counterpart using the old model are the ones working with cchar_t wide chars
- * ("complex renditions" in ncurses docs).
- *
- * For those, a distinct function could be created with a signature such as
- * `void attrw_from_dos(byte dos_attr, attr_t *attrs, short *color_pair)`
+ * ("complex renditions" in ncurses docs). For those there is attrw_from_dos()
  */
 chtype
 attr_from_dos(byte dos_attr)
@@ -935,6 +976,45 @@ attr_from_dos(byte dos_attr)
 
 	return attr;
 }
+
+
+#ifdef _XOPEN_CURSES
+void
+attrw_from_dos(byte dos_attr, attr_t *attrs, short *color_pair)
+{
+	/*
+	 * A sloppy version could simply assume that attr_t is typedef'd to
+	 * chtype and all WA_* == A_*, which is true for current ncurses,
+	 * and this function would be simplified to:
+	 *
+	 * attr_t bute = attr_from_dos(dos_attr);
+	 * *attrs = bute & A_ATTRIBUTES & ~A_COLOR,
+	 * *color_pair = PAIR_NUMBER(bute);
+	 *
+	 * Tempting, but we shall not make such assumptions. By the book, boys!
+	 */
+
+	short fg, bg;
+
+	*attrs = WA_NORMAL;
+	*color_pair = 0;
+
+	// shortcut to avoid setting (and calculating) a spurious color pair
+	if (dos_attr == A_DOS_NORMAL)
+		return;
+
+	if (dos_attr & A_DOS_BLINK)
+		*attrs |= WA_BLINK;
+
+	if (dos_attr & A_DOS_BRIGHT)
+		*attrs |= WA_BOLD;
+
+	fg = color_from_dos(dos_attr, TRUE);
+	bg = color_from_dos(dos_attr, FALSE);
+
+	*color_pair = PAIR_INDEX(fg, bg);
+}
+#endif
 
 
 void
@@ -1010,6 +1090,12 @@ set_attr(bute)
 	else
 		ch_attr = bute;
 #ifndef ROGUE_DOS_CURSES
+	/*@
+	 * XOpen Curses standard and ncurses docs clearly says that both
+	 * attrset() and attr_set() should operate on the same video attributes,
+	 * regardless if current screen cell is chtype or cchar_t. So we still
+	 * use attrset() for ncursesw
+	 */
 	attrset(attr_from_dos(ch_attr));
 #endif
 }
@@ -1280,7 +1366,7 @@ wdump(void)
 	getyx(stdscr, c_row, c_col);
 	for (line = 0; line < LINES; line++)
 	{
-		mvinchnstr(line, 0, savewin[line], COLS);
+		cur_mvinchnstr(line, 0, savewin[line], COLS);
 	}
 	wmove(stdscr, c_row, c_col);
 
@@ -1299,7 +1385,7 @@ wrestor(void)
 	getyx(stdscr, c_row, c_col);
 	for (line = 0; line < LINES; line++)
 	{
-		mvaddchnstr(line, 0, savewin[line], COLS);
+		cur_mvaddchnstr(line, 0, savewin[line], COLS);
 	}
 	wmove(stdscr, c_row, c_col);
 
@@ -1341,6 +1427,9 @@ int
 cur_line(byte chd, int length, bool orientation)
 {
 	chtype ch;
+#ifdef _XOPEN_CURSES
+	cchar_t *cch;
+#endif
 
 	switch (charset)
 	{
@@ -1358,6 +1447,17 @@ cur_line(byte chd, int length, bool orientation)
 		else
 			whline(stdscr, ch, length);
 		break;
+#ifdef _XOPEN_CURSES
+	case UNICODE:
+		cch = unicode_from_dos(chd, ch_attr, btab);
+		if (cch->chars[0] == L'\0')
+			cch = unicode_from_dos(chd, ch_attr, ctab);
+		if (orientation == VERTICAL)
+			wvline_set(stdscr, cch, length);
+		else
+			whline_set(stdscr, cch, length);
+		break;
+#endif
 	}
 	return OK;
 }
@@ -1667,16 +1767,16 @@ drop_curtain(void)
 	cursor(FALSE);
 	green();
 	vbox(sng_box, 0, 0, LINES-1, COLS-1);
-	mvinchnstr(0, 0, curtain[0], COLS);
+	cur_mvinchnstr(0, 0, curtain[0], COLS);
 	wrefresh(stdscr);
 	yellow();
 	for (r = 1; r < LINES-1; r++) {
 		cur_mvhline(r, 1, FILLER, COLS-2);
-		mvinchnstr(r, 0, curtain[r], COLS);
+		cur_mvinchnstr(r, 0, curtain[r], COLS);
 		wrefresh(stdscr);
 		msleep(delay);
 	}
-	mvinchnstr(LINES-1, 0, curtain[LINES-1], COLS);
+	cur_mvinchnstr(LINES-1, 0, curtain[LINES-1], COLS);
 	cur_move(0,0);
 	cur_standend();
 	wclear(stdscr);
@@ -1700,14 +1800,14 @@ raise_curtain(void)
 	// restore and display the curtain
 	for (line = 0; line < LINES; line++)
 	{
-		mvaddchnstr(line, 0, curtain[line], COLS);
+		cur_mvaddchnstr(line, 0, curtain[line], COLS);
 	}
 	wrefresh(stdscr);
 
 	// progressively restore screen
 	for (line = LINES-1; line >= 0; line--)
 	{
-		mvaddchnstr(line, 0, savewin[line], COLS);
+		cur_mvaddchnstr(line, 0, savewin[line], COLS);
 		wrefresh(stdscr);
 		msleep(delay);
 	}
