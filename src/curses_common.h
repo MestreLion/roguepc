@@ -91,7 +91,7 @@
 #define POTION		(0xad)
 #define SCROLL		(0x0d)
 #define MAGIC		'$'
-#define BMAGIC		'+'
+#define BMAGIC		'~'  //@ originally '+'. Reverse ASCII map must be unique
 #define FOOD		(0x05)
 #define STICK		(0xe7)
 #define ARMOR		(0x08)
@@ -131,6 +131,7 @@
 #define DVLEFT	(0xb9)  //@ 185
 #define DVRIGHT	(0xcc)  //@ 204
 
+//@ only used in drop_curtain()
 #define FILLER	PASSAGE
 
 

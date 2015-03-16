@@ -115,72 +115,80 @@ byte *at_table;
 
 /*@
  * Changes in ASCII chars from Unix Rogue (and roguelike ASCII tradition):
- * AMULET: ',' to '&'. Needed ',' for corners; Not meant to be subtle in DOS
- * xxWALL: '-' to ",`;\'". DOS code requires unique values (for switch cases)
- * BMAGIC: '+' to '{'. Needed '+' for door. BMAGIC is a DOS-only extension.
+ * AMULET: ',' to '&'. Not meant to be subtle in DOS
+ * BMAGIC: '+' to '~'. '+' is ASCII for door. BMAGIC is a DOS-only extension.
  *
- * Note: Swapping '+' with '}' would yield a better visual result, as '}' is
- * great as door and it better matches DOS CP437 char 0xCE. But I will not be
+ * Note: Swapping '+' with '{' would yield a better visual result, as '{' is
+ * great as door and it better matches DOS CP437 char 0xCE ╬. But I will not be
  * the one to break such a well-known convention, and get flamed for heresy.
  * You do it.
  */
 CCODE ctab[] = {
-		{'@', L"\x263A", 0x01},  // ☺ PLAYER
-		{'^', L"\x2666", 0x04},  // ♦ TRAP
-		{':', L"\x2663", 0x05},  // ♣ FOOD
-		{']', L"\x25D8", 0x08},  // ◘ ARMOR
-		{'=', L"\x25CB", 0x09},  // ○ RING
-		{'&', L"\x2640", 0x0C},  // ♀ AMULET
-		{'?', L"\x266A", 0x0D},  // ♪ SCROLL
-		{'*', L"\x263C", 0x0F},  // ☼ GOLD
-		{')', L"\x2191", 0x18},  // ↑ WEAPON
-		{'!', L"\x00A1", 0xAD},  // ¡ POTION
-		{'#', L"\x2592", 0xB1},  // ▒ PASSAGE
-		{'+', L"\x256C", 0xCE},  // ╬ DOOR
-		{'/', L"\x03C4", 0xE7},  // τ STICK
-		{'.', L"\x00B7", 0xFA},  // · FLOOR
-		{'%', L"\x2261", 0xF0},  // ≡ STAIRS
+		/*
+		 * Dungeon chars. If a char in this block is not unique, such as
+		 * the ASCII for room corners, cur_inch() reverse search will map
+		 * them back to a different DOS char. So choose them carefully.
+		 */
+		{'@', L"\x263A", PLAYER},     // ☺
+		{'^', L"\x2666", TRAP},       // ♦
+		{':', L"\x2663", FOOD},       // ♣
+		{']', L"\x25D8", ARMOR},      // ◘
+		{'=', L"\x25CB", RING},       // ○
+		{'&', L"\x2640", AMULET},     // ♀
+		{'?', L"\x266A", SCROLL},     // ♪
+		{'*', L"\x263C", GOLD},       // ☼
+		{')', L"\x2191", WEAPON},     // ↑
+		{'!', L"\x00A1", POTION},     // ¡
+		{'#', L"\x2592", PASSAGE},    // ▒
+		{'+', L"\x256C", DOOR},       // ╬
+		{'/', L"\x03C4", STICK},      // τ
+		{'.', L"\x00B7", FLOOR},      // ·
+		{'%', L"\x2261", STAIRS},     // ≡
+//		{'$', L"$",      MAGIC},      // $, maps to itself
+//		{'~', L"~",      BMAGIC},     // ~, maps to itself
+		{'|', L"\x2551", VWALL},      // ║
+		{'-', L"\x2550", HWALL},      // ═
+		{'-', L"\x2554", ULWALL},     // ╔
+		{'-', L"\x2557", URWALL},     // ╗
+		{'-', L"\x255A", LLWALL},     // ╚
+		{'-', L"\x255D", LRWALL},     // ╝
 
-		{'{', L"+",    '+'},     // + BMAGIC
+		// Title screen
+		{'X', L"\x2563", DVLEFT},     // ╣
+		{'X', L"\x2560", DVRIGHT},    // ╠
 
-		// dungeon room walls. must be unique
-		{'|', L"\x2551", 0xBA},  // ║ VWALL
-		{'-', L"\x2550", 0xCD},  // ═ HWALL
-		{',', L"\x2554", 0xC9},  // ╔ ULWALL
-		{';', L"\x2557", 0xBB},  // ╗ URWALL
-		{'`', L"\x255A", 0xC8},  // ╚ LLWALL
-		{'\'',L"\x255D", 0xBC},  // ╝ LRWALL
+		// F1 help screen and save game message
+		{'<', L"\x25C4", 0x11},       // ◄ 'Enter' char 1
+		{'/', L"\x2518", 0xD9},       // ┘ 'Enter' char 2
 
-		{'X', L"\x2563", 0xB9},  // ╣ DVLEFT
-		{'K', L"\x2560", 0xCC},  // ╠ DVRIGHT
+		// F1 help screen
+		{'^', L"\x2191", 0x18},       // ↑ up (same as WEAPON)
+		{'v', L"\x2193", 0x19},       // ↓ down
+		{'>', L"\x2192", 0x1A},       // → right
+		{'<', L"\x2190", 0x1B},       // ← left
 
-		{'<', L"\x25C4", 0x11},  // ◄ 'Enter' char 1
-		{'/', L"\x2518", 0xD9},  // ┘ 'Enter' char 2
-
-	//	{'^', L"\x2191", 0x18},  // ↑ up (same as WEAPON)
-		{'v', L"\x2193", 0x19},  // ↓ down
-		{'>', L"\x2192", 0x1A},  // → right
-		{'<', L"\x2190", 0x1B},  // ← left
-
-		{'~', L"~", 0}  // if ~ appears on screen, something went wrong!
+		{'`', L"`", 0}  // if ` appears on screen, something went wrong!
 };
 
 CCODE btab[] = {
 		// single-width box glyphs
-		{'|', L"\x2502", 0xB3},  // │ VLINE
-		{'-', L"\x2500", 0xC4},  // ─ HLINE
-		{'.', L"\x250C", 0xDA},  // ┌ ULCORNER
-		{'.', L"\x2510", 0xBF},  // ┐ URCORNER
-		{'`', L"\x2514", 0xC0},  // └ LLCORNER
-		{'\'',L"\x2518", 0xD9},  // ┘ LRCORNER
+		{'|', L"\x2502", VLINE},      // │
+		{'-', L"\x2500", HLINE},      // ─
+		{'.', L"\x250C", ULCORNER},   // ┌
+		{'.', L"\x2510", URCORNER},   // ┐
+		{'`', L"\x2514", LLCORNER},   // └
+		{'\'',L"\x2518", LRCORNER},   // ┘
 
-		//same as *WALL set, but used in boxes, with different ASCII
-		{'H', L"\x2551", 0xBA},  // ║ DVLINE
-		{'=', L"\x2550", 0xCD},  // ═ DHLINE
-		{'#', L"\x2554", 0xC9},  // ╔ DULCORNER
-		{'#', L"\x2557", 0xBB},  // ╗ DURCORNER
-		{'#', L"\x255A", 0xC8},  // ╚ DLLCORNER
-		{'#', L"\x255D", 0xBC},  // ╝ DLRCORNER
+		// same as *WALL set, but used in boxes, with different ASCII
+		{'H', L"\x2551", DVLINE},     // ║
+		{'=', L"\x2550", DHLINE},     // ═
+		{'#', L"\x2554", DULCORNER},  // ╔
+		{'#', L"\x2557", DURCORNER},  // ╗
+		{'#', L"\x255A", DLLCORNER},  // ╚
+		{'#', L"\x255D", DLRCORNER},  // ╝
+
+		// same as PASSAGE, used for curtain
+		{'#', L"\x2592", FILLER},     // ▒
 
 		{'\0', L"", 0}
 };
@@ -900,8 +908,8 @@ charcode_from_dos(byte chd, CCODE *mapping)
 {
 	CCODE *ccp;
 
-	// Shortcut for "ordinary" chars - printable ASCII not in ctab
-	if (chd=='\n' || (isascii(chd) && isprint(chd) && chd != '+'))
+	// Shortcut for "ordinary" chars that map to themselves
+	if (chd == '\0' || chd == '\n' || (isascii(chd) && isprint(chd)))
 	{
 		ccode.ascii = ccode.dos = *ccode.unicode = chd;
 		return &ccode;
