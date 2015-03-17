@@ -114,6 +114,10 @@
 #ifdef WIZARD
 #define debug		if (wizard) msg
 #endif
+/*@
+ * And some new fun defines...
+ */
+#define ismonster(ch)	(((ch) >= 'A') && ((ch) <= 'Z'))
 
 /*
  * Various constants

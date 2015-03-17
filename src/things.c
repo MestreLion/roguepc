@@ -141,7 +141,7 @@ inv_name(obj, drop)
 		strcat(pb, " (on left hand)");
 	else if (obj == cur_ring[RIGHT])
 		strcat(pb, " (on right hand)");
-	if (drop && isupper(prbuf[0]))
+	if (drop && ismonster(prbuf[0]))
 		prbuf[0] = tolower(prbuf[0]);
 	else if (!drop && islower(*prbuf))
 		*prbuf = toupper(*prbuf);

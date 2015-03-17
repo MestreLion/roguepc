@@ -169,7 +169,7 @@ hit_bound:
 		goto move_stuff;
 	default:
 		running = FALSE;
-		if (isupper(ch) || moat(nh.y, nh.x))
+		if (ismonster(ch) || moat(nh.y, nh.x))
 			fight(&nh, ch, cur_weapon, FALSE);
 		else {
 			running = FALSE;
@@ -206,8 +206,13 @@ door_open(rp)
 			for (k = rp->r_pos.x; k < rp->r_pos.x + rp->r_max.x; k++) {
 				ch = winat(j, k);
 				/* move(j, k); Why do this,?????? */
-				if (isupper(ch)) {
+				if (ismonster(ch)) {
 					item = wake_monster(j, k);
+					//@ this sanity check was not in original
+					if (item == NULL)
+					{
+						continue;
+					}
 					if (item->t_oldch == ' ' && !(rp->r_flags & ISDARK)
 						&& !on(player, ISBLIND))
 							item->t_oldch = chat(j, k);

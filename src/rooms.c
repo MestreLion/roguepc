@@ -285,7 +285,7 @@ leave_room(cp)
 				 * to check for monster, we have to strip out
 				 * standout bit
 				 */
-				if (isupper(toascii(ch)))
+				if (ismonster(toascii(ch)))
 				{
 					if (on(player, SEEMONST)) {
 						standout();
