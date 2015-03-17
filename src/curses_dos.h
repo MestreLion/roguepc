@@ -104,5 +104,6 @@ CCODE	*charcode_from_dos(byte chd, CCODE *mapping);
 short	color_from_dos(byte dos_attr, bool fg);
 chtype	attr_from_dos(byte dos_attr);
 void	init_curses_colors(void);
+void	resize_screen();
 int	cur_line(byte chd, int length, bool orientation);
-#endif
+#endif  // ROGUE_DOS_CURSES

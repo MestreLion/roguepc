@@ -30,15 +30,19 @@
  *  Globals for curses
  *  (extern'ed in curses.h)
  */
-int LINES=25, COLS=80;
 int is_saved = FALSE;  //@ in practice, TRUE disables status updates in SIG2()
 int no_check = FALSE;
 int scr_type = -1;
 #ifdef ROGUE_DOS_CURSES
+int LINES=25, COLS=80;
 bool iscuron = TRUE;
 int old_page_no;  //@ this is public, but page_no is not. Weird. See rip.c
 int scr_ds=0xB800;
 int svwin_ds = 0;
+#else
+extern int LINES, COLS;
+int cur_LINES = min(25, MAXLINES);
+int cur_COLS  = min(ROGUE_COLUMNS, MAXCOLS);
 #endif
 
 //@ unused
@@ -337,7 +341,10 @@ cur_getch_timeout(int msdelay)
 #else
 	int ch;
 	wtimeout(stdscr, msdelay);
-	ch = wgetch(stdscr);
+	while ((ch = wgetch(stdscr)) == KEY_RESIZE)
+	{
+		resize_screen();
+	}
 	nodelay(stdscr, FALSE);
 	return ch;
 #endif
@@ -877,7 +884,7 @@ cur_addstr(s)
 #endif
 }
 
-
+#ifndef ROGUE_DOS_CURSES
 #ifdef _XOPEN_CURSES
 cchar_t *
 unicode_from_dos(byte chd, byte dos_attr, CCODE *mapping)
@@ -895,7 +902,7 @@ unicode_from_dos(byte chd, byte dos_attr, CCODE *mapping)
 			NULL);
 	return &cctemp;
 }
-#endif
+#endif  // _XOPEN_CURSES
 
 
 byte
@@ -929,7 +936,6 @@ charcode_from_dos(byte chd, CCODE *mapping)
 }
 
 
-#ifndef ROGUE_DOS_CURSES
 short
 color_from_dos(byte dos_attr, bool fg)
 {
@@ -1024,7 +1030,7 @@ attrw_from_dos(byte dos_attr, attr_t *attrs, short *color_pair)
 
 	*color_pair = PAIR_INDEX(fg, bg);
 }
-#endif
+#endif  // _XOPEN_CURSES
 
 
 void
@@ -1089,7 +1095,26 @@ init_curses_colors(void)
 		}
 	}
 }
-#endif
+
+
+void
+resize_screen()
+{
+	if ((LINES != cur_LINES) || (COLS != cur_COLS))
+	{
+		if (resizeterm(cur_LINES, cur_COLS) == OK)
+		{
+			flushinp();  //@ eat up the generated KEY_RESIZE
+		}
+		else
+		{
+			fatal("Could not resize resize terminal to %u x %u\n",
+					cur_COLS, cur_LINES);
+		}
+	}
+}
+#endif  // ROGUE_DOS_CURSES
+
 
 void
 set_attr(bute)
@@ -1257,9 +1282,6 @@ winit(void)
 	if (isjr())
 		no_check = TRUE;
 #else
-	int lines = min(LINES, MAXLINES);
-	int cols  = min(ROGUE_COLUMNS, MAXCOLS);
-
 	if (init_curses)
 		return;
 
@@ -1272,28 +1294,18 @@ winit(void)
 	setenv("ESCDELAY", "25", FALSE);
 	initscr();
 	init_curses = TRUE;
-	if ((LINES < lines) || (COLS < cols))
+	if ((LINES < cur_LINES) || (COLS < cur_COLS))
 	{
 		fatal("%u-column mode requires a %u x %u screen\n"
 				"Your terminal size is %u x %u\n",
-				cols, cols, lines, COLS, LINES);
+				cur_COLS, cur_COLS, cur_LINES, COLS, LINES);
 	}
 #ifdef ROGUE_DEBUG
-	printw("Real terminal size: LINES: %u\tCOLS: %u", LINES, COLS);
+	printw("Real terminal size:  %3u x %3u\n", LINES, COLS);
+	printw("Setting up Rogue to: %3u x %3u\n", cur_LINES, cur_COLS);
 	wgetch(stdscr);
 #endif
-	if ((LINES != lines) || (COLS != cols))
-	{
-		if (resizeterm(lines, cols) == OK)
-		{
-			flushinp();  //@ eat up the generated KEY_RESIZE
-		}
-		else
-		{
-			fatal("Could not resize resize terminal to %u x %u\n",
-					cols, lines);
-		}
-	}
+	resize_screen();
 	cbreak();  //@ do not buffer input until ENTER
 	noecho();  //@ do not echo typed characters
 	nodelay(stdscr, FALSE); //@ use a blocking getch() (already the default)
@@ -1964,6 +1976,9 @@ getinfo(str,size)
 				cursor(wason);
 				break;
 #ifndef ROGUE_DOS_CURSES
+			case KEY_RESIZE:
+				resize_screen();
+				break;
 			case KEY_BACKSPACE:
 #endif
 			case '\b':
