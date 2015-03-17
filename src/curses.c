@@ -536,10 +536,12 @@ cur_inch(void)
 
 	wch = (wchar_t)(A_CHARTEXT & winch(stdscr));
 #endif  // _XOPEN_CURSES
+	// if not on mapping list, will report as itself
+	chd = (byte)wch;
 
 	if (charset == CP437)
 	{
-		return (byte)wch;
+		return chd;
 	}
 	for(ccp = ctab; ccp->dos; ccp++)
 	{
@@ -839,10 +841,10 @@ cur_addch(byte chr)
 #else
 	switch (charset)
 	{
-	// ASCII, and also UNICODE if wide not available
 	default:
-		chr = ascii_from_dos(chr, ctab);
-		/* no break */
+	case ASCII:
+		waddch(stdscr, ascii_from_dos(chr, ctab) | attr_from_dos(ch_attr));
+		break;
 	case CP437:
 		waddch(stdscr, chr | attr_from_dos(ch_attr));
 		break;
