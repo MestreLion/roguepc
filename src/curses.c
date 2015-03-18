@@ -43,6 +43,7 @@ int svwin_ds = 0;
 extern int LINES, COLS;
 int cur_LINES = min(25, MAXLINES);
 int cur_COLS  = min(ROGUE_COLUMNS, MAXCOLS);
+static int KEY_MASK;
 #endif
 
 //@ unused
@@ -197,6 +198,47 @@ CCODE btab[] = {
 		{'\0', L"", 0}
 };
 
+/*@
+ * Numpad keys missing from the terminfo data of some common terminals
+ * See define_keys()
+ *
+ * CSI: Control Sequence Introducer: ESC [
+ * SS3: Single Shift Select of G3 Character Set (SS3  is 0x8f): ESC O
+ *      This affects next character only.
+ *
+ * xterm
+ * *	SS3 j	* multiply
+ * +	SS3 k	+ add
+ * -	SS3 m	- minus
+ * .	SS3 n	. period (VT220)
+ * /	SS3 o	/ divide   ()
+ * ENT	0527	KEY_ENTER
+ * 7	0406	KEY_HOME
+ * 5	0536	KEY_B2
+ * 1	0550	KEY_END
+ *
+ * gnome-terminal TERM=xterm
+ * .	.
+ * 7	CSI 1 ~	Home (VT220)
+ * 5	CSI E	5 begin (kb2/K2)
+ * 1	CSI 4 ~	End (VT220)
+ *
+ * gnome-terminal TERM=gnome
+ * ENT	SS3 M	CR, enter (kent/@8)
+ * 7	0552	KEY_FIND
+ * 1	0601	KEY_SELECT
+ */
+static TTYSEQ ttymap[] = {
+		{TTY_SS3 "j", '*'},
+		{TTY_SS3 "k", '+'},
+		{TTY_SS3 "m", '-'},
+		{TTY_SS3 "n", '.'},
+		{TTY_SS3 "o", '/'},
+		{TTY_SS3 "M",  KEY_ENTER},
+		{TTY_CSI "E",  KEY_B2},
+		{TTY_CSI "1~", KEY_HOME},
+		{TTY_CSI "4~", KEY_END},
+};
 
 byte dbl_box[BX_SIZE] = {
 	DULCORNER, DURCORNER, DLLCORNER, DLRCORNER, DVLINE, DHLINE, DHLINE
@@ -246,6 +288,7 @@ static struct xlate {
 	{C_F10,		'!'},
 	{ALT_F9,	'F'}
 #else
+	{KEY_ENTER,	'\n'}, //@ Keypad Enter
 	{KEY_HOME,	'y'},
 	{KEY_FIND,	'y'},  //@ Keypad Home (7) in some terminals
 	{KEY_A1,	'y'},  //@ Keypad upper left (7)
@@ -255,7 +298,7 @@ static struct xlate {
 	{KEY_LEFT,	'h'},
 	{KEY_RIGHT,	'l'},
 	{KEY_END,	'b'},
-	{KEY_SELECT,'b'},  //@ Keypad End (1) in some terminals
+	{KEY_SELECT,	'b'},  //@ Keypad End (1) in some terminals
 	{KEY_C1,	'b'},  //@ Keypad lower left (1)
 	{KEY_DOWN,	'j'},
 	{KEY_NPAGE,	'n'},  //@ Page Down
@@ -327,6 +370,8 @@ cur_beep(void)
  *
  * After the wgetch() call, input will always restore to blocking mode using
  * nodelay(FALSE);
+ *
+ * Return ERR on non-ASCII chars and on window resize.
  */
 int
 cur_getch_timeout(int msdelay)
@@ -339,15 +384,41 @@ cur_getch_timeout(int msdelay)
 	 */
 	return getchar();
 #else
-	int ch;
+	int ch = 0;
+
 	wtimeout(stdscr, msdelay);
-	while ((ch = wgetch(stdscr)) == KEY_RESIZE)
+
+#ifdef _XOPEN_CURSES
+	wint_t wchi;
+	int ret;
+	if ((ret = wget_wch(stdscr, &wchi)) == ERR || (ret == OK && !isascii(wchi)))
+	{
+		// we're only interested in ASCII input
+		ch = ERR;
+	}
+	else
+	{
+		// KEY_* codes always fit int, so no need for any special test
+		ch = (int)wchi;
+	}
+#else
+	ch = wgetch(stdscr);
+#endif  // _XOPEN_CURSES
+	// mask-map custom keys
+	if (ch != ERR)
+	{
+		ch = KEY_MASK & ch;
+	}
+
+	// window resize needs special handling. all others go through xlate/xtab
+	if (ch == KEY_RESIZE)
 	{
 		resize_screen();
+		ch = ERR;
 	}
 	nodelay(stdscr, FALSE);
 	return ch;
-#endif
+#endif  // ROGUE_DOS_CURSES
 }
 
 
@@ -905,6 +976,32 @@ unicode_from_dos(byte chd, byte dos_attr, CCODE *mapping)
 #endif  // _XOPEN_CURSES
 
 
+void
+define_keys(void)
+{
+#ifdef NCURSES_VERSION
+	int i;
+	int shift;
+	TTYSEQ *ptr, *max;
+
+	// get the shift offset of the bit past KEY_MAX
+	for (i=KEY_MAX, shift=1; i>>=1; shift++);
+
+	// define the mask that will be used by cur_getch() and friends
+	KEY_MASK = (1 << shift) - 1;
+
+	// define keys. first key gets i>0 to leave room for user terminfo keys
+	for (i=8, ptr=ttymap, max=ASIZE(ttymap); ptr < max; ptr++)
+	{
+		if(!key_defined(ptr->def))
+		{
+			define_key(ptr->def, ((i++) << shift) | ptr->dest);
+		}
+	}
+#endif
+}
+
+
 byte
 ascii_from_dos(byte chd, CCODE *mapping)
 {
@@ -1310,6 +1407,7 @@ winit(void)
 	noecho();  //@ do not echo typed characters
 	nodelay(stdscr, FALSE); //@ use a blocking getch() (already the default)
 	keypad(stdscr, TRUE);   //@ enable directional arrows, keypad, home, etc
+	define_keys();
 
 	/*@
 	 * Immediately refresh() screen on *add{ch,str}() and friends.
@@ -2001,6 +2099,9 @@ getinfo(str,size)
 				addch(ch);
 				*str++ = ch;
 				break;
+#ifndef ROGUE_DOS_CURSES
+			case KEY_ENTER:
+#endif
 			case '\n':
 				*str = 0;
 				cursor(wason);

@@ -72,6 +72,9 @@ void	wsetmem(void *buffer, int count, chtype attrchar);
 #define PAIR_INDEX(fg, bg)	(bg * colors + fg + 1)
 #define COLOR_PAIR_N(fg, bg)	COLOR_PAIR(PAIR_INDEX(fg, bg))
 
+#define ALENGTH(arr)	(sizeof (arr) / sizeof (*arr))
+#define ASIZE(arr)	(arr + ALENGTH(arr))
+
 #define HORIZONTAL TRUE
 #define VERTICAL   FALSE
 
@@ -88,6 +91,16 @@ void	wsetmem(void *buffer, int count, chtype attrchar);
 #define cur_mvinchnstr	mvinchnstr
 #endif  // _XOPEN_CURSES
 
+#define TTY_ESC "\033"
+#define TTY_CSI TTY_ESC "["
+#define TTY_SS3 TTY_ESC "O"
+
+struct ttykeys {
+	char *def;
+	int dest;
+};
+typedef struct ttykeys TTYSEQ;
+
 struct charcode {
 	byte ascii;
 	wchar_t *unicode;
@@ -99,6 +112,7 @@ typedef struct charcode CCODE;
 cchar_t *unicode_from_dos(byte chd, byte dos_attr, CCODE *mapping);
 void	attrw_from_dos(byte dos_attr, attr_t *attrs, short *color_pair);
 #endif
+void	define_keys(void);
 byte	ascii_from_dos(byte chd, CCODE *mapping);
 CCODE	*charcode_from_dos(byte chd, CCODE *mapping);
 short	color_from_dos(byte dos_attr, bool fg);
