@@ -1468,6 +1468,26 @@ resize_screen()
 		}
 	}
 }
+
+
+void
+cur_debug(const char *msg, ...)
+{
+	int y, x;
+	va_list argp;
+
+	getyx(stdscr, y, x);
+	wmove(stdscr, 0, 0);
+	wclrtoeol(stdscr);
+
+	va_start(argp, msg);
+	vw_printw(stdscr, msg, argp); // humm, no vw_mvprintw()
+	va_end(argp);
+
+	wgetch(stdscr);
+	wmove(stdscr, y, x);
+
+}
 #endif  // ROGUE_DOS_CURSES
 
 

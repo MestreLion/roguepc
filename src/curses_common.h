@@ -172,6 +172,8 @@ byte	video_mode(int type);
 #ifdef ROGUE_DOS_CURSES
 void	switch_page(int pn);
 void	blot_out(int ul_row, int ul_col, int lr_row, int lr_col);
+#else
+void	cur_debug(const char *msg, ...);
 #endif
 
 //@ originally in dos.asm
