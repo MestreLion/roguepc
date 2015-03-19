@@ -2060,8 +2060,21 @@ getinfo(str,size)
 	wason = cursor(TRUE);
 	while(ret == 1)
 	{
+#ifdef ROGUE_DOS_CURSES
+		if((ch = cur_getch()) == EOF)
+		{
+			ch = '\n';
+		}
+#else
 		//@ Blocking getch() is fine, as SIG2() is not called anyway
-		switch(ch = wgetch(stdscr)) {
+		while ((ch = wgetch(stdscr)) == ERR);
+		if (ch > KEY_MIN)
+		{
+			ch = KEY_MASK & ch;
+		}
+#endif
+		switch(ch)
+		{
 			case ESCAPE:
 				while(str != retstr) {
 					backspace();

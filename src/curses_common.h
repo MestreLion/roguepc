@@ -71,6 +71,8 @@
 #define high() set_attr(15)
 #define bold() set_attr(16)
 
+#define cur_getch()	cur_getch_timeout(-1)
+
 /*@
  * The DOS attribute set on standend(), also the initial value of ch_attr
  * Light Gray ("non-bright White") on Black

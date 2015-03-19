@@ -46,7 +46,7 @@
 #define addstr	cur_addstr
 #define box	cur_box
 #define printw	cur_printw
-#define getch() getch_timeout(-1)  //@ no longer used
+#define getch	cur_getch  //@ no longer used
 #define getch_timeout	cur_getch_timeout
 
 
