@@ -90,7 +90,7 @@ setenv_from_file(envfile)
 		 * Skip white space, this is the only state (pstate == 0)
 		 * where eof will not be aborted
 		 */
-		while (isspace(peekc()))
+		while (is_space(peekc()))
 			;
 		if (ch == 0) {
 			fclose(file);
@@ -111,16 +111,16 @@ setenv_from_file(envfile)
 		 */
 		*plabel = ch;
 		while ((pc = peekc()) != '=' && pc != '-')
-			if (!isspace(*plabel) || !isspace(ch))
+			if (!is_space(*plabel) || !is_space(ch))
 				*(++plabel) = ch;
-		if (!isspace(*plabel))
+		if (!is_space(*plabel))
 			plabel++;
 		*plabel = 0;
 
 		/*
 		 * Looking for corresponding string
 		 */
-		while (isspace(peekc()))
+		while (is_space(peekc()))
 			;
 
 		/*
@@ -129,9 +129,9 @@ setenv_from_file(envfile)
 		pstate = 2;
 		*pstring = ch;
 		while (peekc() != '\n')
-			if (!isspace(*pstring) || !isspace(ch))
+			if (!is_space(*pstring) || !is_space(ch))
 				*(++pstring) = ch;
-		if (!isspace(*pstring))
+		if (!is_space(*pstring))
 			pstring++;
 		*pstring = 0;
 		lcase(blabel);

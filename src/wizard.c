@@ -95,7 +95,7 @@ create_obj()
 	}
 	mpos = 0;
 	msg("which %c do you want? (0-f)", obj->o_type);
-	obj->o_which = (isdigit((ch = readchar())) ? ch - '0' : ch - 'a' + 10);
+	obj->o_which = (is_digit((ch = readchar())) ? ch - '0' : ch - 'a' + 10);
 	obj->o_group = 0;
 	obj->o_count = 1;
 	obj->o_damage = obj->o_hurldmg = "0d0";

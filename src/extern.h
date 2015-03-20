@@ -37,6 +37,13 @@
 //@ Marked obsolescent in POSIX-2008, so not in <ctype.h> if C99 is used
 #define isascii(c)	(((c) & ~0x7f) == 0)
 #endif
+//@ Locale-independent versions, as expected by Rogue. Originally in strings.c
+#define is_alpha(ch)	(isascii(ch) && isalpha(ch))
+#define is_upper(ch)	(isascii(ch) && isupper(ch))
+#define is_lower(ch)	(isascii(ch) && islower(ch))
+#define is_digit(ch)	(isascii(ch) && isdigit(ch))
+#define is_space(ch)	(isascii(ch) && isspace(ch))
+#define is_print(ch)	(isascii(ch) && isprint(ch))
 
 //@ str{len,cat,cpy,cmp,chr}() and possibly others
 #include <string.h>

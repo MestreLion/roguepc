@@ -100,7 +100,7 @@ endmsg()
 	 * All messages should start with uppercase, except ones that
 	 * start with a pack addressing character
 	 */
-	if (islower(msgbuf[0]) && msgbuf[1] != ')')
+	if (is_lower(msgbuf[0]) && msgbuf[1] != ')')
 		msgbuf[0] = toupper(msgbuf[0]);
 	putmsg(0,msgbuf);
 	mpos = newpos;
@@ -265,9 +265,9 @@ unsigned char ch;
 {
 	static char chstr[9];		/* Defined in curses library */
 
-	if (isspace(ch))
+	if (is_space(ch))
 		strcpy(chstr," ");
-	else if (!isprint(ch))
+	else if (!is_print(ch))
 		if (ch < ' ')
 			sprintf(chstr, "^%c", ch + '@');
 		else

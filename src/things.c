@@ -143,7 +143,7 @@ inv_name(obj, drop)
 		strcat(pb, " (on right hand)");
 	if (drop && ismonster(prbuf[0]))
 		prbuf[0] = tolower(prbuf[0]);
-	else if (!drop && islower(*prbuf))
+	else if (!drop && is_lower(*prbuf))
 		*prbuf = toupper(*prbuf);
 	return prbuf;
 }
@@ -518,7 +518,7 @@ add_line(use, fmt, arg)
 			addstr("-Press space to continue-");
 		do
 			retchar = readchar();
-		while (retchar != ESCAPE && retchar != ' ' && (!islower(retchar)));
+		while (retchar != ESCAPE && retchar != ' ' && (!is_lower(retchar)));
 		clear();
 		newpage = TRUE;
 		line_cnt = 0;

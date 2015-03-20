@@ -218,13 +218,13 @@ find_drive()
 	char spec = s_drive[0];
 	char filename[30];
 
-	if (isalpha(spec))
+	if (is_alpha(spec))
 	{
 		/*@
 		 * It looks like this block could be replaced with:
 		 * drive = tolower(spec) - 'a';
 		 */
-		if (isupper(spec))
+		if (is_upper(spec))
 			drive = spec - 'A';
 		else
 			drive = spec - 'a';

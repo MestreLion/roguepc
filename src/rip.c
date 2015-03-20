@@ -162,7 +162,7 @@ pr_scores(newrank,top10)
 	if (top10->sc_level >= 26)  //@ There is AMULETLEVEL, you know?
 		altmsg = " Honored by the Guild";
 
-	if (isalpha(top10->sc_fate))
+	if (is_alpha(top10->sc_fate))
 	{
 		sprintf(dthstr," killed by %s",
 				killname((0xff & top10->sc_fate), TRUE));

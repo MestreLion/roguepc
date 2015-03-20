@@ -1,5 +1,4 @@
-#include <string.h>   //@ strlen()
-#include <ctype.h>    //@ is...() and to...() family
+#include "extern.h"
 
 //@ extern char ctp_[]; //@ not needed anymore. could not find definition
 
@@ -61,7 +60,7 @@ char *
 stpblk(str)
 	char *str;
 {
-	while (isspace(*str))
+	while (is_space(*str))
 		str++;
 	return(str);
 }
@@ -76,7 +75,7 @@ endblk(str)
 	register char *backup;
 
 	backup = str + strlen(str);
-	while (backup != str && isspace(*(--backup)))
+	while (backup != str && is_space(*(--backup)))
 		*backup = 0;
 	return(str);
 }

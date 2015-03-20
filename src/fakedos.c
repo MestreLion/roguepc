@@ -44,7 +44,7 @@ dodos(com)
 		int drv = (*com & 0x1f) - 1;
 
 		printw("\n");
-		if ((!isalpha(*com)) || drv >= bdos(0x0e, drv))
+		if ((!is_alpha(*com)) || drv >= bdos(0x0e, drv))
 			printw("Invalid drive specification\n");
 	} else  if (com[0])
 		printw("\nBad command or file name\n");
