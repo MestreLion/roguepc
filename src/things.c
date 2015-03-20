@@ -148,14 +148,14 @@ inv_name(obj, drop)
 	return prbuf;
 }
 
+//@ changed original signature to use varargs
 void
-chopmsg(s,shmsg,lnmsg,arg1,arg2,arg3)
-	char *s, *shmsg, *lnmsg;
-	int arg1, arg2, arg3;
+chopmsg(char *s, char *shmsg, char *lnmsg, ...)
 {
-	sprintf(s,lnmsg,arg1,arg2,arg3);
-	if (terse || expert)
-		sprintf(s,shmsg,arg1,arg2,arg3);
+	va_list argp;
+	va_start(argp, lnmsg);
+	vsnprintf(s, MAXSTR, (terse || expert) ? shmsg : lnmsg, argp);
+	va_end(argp);
 }
 
 /*

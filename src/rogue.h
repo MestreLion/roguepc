@@ -734,7 +734,8 @@ void	lcase();
 
 //@ things.c
 char	*inv_name(), *nothing();
-void	chopmsg(), drop(), discovered(), print_disc(), set_order();
+void	chopmsg(char *s, char *shmsg, char *lnmsg, ...);
+void	drop(), discovered(), print_disc(), set_order();
 bool	can_drop();
 THING	*new_thing();
 byte	add_line(), end_line();
