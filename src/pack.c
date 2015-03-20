@@ -82,6 +82,7 @@ add_pack(THING *obj, bool silent)
 			}
 		}
 	}
+	cur_debug("Checkpoint 1");
 	/*
 	 * Check if there is room
 	 */
@@ -106,6 +107,7 @@ add_pack(THING *obj, bool silent)
 		else
 			obj->o_flags |= ISFOUND;
 	}
+	cur_debug("Checkpoint 2");
 
 	inpack++;
 	if (from_floor)
@@ -151,6 +153,7 @@ add_pack(THING *obj, bool silent)
 				break;
 		}
 	}
+	cur_debug("Checkpoint 3");
 	if (op == NULL)
 	{
 		/*
@@ -217,6 +220,7 @@ picked_up:
 			op->t_dest = &hero;
 	}
 
+	cur_debug("Checkpoint 4");
 	if (obj->o_type == AMULET)
 	{
 		amulet = TRUE;
