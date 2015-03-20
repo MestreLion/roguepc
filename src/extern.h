@@ -33,9 +33,8 @@
 
 //@ is{alpha,digit,upper,...}() and to{upper,lower,...}() families
 #include <ctype.h>
-#ifndef toascii
+#ifndef isascii
 //@ Marked obsolescent in POSIX-2008, so not in <ctype.h> if C99 is used
-#define toascii(c)	((c) & 0x7f)
 #define isascii(c)	(((c) & ~0x7f) == 0)
 #endif
 

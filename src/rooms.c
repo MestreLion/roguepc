@@ -284,8 +284,10 @@ leave_room(cp)
 				/*
 				 * to check for monster, we have to strip out
 				 * standout bit
+				 * @ No we don't, inch() took care of that already
+				 * @ originally tested for isupper(toascii(ch))
 				 */
-				if (ismonster(toascii(ch)))
+				if (ismonster(ch))
 				{
 					if (on(player, SEEMONST)) {
 						standout();
