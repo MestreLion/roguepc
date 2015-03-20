@@ -159,27 +159,30 @@ pr_scores(newrank,top10)
 	printw("%s",top10->sc_name);
 	if ((newrank) - 1 != i)
 		brown();
-		if (top10->sc_level >= 26)  //@ There is AMULETLEVEL, you know?
-			altmsg = " Honored by the Guild";
+	if (top10->sc_level >= 26)  //@ There is AMULETLEVEL, you know?
+		altmsg = " Honored by the Guild";
 	if (isalpha(top10->sc_fate))
-		{
-			sprintf(dthstr," killed by %s",
-					killname((0xff & top10->sc_fate), TRUE));
-			if (COLS == 40 && strlen(dthstr) > 23)
-				strcpy(dthstr," killed");
-		}
+	{
+		sprintf(dthstr," killed by %s",
+				killname((0xff & top10->sc_fate), TRUE));
+		if (COLS == 40 && strlen(dthstr) > 23)
+			strcpy(dthstr," killed");
+	}
 	else
-		switch(top10->sc_fate) {
+	{
+		switch(top10->sc_fate)
+		{
 			case 2:
 				altmsg = " A total winner!";
-					break;
-				case 1:
-					strcpy(dthstr," quit");
-					break;
-				default:
-					strcpy(dthstr," wierded out");
-					break;
+				break;
+			case 1:
+				strcpy(dthstr," quit");
+				break;
+			default:
+				strcpy(dthstr," wierded out");
+				break;
 		}
+	}
 	if ((signed)(strlen(top10->sc_name) + 10 +
 		strlen(he_man[top10->sc_rank-1])) < COLS)
 	{
@@ -477,11 +480,11 @@ killname(monst, doart)
 		sp = "fall";
 	otherwise:
 		if (monst >= 'A' && monst <= 'Z')
-		sp = monsters[monst-'A'].m_name;
+			sp = monsters[monst-'A'].m_name;
 		else
 		{
-		sp = "God";
-		article = FALSE;
+			sp = "God";
+			article = FALSE;
 		}
 	}
 	if (doart && article)
