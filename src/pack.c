@@ -60,6 +60,8 @@ add_pack(THING *obj, bool silent)
 	 *  called in new_level()
 	 */
 	floor = (proom != NULL && (proom->r_flags & ISGONE)) ? PASSAGE : FLOOR;
+
+
 	if (obj->o_group)
 	{
 		for (op = pack; op != NULL; op = next(op))
@@ -78,11 +80,11 @@ add_pack(THING *obj, bool silent)
 				}
 				discard(obj);
 				obj = op;
+				cur_debug("Placed grouped arrows/crossbolts");
 				goto picked_up;
 			}
 		}
 	}
-	cur_debug("Checkpoint 1");
 	/*
 	 * Check if there is room
 	 */
@@ -107,7 +109,6 @@ add_pack(THING *obj, bool silent)
 		else
 			obj->o_flags |= ISFOUND;
 	}
-	cur_debug("Checkpoint 2");
 
 	inpack++;
 	if (from_floor)
@@ -115,7 +116,6 @@ add_pack(THING *obj, bool silent)
 		detach(lvl_obj, obj);
 		mvaddch(hero.y, hero.x, floor);
 		chat(hero.y, hero.x) = floor;
-		cur_debug("Detached from floor");
 	}
 	/*
 	 * Search for an object of the same type
@@ -153,7 +153,6 @@ add_pack(THING *obj, bool silent)
 				break;
 		}
 	}
-	cur_debug("Checkpoint 3");
 	if (op == NULL)
 	{
 		/*
@@ -167,7 +166,7 @@ add_pack(THING *obj, bool silent)
 			obj->l_prev = lp;
 			obj->l_next = NULL;
 		}
-		cur_debug("Placed on inventory");
+		cur_debug("Placed on inventory - New item, type 0x%x", obj->o_type);
 	}
 	else
 	{
@@ -180,6 +179,8 @@ add_pack(THING *obj, bool silent)
 			op->o_count++;
 			discard(obj);
 			obj = op;
+			cur_debug("Placed on inventory, type 0x%x, grouping with existing item %p",
+					obj->o_type, op);
 			goto picked_up;
 		}
 		if ((obj->l_prev = prev(op)) != NULL)
@@ -192,6 +193,8 @@ add_pack(THING *obj, bool silent)
 		}
 		obj->l_next = op;
 		op->l_prev = obj;
+		cur_debug("Placed on inventory, type 0x%x, not groupable or no matching item",
+				obj->o_type);
 	}
 picked_up:
 	/*
@@ -220,7 +223,6 @@ picked_up:
 			op->t_dest = &hero;
 	}
 
-	cur_debug("Checkpoint 4");
 	if (obj->o_type == AMULET)
 	{
 		amulet = TRUE;
