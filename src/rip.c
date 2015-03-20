@@ -161,6 +161,7 @@ pr_scores(newrank,top10)
 		brown();
 	if (top10->sc_level >= 26)  //@ There is AMULETLEVEL, you know?
 		altmsg = " Honored by the Guild";
+
 	if (isalpha(top10->sc_fate))
 	{
 		sprintf(dthstr," killed by %s",
@@ -446,7 +447,7 @@ total_winner()
 	}
 	move(c - 'a' + 1, 0);
 	printw("   %5u  Gold Pieces          ", oldpurse);
-	score(purse, 2);
+	score(purse, 2, 0);
 #endif //DEMO
 	md_exit(EXIT_SUCCESS);
 }
@@ -457,7 +458,7 @@ total_winner()
  */
 char *
 killname(monst, doart)
-	register char monst;
+	byte monst;
 	bool doart;
 {
 	register char *sp;
@@ -479,7 +480,7 @@ killname(monst, doart)
 	when 'f':
 		sp = "fall";
 	otherwise:
-		if (monst >= 'A' && monst <= 'Z')
+		if (ismonster(monst))
 			sp = monsters[monst-'A'].m_name;
 		else
 		{
