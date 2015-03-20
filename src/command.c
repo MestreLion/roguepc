@@ -257,7 +257,9 @@ execcom()
 			save_msg = TRUE;
 		}
 		if (take && do_take)
+		{
 			pick_up(take);
+		}
 		take = 0;
 		if (!running)
 			door_stop = FALSE;

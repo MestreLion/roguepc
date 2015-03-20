@@ -39,6 +39,7 @@ add_pack(THING *obj, bool silent)
 		from_floor = TRUE;
 		if ((obj = find_obj(hero.y, hero.x)) == NULL)
 			return;
+		cur_debug("Adding to pack: [%p]", obj);
 	}
 	else
 		from_floor = FALSE;
@@ -112,6 +113,7 @@ add_pack(THING *obj, bool silent)
 		detach(lvl_obj, obj);
 		mvaddch(hero.y, hero.x, floor);
 		chat(hero.y, hero.x) = floor;
+		cur_debug("Detached from floor");
 	}
 	/*
 	 * Search for an object of the same type
@@ -162,6 +164,7 @@ add_pack(THING *obj, bool silent)
 			obj->l_prev = lp;
 			obj->l_next = NULL;
 		}
+		cur_debug("Placed on inventory");
 	}
 	else
 	{
@@ -275,6 +278,7 @@ pick_up(byte ch)
 {
 	register THING *obj;
 
+	cur_debug("About to pick up: [%02x]", ch);
 	switch (ch)
 	{
 	case GOLD:
