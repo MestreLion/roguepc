@@ -160,7 +160,7 @@
 #define ISCURSED 0x0001		/* object is cursed */
 #define ISKNOW	 0x0002		/* player knows details about the object */
 #define DIDFLASH 0x0004		/* has the vorpal weapon flashed */
-#define ISEGO	 0x0008		/* weapon has control of player */
+#define ISEGO	 0x0008		/* weapon has control of player @ unused */
 #define ISMISL	 0x0010		/* object is a missile type */
 #define ISMANY	 0x0020		/* object comes in groups */
 #define ISREVEAL 0x0040		/* Do you know who the enemy of the object is */
@@ -621,9 +621,7 @@ void	nohaste(void);
 void	stomach(void);
 
 //@ env.h
-byte	peekc();
-bool	setenv_from_file();
-void	putenv_struct();
+bool	setenv_from_file(char *envfile);
 
 //@ fakedos.c
 void	fakedos();

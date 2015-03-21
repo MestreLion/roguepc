@@ -8,22 +8,24 @@
  * "Environment" is read from a text file and manipulated in a custom struct
  */
 
-#include "rogue.h"  //@
+#include "rogue.h"  //@ could be "extern.h" if not for some strings.c functions
 
 #define ERROR   -1
 #define MATCH    0
 #define MAXEP	 8
 #define FOREVER	 1
 
-char l_name[] = "name";
-char l_save[] = "savefile";
-char l_score[] = "scorefile";
-char l_macro[] = "macro";
-char l_fruit[] = "fruit";
-char l_drive[] = "drive";
-char l_menu [] = "menu";
-char l_screen[]   = "screen";
+//@ made static. could also be hardcoded in struct environment element array
+static char l_name[] = "name";
+static char l_save[] = "savefile";
+static char l_score[] = "scorefile";
+static char l_macro[] = "macro";
+static char l_fruit[] = "fruit";
+static char l_drive[] = "drive";
+static char l_menu [] = "menu";
+static char l_screen[]   = "screen";
 
+//@ public extern'ed vars
 char whoami[] = "Rodney\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0";
 char s_score[]  =  "rogue.scr\0\0\0\0\0";
 char s_save[]   =   "rogue.sav\0\0\0\0\0";
@@ -33,6 +35,7 @@ char s_drive[]  =  "?";
 char s_menu[]   =  "on\0";
 char s_screen[]    =  "\0w fast";
 
+static
 struct environment {
 	char *e_label;
 	char *e_string;
@@ -48,7 +51,10 @@ struct environment {
 	{l_screen,	s_screen,	 7},
 };
 
+static byte	peekc(void);
+static void	putenv_struct(char *label, char *string);
 
+//@ already static in original
 static FILE *file;
 static byte ch;
 static int pstate;
@@ -140,7 +146,7 @@ setenv_from_file(envfile)
 	}
 	/*
 	 * for all environment strings that have to be in lowercase ....
-	 * @ this will never be reached, as there is `break` in previous `while`
+	 * @ this will never be reached, there is no `break` in previous `while`
 	 */
 	lcase(s_menu);
 	lcase(s_screen);
@@ -158,8 +164,9 @@ setenv_from_file(envfile)
  *  way I can avoid checking for premature eof
  *  every time a character is read.
  */
+static
 byte
-peekc()
+peekc(void)
 {
 	ch = 0;
 	/*
@@ -185,7 +192,7 @@ peekc()
 	return(ch);
 }
 
-//@ used only by the unused is_set(), so safe to remove
+#ifdef LUXURY
 /*
  * Getenv: UNIX compatable call
  *
@@ -193,9 +200,13 @@ peekc()
  *
  *	  STATUS - returns the string associated with the label
  *			   or NULL (0) if it is not present
+ *
+ * @ used only by the unused is_set(), so safe to remove. renamed from getenv()
+ * @ to avoid conflict with <stdlib.h>, and also made static
  */
-#ifdef LUXURY
-getenv(label)
+static
+char *
+getenv_struct(label)
 	char *label;
 {
 	register int i;
@@ -233,7 +244,9 @@ putenv_struct(label,string)
 }
 
 #ifdef LUXURY
-//@ unused, safe to remove
+//@ unused, safe to remove, made static
+static
+bool
 is_set(label,string)
 	char *label,*string;
 {
