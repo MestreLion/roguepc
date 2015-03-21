@@ -630,15 +630,34 @@ void	fakedos();
 int	dodos();
 
 //@ fight.c
-bool	fight(), swing(), roll_em(), save_throw(), save(), is_magic();
-void	attack(), check_level(), hit(), miss(), raise_level(), thunk(),
-		remove_monster(), killed();
-int	str_plus(), add_dam();
+bool	fight();
+bool	swing();
+bool	roll_em();
+bool	save_throw();
+bool	save();
+bool	is_magic();
+void	attack();
+void	check_level();
+void	hit();
+void	miss();
+void	raise_level();
+void	thunk();
+void	remove_monster();
+void	killed();
+int	str_plus();
+int	add_dam();
 
 //@ init.c
-void	init_player(), init_things(), init_colors(), init_names(),
-		init_stones(), init_materials(), init_ds(), free_ds();
-char	*getsyl(), rchr();
+void	init_player();
+void	init_things();
+void	init_colors();
+void	init_names();
+void	init_stones();
+void	init_materials();
+void	init_ds();
+void	free_ds();
+char	*getsyl();
+char	rchr();
 
 //@ io.c
 void	ifterse(const char *tfmt, const char *fmt, ...);
@@ -661,20 +680,34 @@ char	*noterse(char *str);
 
 //@ list.c
 THING	*new_item();
-void	*talloc(), _detach(), _attach(), _free_list();
+void	*talloc();
+void	_detach();
+void	_attach();
+void	_free_list();
 int	discard();
 
 //@ load.c
-void	epyx_yuck(), scr_load(), bload();
+void	epyx_yuck();
+void	scr_load();
+void	bload();
 int	find_drive();
 
 //@ main.c
-void	endit(), playit(), quit(), leave();
-int	rnd(), roll();
+void	endit();
+void	playit();
+void	quit();
+void	leave();
+int	rnd();
+int	roll();
 
 //@ maze.c
-void	draw_maze(), new_frontier(), add_frnt(), con_frnt(), splat();
-bool	maze_at(), inrange();
+void	draw_maze();
+void	new_frontier();
+void	add_frnt();
+void	con_frnt();
+void	splat();
+bool	maze_at();
+bool	inrange();
 
 //@ misc.c
 void	look(bool wakeup);
@@ -713,54 +746,88 @@ bool	istest(void);
 #endif
 
 //@ monsters.c
-char	randmonster(), pick_mons();
-void	new_monster(), f_restor(), wanderer(), give_pack();
-THING	*wake_monster(), *moat();
+char	randmonster();
+char	pick_mons();
+void	new_monster();
+void	f_restor();
+void	wanderer();
+void	give_pack();
+THING	*wake_monster();
+THING	*moat();
 int	exp_add();
 
 //@ move.c
-void	do_run(), do_move(), door_open(), descend(), rndmove();
+void	do_run();
+void	do_move();
+void	door_open();
+void	descend();
+void	rndmove();
 byte	be_trapped();
 
 //@ new_leve.c
-void	new_level(), put_things(), treas_room();
+void	new_level();
+void	put_things();
+void	treas_room();
 int	rnd_room();
 
 //@ pack.c
-THING	*pack_obj(), *get_item();
-void	add_pack(), pick_up(), money();
-byte	inventory(), pack_char();
+THING	*pack_obj();
+THING	*get_item();
+void	add_pack();
+void	pick_up();
+void	money();
+byte	inventory();
+byte	pack_char();
 
 //@ passages.c
-void	conn(), do_passages(), door(), passnum(), numpass(), psplat();
+void	conn();
+void	do_passages();
+void	door();
+void	passnum();
+void	numpass();
+void	psplat();
 
 //@ potions.c
-void	quaff(), invis_on(), th_effect();
+void	quaff();
+void	invis_on();
+void	th_effect();
 bool	turn_see();
 
 //@ protect.c
 void	protect();
 
 //@ rings.c
-void	ring_on(), ring_off();
+void	ring_on();
+void	ring_off();
 char	*ring_num();
-int	gethand(), ring_eat();
+int	gethand();
+int	ring_eat();
 
 //@ rip.c
-void	score(), get_scores(), put_scores(), pr_scores(), death(),
-		total_winner();
-char *killname();
+void	score();
+void	get_scores();
+void	put_scores();
+void	pr_scores();
+void	death();
+void	total_winner();
+char	*killname();
 int	add_scores();
 #ifdef DEMO
 void	demo();
 #endif //DEMO
 
 //@ rooms.c
-void	do_rooms(), draw_room(), vert(), horiz(), rnd_pos(), enter_room(),
-		leave_room();
+void	do_rooms();
+void	draw_room();
+void	vert();
+void	horiz();
+void	rnd_pos();
+void	enter_room();
+void	leave_room();
 
 //@ save.c
-void	save_game(), restore();
+void	save_game();
+void	restore();
 int	save_ds();
 
 //@ scrolls.c
@@ -768,10 +835,14 @@ void read_scroll();
 
 //@ slime.c
 void	slime_split();
-bool	new_slime(), plop_monster();
+bool	new_slime();
+bool	plop_monster();
 
 //@ sticks.c
-void	fix_stick(), do_zap(), drain(), fire_bolt();
+void	fix_stick();
+void	do_zap();
+void	drain();
+void	fire_bolt();
 char	*charge_str();
 
 //@ strings.c
@@ -781,22 +852,34 @@ bool	is_lower(char ch);
 bool	is_digit(char ch);
 bool	is_space(char ch);
 bool	is_print(char ch);
-char	*stccpy(), *stpblk(), *endblk();
+char	*stccpy();
+char	*stpblk();
+char	*endblk();
 void	lcase();
 
 //@ things.c
-char	*inv_name(), *nothing();
+char	*inv_name();
+char	*nothing();
 void	chopmsg(char *s, char *shmsg, char *lnmsg, ...);
-void	drop(), discovered(), print_disc(), set_order();
+void	drop();
+void	discovered();
+void	print_disc();
+void	set_order();
 bool	can_drop();
 THING	*new_thing();
-byte	add_line(), end_line();
+byte	add_line();
+byte	end_line();
 int	pick_one();
 
 //@ weapons.c
-void	missile(), do_motion(), fall(), init_weapon(), wield(),
-		tick_pause();
-char	*short_name(), *num();
+void	missile();
+void	do_motion();
+void	fall();
+void	init_weapon();
+void	wield();
+void	tick_pause();
+char	*short_name();
+char	*num();
 bool	hit_monster();
 int	fallpos();
 
@@ -804,7 +887,8 @@ int	fallpos();
 void	whatis();
 int	teleport();
 #ifdef WIZARD
-void	create_obj(), show_map();
+void	create_obj();
+	show_map();
 #ifdef UNIX
 bool	passwd();
 #endif //UNIX
@@ -812,7 +896,8 @@ bool	passwd();
 
 
 /*@ functions declared but not found
-int	auto_save(), tstp();
+int	auto_save();
+int	tstp();
 THING	*find_mons();
 char	*balloc();
 */
