@@ -7,6 +7,15 @@
 #include "rogue.h"
 #include "curses.h"
 
+
+//@ turn_see() wrapper to use as a fuse
+static
+void
+turn_see_off(void)
+{
+	turn_see(TRUE);
+}
+
 /*
  * quaff:
  *	Quaff a potion from the pack
@@ -42,7 +51,7 @@ quaff()
 			if (on(player, ISHUH))
 				lengthen(unconfuse, rnd(8)+HUHDURATION);
 			else
-				fuse(unconfuse, 0, rnd(8)+HUHDURATION);
+				fuse(unconfuse, rnd(8)+HUHDURATION);
 			player.t_flags |= ISHUH;
 			msg("wait, what's going on? Huh? What? Who?");
 		}
@@ -71,15 +80,18 @@ quaff()
 		msg("you feel stronger. What bulging muscles!");
 	when P_MFIND:
 #ifndef DEMO
-		fuse(turn_see, TRUE, HUHDURATION);
+		fuse(turn_see_off, HUHDURATION);
 		if (mlist == NULL)
 			msg("you have a strange feeling%s.",
 				noterse(" for a moment"));
 		else
 		{
-				p_know[P_MFIND] |= turn_see(FALSE);
-				msg("");
+			if (turn_see(FALSE))
+			{
+				p_know[P_MFIND] = TRUE;
 			}
+			msg("");
+		}
 #else
 		msg("you can't move");
 		msg(" and are forced to watch this advertisement");
@@ -87,7 +99,7 @@ quaff()
 		msg("the most popular game on UNIX ever!");
 		msg("now runs on YOUR IBM PC");
 		msg("UNIX is a trademark of Bell Labs");
-			p_know[P_MFIND] = TRUE;
+		p_know[P_MFIND] = TRUE;
 #endif
 	  when P_TFIND:
 		/*
@@ -137,7 +149,7 @@ quaff()
 		msg("you can't move");
 	when P_SEEINVIS:
 		if (!on(player, CANSEE)) {
-			fuse(unsee, 0, SEEDURATION);
+			fuse(unsee, SEEDURATION);
 			look(FALSE);
 			invis_on();
 		}
@@ -179,7 +191,7 @@ quaff()
 		if (!on(player, ISBLIND))
 		{
 			player.t_flags |= ISBLIND;
-			fuse(sight, 0, SEEDURATION);
+			fuse(sight, SEEDURATION);
 			look(FALSE);
 		}
 		msg("a cloak of darkness falls around you");

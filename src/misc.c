@@ -354,7 +354,7 @@ add_haste(potion)
 	{
 		player.t_flags |= ISHASTE;
 		if (potion)
-			fuse(nohaste, 0, rnd(4)+10);
+			fuse(nohaste, rnd(4)+10);
 		return TRUE;
 	}
 }

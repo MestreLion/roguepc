@@ -7,12 +7,13 @@
 #include "rogue.h"
 #include "curses.h"
 
+
 /*
  * doctor:
  *	A healing daemon that restores hit points after rest
  */
 void
-doctor()
+doctor(void)
 {
 	register int lv, ohp;
 
@@ -44,9 +45,9 @@ doctor()
  *	Called when it is time to start rolling for wandering monsters
  */
 void
-swander()
+swander(void)
 {
-	daemon(rollwand, 0);
+	start_daemon(rollwand);
 }
 
 /*
@@ -54,7 +55,7 @@ swander()
  *	Called to roll to see if a wandering monster starts up
  */
 void
-rollwand()
+rollwand(void)
 {
 	static int between = 0;
 
@@ -64,7 +65,7 @@ rollwand()
 		{
 			wanderer();
 			extinguish(rollwand);
-			fuse(swander, 0, WANDERTIME);
+			fuse(swander, WANDERTIME);
 		}
 	between = 0;
 	}
@@ -75,7 +76,7 @@ rollwand()
  *	Release the poor player from his confusion
  */
 void
-unconfuse()
+unconfuse(void)
 {
 	player.t_flags &= ~ISHUH;
 	msg("you feel less confused now");
@@ -86,7 +87,7 @@ unconfuse()
  *	Turn off the ability to see invisible
  */
 void
-unsee()
+unsee(void)
 {
 	register THING *th;
 
@@ -101,7 +102,7 @@ unsee()
  *	He gets his sight back
  */
 void
-sight()
+sight(void)
 {
 	if (on(player, ISBLIND))
 	{
@@ -118,7 +119,7 @@ sight()
  *	End the hasting
  */
 void
-nohaste()
+nohaste(void)
 {
 	player.t_flags &= ~ISHASTE;
 	msg("you feel yourself slowing down");
@@ -129,7 +130,7 @@ nohaste()
  *	Digest the hero's food
  */
 void
-stomach()
+stomach(void)
 {
 	register int oldfood, deltafood;
 

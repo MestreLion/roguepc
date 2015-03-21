@@ -203,7 +203,7 @@ teleport()
 	if (on(player, ISHUH))
 		lengthen(unconfuse, rnd(4)+2);
 	else
-		fuse(unconfuse, 0, rnd(4)+2);
+		fuse(unconfuse, rnd(4)+2);
 	player.t_flags |= ISHUH;
 #ifdef WIZARD
 	}

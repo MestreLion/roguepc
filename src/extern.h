@@ -57,7 +57,6 @@
 
 //@ pause(), access(), sleep(), close()
 #include <unistd.h>
-#define daemon	start_daemon
 #define access(f)	access(f, F_OK)
 
 //@ time(), nanosleep()

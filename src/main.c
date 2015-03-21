@@ -121,10 +121,10 @@ main(argc, argv)
 		/*
 		 * Start up daemons and fuses
 		 */
-		daemon(doctor, 0);
-		fuse(swander, 0, WANDERTIME);
-		daemon(stomach, 0);
-		daemon(runners, 0);
+		start_daemon(doctor);
+		fuse(swander, WANDERTIME);
+		start_daemon(stomach);
+		start_daemon(runners);
 		msg("Hello %s%s.", whoami, noterse(".  Welcome to the Dungeons of Doom"));
 		raise_curtain();
 	}

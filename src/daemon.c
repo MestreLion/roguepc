@@ -2,7 +2,7 @@
  * Contains functions for dealing with things that happen in the
  * future.
  *
- * @(#)daemon.c	5.2 (Berkeley) 6/18/82
+ * (#)daemon.c	5.2 (Berkeley) 6/18/82
  */
 
 #include "rogue.h"
@@ -13,19 +13,35 @@
 #define DAEMON -1
 #define MAXDAEMONS 20
 
+/*@
+ * struct delayed_action, as well as functions using it as return type such
+ * as d_slot() and find_slot() are now marked static as the struct is not
+ * declared in rogue.h, and they are only used in this file
+ */
+
+/*@
+ * `int d_arg` member was removed as all fuses and daemons have no arguments,
+ * and for the only one that did, turn_see(), the argument type is bool. It's
+ * also now wrapped and no longer directly used as fuse, as its return type is
+ * not void, making the argument member of this struct unneeded.
+ *
+ * A solution to handle generic functions of multiple return and argument types
+ * would be a somewhat complex approach using unions to simulate overload, a
+ * sophistication not needed for Rogue.
+ */
+static
 struct delayed_action {
-	int (*d_func)();
-	int d_arg;
+	void (*d_func)();
 	int d_time;
 } d_list[MAXDAEMONS];
 
-//@ No need to declare in rogue.h
 /*
  * d_slot:
  *	Find an empty slot in the daemon/fuse list
  */
+static
 struct delayed_action *
-d_slot()
+d_slot(void)
 {
 	register struct delayed_action *dev;
 
@@ -38,14 +54,13 @@ d_slot()
 	return NULL;
 }
 
-//@ No need to declare in rogue.h
 /*
  * find_slot:
  *	Find a particular slot in the table
  */
+static
 struct delayed_action *
-find_slot(func)
-int (*func)();
+find_slot(void (*func)())
 {
 	register struct delayed_action *dev;
 
@@ -60,14 +75,12 @@ int (*func)();
  *	Start a daemon, takes a function.
  */
 void
-start_daemon(func, arg)
-int (*func)(), arg;
+start_daemon(void (*func)())
 {
 	register struct delayed_action *dev;
 
 	dev = d_slot();
 	dev->d_func = func;
-	dev->d_arg = arg;
 	dev->d_time = DAEMON;
 }
 
@@ -76,7 +89,7 @@ int (*func)(), arg;
  *	Run all the daemons, passing the argument to the function.
  */
 void
-do_daemons()
+do_daemons(void)
 {
 	register struct delayed_action *dev;
 
@@ -84,11 +97,16 @@ do_daemons()
 	 * Loop through the devil list
 	 */
 	for (dev = d_list; dev < &d_list[MAXDAEMONS]; dev++)
-	/*
-	 * Executing each one, giving it the proper arguments
-	 */
-	if (dev->d_time == DAEMON && dev->d_func != EMPTY)
-		(*dev->d_func)(dev->d_arg);
+	{
+		/*
+		 * Executing each one, giving it the proper arguments
+		 * @ Sorry, no more "arguments". And it was a single one.
+		 */
+		if (dev->d_time == DAEMON && dev->d_func != EMPTY)
+		{
+			(*dev->d_func)();
+		}
+	}
 }
 
 /*
@@ -96,14 +114,12 @@ do_daemons()
  *	Start a fuse to go off in a certain number of turns
  */
 void
-fuse(func, arg, time)
-int (*func)(), arg, time;
+fuse(void (*func)(), int time)
 {
 	register struct delayed_action *wire;
 
 	wire = d_slot();
 	wire->d_func = func;
-	wire->d_arg = arg;
 	wire->d_time = time;
 }
 
@@ -112,9 +128,7 @@ int (*func)(), arg, time;
  *	Increase the time until a fuse goes off
  */
 void
-lengthen(func, xtime)
-int (*func)();
-int xtime;
+lengthen(void (*func)(), int xtime)
 {
 	register struct delayed_action *wire;
 
@@ -128,8 +142,7 @@ int xtime;
  *	Put out a fuse
  */
 void
-extinguish(func)
-int (*func)();
+extinguish(void (*func)())
 {
 	register struct delayed_action *wire;
 
@@ -143,7 +156,7 @@ int (*func)();
  *	Decrement counters and start needed fuses
  */
 void
-do_fuses()
+do_fuses(void)
 {
 	register struct delayed_action *wire;
 
@@ -157,7 +170,7 @@ do_fuses()
 	 */
 		if (wire->d_func != EMPTY && wire->d_time > 0 && --wire->d_time == 0)
 		{
-			(*wire->d_func)(wire->d_arg);
+			(*wire->d_func)();
 			wire->d_func = EMPTY;
 		}
 	}

@@ -594,12 +594,22 @@ coord	*find_dest();
 void	command(), show_count(), execcom();
 
 //@ daemon.c
-void	start_daemon(), do_daemons(), fuse(), lengthen(), extinguish(),
-		do_fuses();
+void	start_daemon(void (*func)());
+void	do_daemons(void);
+void	fuse(void (*func)(), int time);
+void	lengthen(void (*func)(), int xtime);
+void	extinguish(void (*func)());
+void	do_fuses(void);
 
 //@ daemons.c
-void	doctor(), swander(), rollwand(), unconfuse(), unsee(), sight(),
-		nohaste(), stomach();
+void	doctor(void);
+void	swander(void);
+void	rollwand(void);
+void	unconfuse(void);
+void	unsee(void);
+void	sight(void);
+void	nohaste(void);
+void	stomach(void);
 
 //@ env.h
 byte	peekc();

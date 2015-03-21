@@ -193,7 +193,7 @@ wake_monster(y, x)
 				if (on(player, ISHUH))
 					lengthen(unconfuse, rnd(20) + HUHDURATION);
 				else
-					fuse(unconfuse, 0, rnd(20) + HUHDURATION);
+					fuse(unconfuse, rnd(20) + HUHDURATION);
 				player.t_flags |= ISHUH;
 				msg("the medusa's gaze has confused you");
 			}
