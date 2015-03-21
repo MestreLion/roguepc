@@ -624,8 +624,7 @@ void	stomach(void);
 bool	setenv_from_file(char *envfile);
 
 //@ fakedos.c
-void	fakedos();
-int	dodos();
+void	fakedos(void);
 
 //@ fight.c
 bool	fight();
