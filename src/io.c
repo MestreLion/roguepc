@@ -87,7 +87,7 @@ addmsg(const char *fmt, ...)
  *	if it is up there with the -More-)
  */
 void
-endmsg()
+endmsg(void)
 {
 	if (save_msg)
 		strcpy(huh, msgbuf);
@@ -260,8 +260,7 @@ scrlmsg(msgline,str1,str2)
  *	@ same purpose but different behavior, so not using the curses version
  */
 char *
-io_unctrl(ch)
-unsigned char ch;
+io_unctrl(byte ch)
 {
 	static char chstr[9];		/* Defined in curses library */
 
@@ -285,7 +284,7 @@ unsigned char ch;
  *	Display the important stats line.  Keep the cursor where it was.
  */
 void
-status()
+status(void)
 {
 	int oy, ox;
 	static int s_hungry;
@@ -406,8 +405,7 @@ status()
  *	Sit around until the guy types the right key
  */
 void
-wait_for(ch)
-	char ch;
+wait_for(byte ch)
 {
 	/*@
 	 * stdio and ncurses will map all stream line endings to '\n'
@@ -549,7 +547,7 @@ str_attr(str)
  * key_state:
  */
 void
-SIG2()
+SIG2(void)
 {
 	static int key_init = TRUE;
 	static int numl, capsl;

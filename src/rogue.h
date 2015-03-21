@@ -638,9 +638,17 @@ void	vmsg(const char *fmt, va_list argp);
 void	addmsg(const char *fmt, ...);
 void	doadd(const char *fmt, va_list argp);
 void	wait_msg(const char *msg);
-void	endmsg(), more(), putmsg(), scrlmsg(), status(), wait_for(),
-		show_win(), str_attr(), SIG2();
-char	*io_unctrl(), *noterse();
+void	endmsg(void);
+void	more(char *msg);
+void	putmsg(int msgline, char *msg);
+void	scrlmsg(int msgline, char *str1, char *str2);
+void	status(void);
+void	wait_for(byte ch);
+void	show_win(char *message);
+void	str_attr(char *str);
+void	SIG2(void);
+char	*io_unctrl(byte ch);
+char	*noterse(char *str);
 
 //@ list.c
 THING	*new_item();
@@ -660,20 +668,39 @@ void	draw_maze(), new_frontier(), add_frnt(), con_frnt(), splat();
 bool	maze_at(), inrange();
 
 //@ misc.c
-void	look(), eat(), chg_str(), add_str(), aggravate(), call_it(),
-		help(), search(), d_level(), u_level(), call(), do_macro();
-THING	*find_obj();
-bool	add_haste(), is_current(), get_dir(), find_dir(), step_ok(),
-		_ce(), offmap();
-char	*tr_name(), *vowelstr(), goodch();
-shint	sign();
-byte	winat();
-int	spread(), DISTANCE(), INDEX();
+void	look(bool wakeup);
+void	eat(void);
+void	chg_str(int amt);
+void	add_str(str_t *sp, int amt);
+void	aggravate(void);
+void	call_it(bool know, char **guess);
+void	help(struct h_list *helpscr);
+void	search(void);
+void	d_level(void);
+void	u_level(void);
+void	call(void);
+void	do_macro(char *buf, int sz);
+THING	*find_obj(int y, int x);
+bool	add_haste(bool potion);
+bool	is_current(THING *obj);
+bool	get_dir(void);
+bool	find_dir(byte ch, coord *cp);
+bool	step_ok(byte ch);
+bool	_ce(coord *a, coord *b);
+bool	offmap(int y, int x);
+char	*tr_name(byte type);
+char	*vowelstr(char *str);
+char	goodch(THING *obj);
+shint	sign(int nm);
+byte	winat(int y, int x);
+int	spread(int nm);
+int	DISTANCE(int y1, int x1, int y2, int x2);
+int	INDEX(int y, int x);
 #ifdef ME
-bool	me();
+bool	me(void);
 #endif
 #ifdef TEST
-bool	istest();
+bool	istest(void);
 #endif
 
 //@ monsters.c

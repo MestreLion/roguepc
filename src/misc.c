@@ -12,8 +12,7 @@
  *	Print the name of a trap
  */
 char *
-tr_name(type)
-byte type;
+tr_name(byte type)
 {
 	switch (type)
 	{
@@ -39,8 +38,7 @@ byte type;
  *	A quick glance all around the player
  */
 void
-look(wakeup)
-	bool wakeup;
+look(bool wakeup)
 {
 	register int x, y;
 	register byte ch, pch;
@@ -338,8 +336,7 @@ add_str(sp, amt)
  *	Add a haste to the player
  */
 bool
-add_haste(potion)
-	bool potion;
+add_haste(bool potion)
 {
 	if (on(player, ISHASTE))
 	{
@@ -441,9 +438,7 @@ get_dir()
 }
 
 bool
-find_dir(ch, cp)
-	byte ch;
-	coord *cp;
+find_dir(byte ch, coord *cp)
 {
 	bool gotit;
 
@@ -492,9 +487,7 @@ spread(nm)
  *	Call an object something after use.
  */
 void
-call_it(know, guess)
-	register bool know;
-	register char **guess;
+call_it(bool know, char **guess)
 {
 	if (know && **guess)
 		**guess = (size_t)NULL;
@@ -512,8 +505,7 @@ call_it(know, guess)
  *	Returns true if it is ok to step on ch
  */
 bool
-step_ok(ch)
-	byte ch;
+step_ok(byte ch)
 {
 	switch (ch)
 	{
