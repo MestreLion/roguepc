@@ -10,13 +10,13 @@
 #	speed.  Don't load in csav.o
 #
 TARGET:=rogue
-CFLAGS:=-Wall -Wextra -D_FORTIFY_SOURCE=2 -O0 -std=c99 -pedantic
+CFLAGS:=-Wall -Wextra -D_FORTIFY_SOURCE=2 -O0 -g3 -std=c99 -pedantic
 LDLIBS:=
 UNICODE=3
 ROGUE_CHARSET:=$(UNICODE)
 
 ifdef ROGUE_DEBUG
-CFLAGS+=-DROGUE_DEBUG -g3
+CFLAGS+=-DROGUE_DEBUG
 endif
 ifdef ROGUE_DEMO
 CFLAGS+=-DROGUE_DEMO
