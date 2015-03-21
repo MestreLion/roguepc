@@ -582,16 +582,25 @@ extern int no_step;  //@ used in clock(), originally by dos.asm
  */
 
 //@ armor.c
-void	wear(), take_off(), waste_time();
+void	wear(void);
+void	take_off(void);
+void	waste_time(void);
 
 //@ chase.c
-void	runners(), do_chase(), chase(), start_run();
-bool	see_monst(), diag_ok(), cansee();
-struct room	*roomin();
-coord	*find_dest();
+void	runners(void);
+void	do_chase(THING *th);
+void	chase(THING *tp, coord *ee);
+void	start_run(coord *runner);
+bool	see_monst(THING *mp);
+bool	diag_ok(coord *sp, coord *ep);
+bool	cansee(int y, int x);
+struct room	*roomin(coord *cp);
+coord	*find_dest(THING *tp);
 
 //@ command.c
-void	command(), show_count(), execcom();
+void	command(void);
+void	show_count(void);
+void	execcom(void);
 
 //@ daemon.c
 void	start_daemon(void (*func)());
