@@ -1015,7 +1015,7 @@ charcode_from_dos(byte chd, CCODE *mapping)
 	CCODE *ccp;
 
 	// Shortcut for "ordinary" chars that map to themselves
-	if (chd == '\0' || chd == '\n' || is_print(chd))
+	if (chd == '\0' || chd == '\n' || (isascii(chd) && isprint(chd)))
 	{
 		ccode.ascii = ccode.dos = *ccode.unicode = chd;
 		return &ccode;
@@ -2104,7 +2104,7 @@ getinfo(str,size)
 					beep();
 					break;
 				}
-				if (!is_print(ch))
+				if (!isprint(ch))
 				{
 					break;
 				}

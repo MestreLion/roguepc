@@ -30,6 +30,14 @@ tolower(chr)
 }
 */
 
+//@ Locale-independent versions, as expected by Rogue
+bool is_alpha(char ch) { return (isascii(ch) && isalpha(ch)); }
+bool is_upper(char ch) { return (isascii(ch) && isupper(ch)); }
+bool is_lower(char ch) { return (isascii(ch) && islower(ch)); }
+bool is_digit(char ch) { return (isascii(ch) && isdigit(ch)); }
+bool is_space(char ch) { return (isascii(ch) && isspace(ch)); }
+bool is_print(char ch) { return (isascii(ch) && isprint(ch)); }
+
 /*@
  * No exact match in signature and behavior from glibc or POSIX
  * Similar to <string.h> strncpy(), but not a drop-in equivalent.

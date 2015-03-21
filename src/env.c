@@ -140,6 +140,7 @@ setenv_from_file(envfile)
 	}
 	/*
 	 * for all environment strings that have to be in lowercase ....
+	 * @ this will never be reached, as there is `break` in previous `while`
 	 */
 	lcase(s_menu);
 	lcase(s_screen);
@@ -170,7 +171,7 @@ peekc()
 		plabel = &blabel[10];
 	if (pstring > &bstring[24])
 		pstring = &bstring[24];
-	if (fread(&ch, 1, 1, file) < 1 && pstate != 0) {
+	if (!fread(&ch, 1, 1, file) && pstate != 0) {
 		/*
 		 * When looking for the end of the string,
 		 * Let the eof look like newlines
@@ -226,8 +227,8 @@ putenv_struct(label,string)
 
 	for (i=0 ; i<MAXEP ; i++)
 	{
-	if ( strcmp(label,element[i].e_label) == MATCH )
-		stccpy(element[i].e_string, string, element[i].strlen);
+		if ( strcmp(label,element[i].e_label) == MATCH )
+			stccpy(element[i].e_string, string, element[i].strlen);
 	}
 }
 

@@ -729,6 +729,12 @@ void	fix_stick(), do_zap(), drain(), fire_bolt();
 char	*charge_str();
 
 //@ strings.c
+bool	is_alpha(char ch);
+bool	is_upper(char ch);
+bool	is_lower(char ch);
+bool	is_digit(char ch);
+bool	is_space(char ch);
+bool	is_print(char ch);
 char	*stccpy(), *stpblk(), *endblk();
 void	lcase();
 
