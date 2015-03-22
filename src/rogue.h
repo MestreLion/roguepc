@@ -740,29 +740,26 @@ bool	istest(void);
 #endif
 
 //@ monsters.c
-char	randmonster();
-char	pick_mons();
-void	new_monster();
-void	f_restor();
-void	wanderer();
-void	give_pack();
-THING	*wake_monster();
-THING	*moat();
-int	exp_add();
+char	randmonster(bool wander);
+char	pick_mons(void);
+void	new_monster(THING *tp, byte type, coord *cp);
+void	f_restor(void);
+void	wanderer(void);
+void	give_pack(THING *tp);
+THING	*wake_monster(int y, int x);
+THING	*moat(int my, int mx);
 
 //@ move.c
-void	do_run();
-void	do_move();
-void	door_open();
-void	descend();
-void	rndmove();
-byte	be_trapped();
+void	do_run(byte ch);
+void	do_move(int dy, int dx);
+void	door_open(struct room *rp);
+void	descend(char *mesg);
+void	rndmove(THING *who, coord *newmv);
 
 //@ new_leve.c
-void	new_level();
-void	put_things();
-void	treas_room();
-int	rnd_room();
+void	new_level(void);
+void	put_things(void);
+int	rnd_room(void);
 
 //@ pack.c
 THING	*pack_obj();

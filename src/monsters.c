@@ -7,6 +7,8 @@
 #include "rogue.h"
 #include "curses.h"
 
+static int	exp_add(THING *tp);
+
 /*
  * List of monsters in rough order of vorpalness
  */
@@ -20,8 +22,7 @@ static char *wand_mons = "KEBHISORZ CAQ YTW PUGM VJ ";
  *	the meaner the monster.
  */
 char
-randmonster(wander)
-	bool wander;
+randmonster(bool wander)
 {
 	register int d;
 	register char *mons;
@@ -44,10 +45,7 @@ randmonster(wander)
  *	Pick a new monster and add it to the list
  */
 void
-new_monster(tp, type, cp)
-	THING *tp;
-	byte type;
-	coord *cp;
+new_monster(THING *tp, byte type, coord *cp)
 {
 	register struct monster *mp;
 	register int lev_add;
@@ -75,7 +73,9 @@ new_monster(tp, type, cp)
 	if (type == 'F')
 		tp->t_stats.s_dmg = f_damage;
 	if (type == 'X')
-		switch (rnd(level > 25 ? 9 : 8)) {
+	{
+		switch (rnd(level > 25 ? 9 : 8))
+		{
 		when 0: tp->t_disguise = GOLD;
 		when 1: tp->t_disguise = POTION;
 		when 2: tp->t_disguise = SCROLL;
@@ -86,6 +86,7 @@ new_monster(tp, type, cp)
 		when 7: tp->t_disguise = STICK;
 		when 8: tp->t_disguise = AMULET;
 		break;
+		}
 	}
 }
 
@@ -93,7 +94,7 @@ new_monster(tp, type, cp)
  *  f_restor(): restor initial damage string for flytraps
  */
 void
-f_restor()
+f_restor(void)
 {
 	register struct monster *mp = &monsters['F'-'A'];
 
@@ -105,9 +106,9 @@ f_restor()
  * expadd:
  *	Experience to add for this monster's level/hit points
  */
+static
 int
-exp_add(tp)
-	register THING *tp;
+exp_add(THING *tp)
 {
 	register int mod;
 
@@ -127,7 +128,7 @@ exp_add(tp)
  *	Create a new wandering monster and aim it at the player
  */
 void
-wanderer()
+wanderer(void)
 {
 	int i;
 	register struct room *rp;
@@ -232,7 +233,7 @@ give_pack(tp)
  *	Choose a sort of monster for the enemy of a vorpally enchanted weapon
  */
 char
-pick_mons()
+pick_mons(void)
 {
 	register char *cp = lvl_mons + strlen(lvl_mons);
 

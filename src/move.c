@@ -10,16 +10,16 @@
 /*
  * Used to hold the new hero position
  */
+static coord nh;
 
-coord nh;
+static byte	be_trapped(coord *tc);
 
 /*
  * do_run:
  *	Start the hero running
  */
 void
-do_run(ch)
-	byte ch;
+do_run(byte ch)
 {
 	running = TRUE;
 	after = FALSE;
@@ -224,9 +224,9 @@ door_open(rp)
  * be_trapped:
  *	The guy stepped on a trap.... Make him pay.
  */
+static
 byte
-be_trapped(tc)
-	register coord *tc;
+be_trapped(coord *tc)
 {
 	register byte tr;
 	register int index;

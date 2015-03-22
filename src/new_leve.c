@@ -12,9 +12,10 @@
 #define MAXTREAS 10	/* maximum number of treasures in a treasure room */
 #define MINTREAS 2	/* minimum number of treasures in a treasure room */
 
+static void	treas_room(void);
 
 void
-new_level()
+new_level(void)
 {
 	register int rm, i;
 	THING *tp;
@@ -130,7 +131,7 @@ new_level()
  *	Pick a room that is really there
  */
 int
-rnd_room()
+rnd_room(void)
 {
 	register int rm;
 
@@ -145,7 +146,7 @@ rnd_room()
  *	Put potions and scrolls on this level
  */
 void
-put_things()
+put_things(void)
 {
 	register int i = 0;
 	register THING *cur;
@@ -219,8 +220,9 @@ put_things()
  */
 #define MAXTRIES 10	/* max number of tries to put down a monster */
 
+static
 void
-treas_room()
+treas_room(void)
 {
 	int nm, index;
 	register THING *tp;
