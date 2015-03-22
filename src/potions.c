@@ -21,7 +21,7 @@ turn_see_off(void)
  *	Quaff a potion from the pack
  */
 void
-quaff()
+quaff(void)
 {
 	register THING *obj, *th;
 	register bool discardit = FALSE;
@@ -225,7 +225,7 @@ quaff()
  *	Turn on the ability to see invisible
  */
 void
-invis_on()
+invis_on(void)
 {
 	register THING *th;
 
@@ -242,8 +242,7 @@ invis_on()
  *	Put on or off seeing monsters on this level
  */
 bool
-turn_see(turn_off)
-	register bool turn_off;
+turn_see(bool turn_off)
 {
 	register THING *mp;
 	register bool can_see, add_new;
@@ -279,8 +278,7 @@ turn_see(turn_off)
  *	Compute the effect of this potion hitting a monster.
  */
 void
-th_effect(obj, tp)
-	register THING *obj, *tp;
+th_effect(THING *obj, THING *tp)
 {
 	switch (obj->o_which)
 	{

@@ -7,9 +7,9 @@
  * pack.c	1.4 (A.I. Design)	12/14/84
  */
 
+static
 THING *
-pack_obj(ch, chp)
-	byte ch, *chp;
+pack_obj(byte ch, byte *chp)
 {
 	register THING *obj;
 	register byte och;
@@ -28,9 +28,7 @@ pack_obj(ch, chp)
  *	it off the ground.
  */
 void
-add_pack(obj, silent)
-	register THING *obj;
-	bool silent;
+add_pack(THING *obj, bool silent)
 {
 	register THING *op, *lp = NULL;
 	register bool exact, from_floor;
@@ -179,9 +177,13 @@ add_pack(obj, silent)
 			goto picked_up;
 		}
 		if ((obj->l_prev = prev(op)) != NULL)
+		{
 			obj->l_prev->l_next = obj;
+		}
 		else
+		{
 			pack = obj;
+		}
 		obj->l_next = op;
 		op->l_prev = obj;
 	}
@@ -191,6 +193,7 @@ picked_up:
 	 * get mad and run at the hero
 	 */
 	for (op = mlist; op != NULL; op = next(op))
+	{
 		/*
 		 *  compiler bug: jll : 2-7-83
 		 *		It is stupid because it thinks the obj... is not an lvalue
@@ -209,6 +212,7 @@ picked_up:
 		if (op->t_dest != NULL &&
 		   (op->t_dest->x == obj->o_pos.x) && (op->t_dest->y == obj->o_pos.y))
 			op->t_dest = &hero;
+	}
 
 	if (obj->o_type == AMULET)
 	{
@@ -228,10 +232,7 @@ picked_up:
  *	List what is in the pack
  */
 byte
-inventory(list, type, lstr)
-	THING *list;
-	int type;
-	char *lstr;
+inventory(THING *list, int type, char *lstr)
 {
 	register byte ch;
 	register int n_objs;
@@ -270,8 +271,7 @@ inventory(list, type, lstr)
  *	Add something to characters pack.
  */
 void
-pick_up(ch)
-	byte ch;
+pick_up(byte ch)
 {
 	register THING *obj;
 
@@ -304,9 +304,7 @@ pick_up(ch)
  *	Pick something out of a pack for a purpose
  */
 THING *
-get_item(purpose, type)
-	char *purpose;
-	int type;
+get_item(char *purpose, int type)
 {
 	register THING *obj;
 	register byte ch;
@@ -391,8 +389,7 @@ get_item(purpose, type)
  *	Return which character would address a pack object
  */
 byte
-pack_char(obj)
-register THING *obj;
+pack_char(THING *obj)
 {
 	register THING *item;
 	register byte c;
@@ -411,8 +408,7 @@ register THING *obj;
  *	Add or subtract gold from the pack
  */
 void
-money(value)
-	register int value;
+money(int value)
 {
 	register byte floor;
 

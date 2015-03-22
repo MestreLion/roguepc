@@ -762,27 +762,26 @@ void	put_things(void);
 int	rnd_room(void);
 
 //@ pack.c
-THING	*pack_obj();
-THING	*get_item();
-void	add_pack();
-void	pick_up();
-void	money();
-byte	inventory();
-byte	pack_char();
+THING	*get_item(char *purpose, int type);
+void	add_pack(THING *obj, bool silent);
+void	pick_up(byte ch);
+void	money(int value);
+byte	inventory(THING *list, int type, char *lstr);
+byte	pack_char(THING *obj);
 
 //@ passages.c
-void	conn();
-void	do_passages();
-void	door();
-void	passnum();
-void	numpass();
-void	psplat();
+void	conn(int r1, int r2);
+void	do_passages(void);
+void	door(struct room *rm, coord *cp);
+void	passnum(void);
+void	numpass(int y, int x);
+void	psplat(shint y, shint x);
 
 //@ potions.c
-void	quaff();
-void	invis_on();
-void	th_effect();
-bool	turn_see();
+void	quaff(void);
+void	invis_on(void);
+void	th_effect(THING *obj, THING *tp);
+bool	turn_see(bool turn_off);
 
 //@ protect.c
 void	protect();
