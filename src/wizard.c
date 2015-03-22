@@ -9,12 +9,17 @@
 #include "rogue.h"
 #include "curses.h"
 
+#ifdef WIZARD
+static int	get_num(int *place);
+#endif
+
+
 /*
  * whatis:
  *	What a certin object is
  */
 void
-whatis()
+whatis(void)
 {
 	register THING *obj;
 
@@ -71,7 +76,7 @@ whatis()
  *	Wizard command for getting anything he wants
  */
 void
-create_obj()
+create_obj(void)
 {
 	THING *obj;
 	byte ch, bless;
@@ -140,6 +145,7 @@ create_obj()
 		when R_AGGR:
 		case R_TELEPORT:
 			obj->o_flags |= ISCURSED;
+			/* no break */
 		}
 	else if (obj->o_type == STICK)
 		fix_stick(obj);
@@ -157,7 +163,7 @@ create_obj()
  *	Bamf the hero someplace else
  */
 int
-teleport()
+teleport(void)
 {
 	register int rm;
 	coord c;
@@ -211,14 +217,16 @@ teleport()
 	return rm;
 }
 
-#ifdef UNIX
 #ifdef WIZARD
+#ifdef UNIX
 /*
  * passwd:
  *	See if user knows password
+ *	@ unused
  */
+static
 bool
-passwd()
+passwd(void)
 {
 	register char *sp, c;
 	char buf[MAXSTR], *crypt();
@@ -238,18 +246,16 @@ passwd()
 	*sp = '\0';
 	return (strcmp(PASSWD, crypt(buf, "mT")) == 0);
 }
+#endif  // UNIX
 
-#endif
-#endif
-
-#ifdef WIZARD
 /*
  * show_map:
  *	Print out the map for the wizard
  *	@unused, which is a shame...
  */
+static
 void
-show_map()
+show_map(void)
 {
 	register int y, x, real;
 
@@ -268,8 +274,9 @@ show_map()
 	wrestor();
 }
 
-get_num(place)
-	int *place;
+static
+int
+get_num(int *place)
 {
 	char numbuf[12];
 
@@ -277,4 +284,4 @@ get_num(place)
 	*place = atoi(numbuf);
 	return(*place);
 }
-#endif
+#endif  // WIZARD

@@ -27,13 +27,15 @@ static struct init_weps {
 	{"2d3",	"1d6",	NONE,     ISMISL}        	/* Spear */
 };
 
+static int	fallpos(THING *obj, coord *newpos);
+static char	*short_name(THING *obj);
+
 /*
  * missile:
  *	Fire a missile in a given direction
  */
 void
-missile(ydelta, xdelta)
-	int ydelta, xdelta;
+missile(int ydelta, int xdelta)
 {
 	register THING *obj, *nitem;
 
@@ -85,9 +87,7 @@ missile(ydelta, xdelta)
  *	across the room
  */
 void
-do_motion(obj, ydelta, xdelta)
-	THING *obj;
-	register int ydelta, xdelta;
+do_motion(THING *obj, int ydelta, int xdelta)
 {
 	register byte under = '@';
 
@@ -126,9 +126,9 @@ do_motion(obj, ydelta, xdelta)
 	}
 }
 
+static
 char *
-short_name(obj)
-	THING *obj;
+short_name(THING *obj)
 {
 	switch (obj->o_type) {
 		case WEAPON: return w_names[obj->o_which];
@@ -150,9 +150,7 @@ short_name(obj)
  *	Drop an item someplace around here.
  */
 void
-fall(obj, pr)
-	THING *obj;
-	bool pr;
+fall(THING *obj, bool pr)
 {
 	static coord fpos;
 	register int index;
@@ -190,9 +188,7 @@ fall(obj, pr)
  *	Set up the initial goodies for a weapon
  */
 void
-init_weapon(weap, type)
-	register THING *weap;
-	byte type;
+init_weapon(THING *weap, byte type)
 {
 	register struct init_weps *iwp;
 
@@ -215,9 +211,7 @@ init_weapon(weap, type)
  *	Does the missile hit the monster?
  */
 bool
-hit_monster(y, x, obj)
-	register int y, x;
-	THING *obj;
+hit_monster(int y, int x, THING *obj)
 {
 	static coord mp;
 	register THING *mo = moat(y, x);
@@ -235,9 +229,7 @@ hit_monster(y, x, obj)
  *	Figure out the plus number for armor/weapons
  */
 char *
-num(n1, n2, type)
-	register int n1, n2;
-	register char type;
+num(int n1, int n2, char type)
 {
 	static char numbuf[10];
 
@@ -252,7 +244,7 @@ num(n1, n2, type)
  *	Pull out a certain weapon
  */
 void
-wield()
+wield(void)
 {
 	register THING *obj, *oweapon;
 	register char *sp;
@@ -289,10 +281,9 @@ bad:
  * fallpos:
  *	Pick a random position around the given (y, x) coordinates
  */
+static
 int
-fallpos(obj, newpos)
-	register coord *newpos;
-	THING *obj;
+fallpos(THING *obj, coord *newpos)
 {
 	register int y, x, cnt = 0, ch;
 	THING *onfloor;
@@ -326,9 +317,10 @@ fallpos(obj, newpos)
 		return(cnt != 0);
 }
 
+
 //@ pause for a tick, ie, 1/18.2 secs (about 55ms)
 void
-tick_pause()
+tick_pause(void)
 {
 /*@ no more busy loops! :)
 

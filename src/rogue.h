@@ -843,26 +843,20 @@ byte	add_line(char *use, char *fmt, char *arg);
 byte	end_line(char *use);
 
 //@ weapons.c
-void	missile();
-void	do_motion();
-void	fall();
-void	init_weapon();
-void	wield();
-void	tick_pause();
-char	*short_name();
-char	*num();
-bool	hit_monster();
-int	fallpos();
+void	missile(int ydelta, int xdelta);
+void	do_motion(THING *obj, int ydelta, int xdelta);
+void	fall(THING *obj, bool pr);
+void	init_weapon(THING *weap, byte type);
+void	wield(void);
+void	tick_pause(void);
+char	*num(int n1, int n2, char type);
+bool	hit_monster(int y, int x, THING *obj);
 
 //@ wizard.c
-void	whatis();
-int	teleport();
+void	whatis(void);
+int	teleport(void);
 #ifdef WIZARD
 void	create_obj();
-	show_map();
-#ifdef UNIX
-bool	passwd();
-#endif //UNIX
 #endif //WIZARD
 
 

@@ -89,7 +89,7 @@ read_scroll()
 		msg("this scroll is an identify scroll");
 		if (! strcmp(s_menu,"on") || !strcmp(s_menu,"sel"))
 			more(" More ");
-		whatis(TRUE);
+		whatis();
 	when S_MAP:
 		/*
 		 * Scroll of magic mapping.
