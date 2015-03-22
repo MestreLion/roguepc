@@ -8,9 +8,24 @@
 #include "rogue.h"
 #include "curses.h"
 
+//@ moved from rogue.h
+#define TOPSCORES	10
+struct sc_ent {
+	char sc_name[38];
+	int sc_rank;
+	int sc_gold;
+	int sc_fate;
+	int sc_level;
+};
+
 #ifndef DEMO
 static FILE *file;
 #endif
+
+static void	get_scores(struct sc_ent *top10);
+static void	put_scores(struct sc_ent *top10);
+static void	pr_scores(int newrank, struct sc_ent *top10);
+static int	add_scores(struct sc_ent *newscore, struct sc_ent *oldlist);
 
 /*
  * score:
@@ -18,9 +33,7 @@ static FILE *file;
  */
 /* VARARGS2 */
 void
-score(amount, flags, monst)
-	int amount, flags;
-	char monst;
+score(int amount, int flags, char monst)
 {
 #ifndef DEMO
 #ifndef WIZARD
@@ -59,7 +72,7 @@ reread:
 		}
 	}
 	printw("\n");
-	get_scores(&top_ten);
+	get_scores(top_ten);
 
 	if (noscore != TRUE)
 	{
@@ -68,16 +81,16 @@ reread:
 		his_score.sc_fate = flags ? flags : monst;
 		his_score.sc_level = max_level;
 		his_score.sc_rank  = pstats.s_lvl;
-		rank = add_scores(&his_score,&top_ten);
+		rank = add_scores(&his_score, top_ten);
 	}
 	fclose(file);
 	if (rank > 0) {
 		if ((file = fopen(s_score, "w")) != NULL) {
-			put_scores(&top_ten);
+			put_scores(top_ten);
 			fclose(file);
 		}
 	}
-	pr_scores(rank,&top_ten);
+	pr_scores(rank, top_ten);
 #ifndef ROGUE_DOS_CURSES
 	wait_msg("exit");
 	printw("\n");
@@ -88,9 +101,9 @@ reread:
 
 #ifndef DEMO
 #ifndef WIZARD
+static
 void
-get_scores(top10)
-	struct sc_ent *top10;
+get_scores(struct sc_ent *top10)
 {
 	register int i, retcode = 1;
 
@@ -102,9 +115,9 @@ get_scores(top10)
 	}
 }
 
+static
 void
-put_scores(top10)
-	struct sc_ent *top10;
+put_scores(struct sc_ent *top10)
 {
 	register int i;
 
@@ -115,10 +128,9 @@ put_scores(top10)
 	}
 }
 
+static
 void
-pr_scores(newrank,top10)
-	int newrank;
-	struct sc_ent *top10;
+pr_scores(int newrank, struct sc_ent *top10)
 {
 	register int i;
 	int curl;
@@ -202,9 +214,9 @@ pr_scores(newrank,top10)
 		addstr("\n\n\n\n");
 }
 
+static
 int
-add_scores(newscore,oldlist)
-	struct sc_ent *newscore, *oldlist;
+add_scores(struct sc_ent *newscore, struct sc_ent *oldlist)
 {
 	register struct sc_ent *sentry, *insert;
 	int retcode = TOPSCORES+1;
@@ -232,8 +244,7 @@ add_scores(newscore,oldlist)
  *	Do something really fun when he dies
  */
 void
-death(monst)
-	register char monst;
+death(char monst)
 {
 	char buf[MAXSTR];
 #ifndef DEMO
@@ -321,7 +332,7 @@ death(monst)
  *	Code for a winner
  */
 void
-total_winner()
+total_winner(void)
 {
 #ifndef DEMO
 	register THING *obj;
@@ -457,9 +468,7 @@ total_winner()
  *	Convert a code to a monster name
  */
 char *
-killname(monst, doart)
-	byte monst;
-	bool doart;
+killname(byte monst, bool doart)
 {
 	register char *sp;
 	register bool article;
@@ -503,8 +512,7 @@ killname(monst, doart)
  * order the game.
  */
 void
-demo(endtype)
-	int endtype;
+demo(int endtype)
 {
 	char demobuf[81];
 

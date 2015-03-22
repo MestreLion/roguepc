@@ -455,15 +455,6 @@ struct monster {
 	struct stats m_stats;		/* Initial stats */
 };
 
-#define TOPSCORES	10
-struct sc_ent {
-	char sc_name[38];
-	int sc_rank;
-	int sc_gold;
-	int sc_fate;
-	int sc_level;
-};
-
 /*
  * External variables
  * @ all in extern.c unless noted (init.c, env.c, croot.c, main.c, protect.c)
@@ -797,16 +788,12 @@ char	*ring_num(THING *obj);
 int	ring_eat();
 
 //@ rip.c
-void	score();
-void	get_scores();
-void	put_scores();
-void	pr_scores();
-void	death();
-void	total_winner();
-char	*killname();
-int	add_scores();
+void	score(int amount, int flags, char monst);
+void	death(char monst);
+void	total_winner(void);
+char	*killname(byte monst, bool doart);
 #ifdef DEMO
-void	demo();
+void	demo(int endtype);
 #endif //DEMO
 
 //@ rooms.c
