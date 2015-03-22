@@ -8,15 +8,19 @@
 #include "rogue.h"
 #include "curses.h"
 
+static void	chopmsg(char *s, char *shmsg, char *lnmsg, ...);
+static void	print_disc(byte type);
+static void	set_order(short *order, int numthings);
+static int	pick_one(struct magic_item *magic, int nitems);
+static char	*nothing(byte type);
+
 /*
  * inv_name:
  *	Return the name of something as it would appear in an
  *	inventory.
  */
 char *
-inv_name(obj, drop)
-	register THING *obj;
-	bool drop;
+inv_name(THING *obj, bool drop)
 {
 	register int which = obj->o_which;
 	register char *pb;
@@ -149,6 +153,7 @@ inv_name(obj, drop)
 }
 
 //@ changed original signature to use varargs
+static
 void
 chopmsg(char *s, char *shmsg, char *lnmsg, ...)
 {
@@ -163,7 +168,7 @@ chopmsg(char *s, char *shmsg, char *lnmsg, ...)
  *	Put something down
  */
 void
-drop()
+drop(void)
 {
 	register byte ch;
 	register THING *nobj, *op;
@@ -215,8 +220,7 @@ drop()
  *	Do special checks for dropping or unweilding|unwearing|unringing
  */
 bool
-can_drop(op)
-register THING *op;
+can_drop(THING *op)
 {
 	if (op == NULL)
 		return TRUE;
@@ -261,7 +265,7 @@ register THING *op;
  *	Return a new thing
  */
 THING *
-new_thing()
+new_thing(void)
 {
 	register THING *cur;
 	register int j, k;
@@ -363,10 +367,9 @@ new_thing()
  * pick_one:
  *	Pick an item out of a list of nitems possible magic items
  */
+static
 shint  //@ actually an offset, the element index in the array
-pick_one(magic, nitems)
-	register struct magic_item *magic;
-	int nitems;
+pick_one(struct magic_item *magic, int nitems)
 {
 	register struct magic_item *end;
 	register int i;
@@ -402,14 +405,14 @@ static bool newpage = FALSE;
 static char *lastfmt, *lastarg;
 
 void
-discovered()
+discovered(void)
 {
 	print_disc(POTION);
-	add_line(nullstr, " ");
+	add_line(nullstr, " ", "");
 	print_disc(SCROLL);
-	add_line(nullstr, " ");
+	add_line(nullstr, " ", "");
 	print_disc(RING);
-	add_line(nullstr, " ");
+	add_line(nullstr, " ", "");
 	print_disc(STICK);
 	end_line(nullstr);
 }
@@ -421,9 +424,9 @@ discovered()
 
 #define MAX(a,b,c,d) (a>b?(a>c?(a>d?a:d):(c>d?c:d)):(b>c?(b>d?b:d):(c>d?c:d)))
 
+static
 void
-print_disc(type)
-	byte type;
+print_disc(byte type)
 {
 	register bool *know = NULL;
 	register char **guess = NULL;
@@ -467,17 +470,16 @@ print_disc(type)
 			num_found++;
 		}
 	if (num_found == 0)
-		add_line(nullstr, nothing(type));
+		add_line(nullstr, nothing(type), "");
 }
 
 /*
  * set_order:
  *	Set up order for list
  */
+static
 void
-set_order(order, numthings)
-	short *order;
-	int numthings;
+set_order(short *order, int numthings)
 {
 	register int i, r, t;
 
@@ -496,11 +498,11 @@ set_order(order, numthings)
 /*
  * add_line:
  *	Add a line to the list of discoveries
+ *
+ * VARARGS1
  */
-/* VARARGS1 */
 byte
-add_line(use, fmt, arg)
-	char *use, *fmt, *arg;
+add_line(char *use, char *fmt, char *arg)
 {
 	int x, y;
 	register byte retchar = ' ';
@@ -545,12 +547,11 @@ add_line(use, fmt, arg)
  *	End the list of lines
  */
 byte
-end_line(use)
-	char *use;
+end_line(char *use)
 {
 	register int retchar;
 
-	retchar = add_line(use, NULL);
+	retchar = add_line(use, NULL, "");
 	wrestor();
 	line_cnt = 0;
 	newpage = FALSE;
@@ -561,9 +562,9 @@ end_line(use)
  * nothing:
  *	Set up prbuf so that message for "nothing found" is there
  */
+static
 char *
-nothing(type)
-	register byte type;
+nothing(byte type)
 {
 	register char *sp, *tystr;
 

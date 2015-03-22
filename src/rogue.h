@@ -834,18 +834,13 @@ char	*endblk(char *str);
 void	lcase(char *str);
 
 //@ things.c
-char	*inv_name();
-char	*nothing();
-void	chopmsg(char *s, char *shmsg, char *lnmsg, ...);
-void	drop();
-void	discovered();
-void	print_disc();
-void	set_order();
-bool	can_drop();
-THING	*new_thing();
-byte	add_line();
-byte	end_line();
-int	pick_one();
+char	*inv_name(THING *obj, bool drop);
+void	drop(void);
+void	discovered(void);
+bool	can_drop(THING *op);
+THING	*new_thing(void);
+byte	add_line(char *use, char *fmt, char *arg);
+byte	end_line(char *use);
 
 //@ weapons.c
 void	missile();
