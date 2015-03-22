@@ -44,6 +44,9 @@
 #define HIGHENABLE 0x010  //@ Bit 4 mask, for intensified palette
 #define PALETTEBIT 0x020  //@ Bit 5 mask, unused
 
+static void	scr_load(void);
+static void	bload(unsigned int segment);
+
 //@ temp buffer to hold image file bytes
 static char *store;
 
@@ -63,7 +66,7 @@ static FILE *file;
  * - Return to previous video mode
  */
 void
-epyx_yuck()
+epyx_yuck(void)
 {
 	register int type = get_mode();
 
@@ -131,8 +134,9 @@ epyx_yuck()
  * 192 bytes of padding
  *   *    Padding       Padding                   55h
 */
+static
 void
-scr_load()
+scr_load(void)
 {
 	int palette, background;
 	int mode, burst;
@@ -184,11 +188,11 @@ scr_load()
 }
 
 /*@
- * Load the file bytes into a memory segment using DMA
+ * Load the file bytes into a memory segment
  */
+static
 void
-bload(segment)
-	unsigned segment;
+bload(unsigned int segment)
 {
 	register unsigned offset = 0, rdcnt;
 
@@ -210,9 +214,10 @@ bload(segment)
  * Also contains a no-op code which checked the existence of a file named
  * "jatgnas.8ys" in the root of such drive, but ignored the check result.
  *
+ * Btw... what is this function doing here?
  */
 int
-find_drive()
+find_drive(void)
 {
 	int drive = bdos(0x19);  //@ Get Current Default Drive (0=A, 1=B, etc)
 	char spec = s_drive[0];

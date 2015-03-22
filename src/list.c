@@ -9,12 +9,14 @@
 #include "rogue.h"
 #include "curses.h"
 
+static void	*talloc(void);
+
 /*
  * detach:
  *	Takes an item out of whatever linked list it might be in
  */
 void
-_detach(list, item)
+list_detach(list, item)
 	register THING **list, *item;
 {
 	if (*list == item)
@@ -30,7 +32,7 @@ _detach(list, item)
  *	add an item to the head of a list
  */
 void
-_attach(list, item)
+list_attach(list, item)
 	register THING **list, *item;
 {
 	if (*list != NULL)
@@ -52,7 +54,7 @@ _attach(list, item)
  *	Throw the whole blamed thing away
  */
 void
-_free_list(ptr)
+list_free(ptr)
 	register THING **ptr;
 {
 	register THING *item;
@@ -64,7 +66,6 @@ _free_list(ptr)
 	discard(item);
 	}
 }
-
 
 /*
  * new_item
@@ -88,6 +89,7 @@ new_item()
 /*
  * talloc: simple allocation of a THING
  */
+static
 void *  //@ maybe should be THING*, as this is a specialized malloc()
 talloc()
 {

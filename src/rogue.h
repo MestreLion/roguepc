@@ -97,9 +97,9 @@
 #define pack		player.t_pack
 #define proom		player.t_room
 #define max_hp		player.t_stats.s_maxhp
-#define attach(a,b)	_attach(&a,b)
-#define detach(a,b)	_detach(&a,b)
-#define free_list(a)	_free_list(&a)
+#define attach(a,b)	list_attach(&a,b)
+#define detach(a,b)	list_detach(&a,b)
+#define free_list(a)	list_free(&a)
 #define max(a,b)	((a) > (b) ? (a) : (b))
 #define on(thing,flag)	(((thing).t_flags & (flag)) != 0)
 #define GOLDCALC	(rnd(50 + 10 * level) + 2)
@@ -676,35 +676,32 @@ char	*io_unctrl(byte ch);
 char	*noterse(char *str);
 
 //@ list.c
-THING	*new_item();
-void	*talloc();
-void	_detach();
-void	_attach();
-void	_free_list();
-int	discard();
+THING	*new_item(void);
+void	list_detach(THING **list, THING *item);
+void	list_attach(THING **list, THING *item);
+void	list_free(THING **ptr);
+int	discard(THING *item);
 
 //@ load.c
-void	epyx_yuck();
-void	scr_load();
-void	bload();
-int	find_drive();
+void	epyx_yuck(void);
+int	find_drive(void);
 
 //@ main.c
-void	endit();
-void	playit();
-void	quit();
-void	leave();
-int	rnd();
-int	roll();
+void	endit(void);
+void	playit(char *sname);
+void	quit(void);
+void	leave(void);
+int	rnd(int range);
+int	roll(int number, int sides);
 
 //@ maze.c
-void	draw_maze();
-void	new_frontier();
-void	add_frnt();
-void	con_frnt();
-void	splat();
-bool	maze_at();
-bool	inrange();
+void	draw_maze(struct room *rp);
+void	new_frontier(int y, int x);
+void	add_frnt(int y, int x);
+void	con_frnt(void);
+void	splat(int y, int x);
+bool	maze_at(int y, int x);
+bool	inrange(int y, int x);
 
 //@ misc.c
 void	look(bool wakeup);
