@@ -44,6 +44,7 @@ extern int LINES, COLS;
 int cur_LINES = min(25, MAXLINES);
 int cur_COLS  = min(ROGUE_COLUMNS, MAXCOLS);
 static int KEY_MASK;
+bool change_colors = TRUE;  // if user wants us to redefine color palette
 #endif
 
 //@ unused
@@ -70,6 +71,7 @@ int 	charset = ROGUE_CHARSET;  // allow run-time / env file selection
 int 	colors;  // number of basic colors
 wchar_t	ccunicode[2] = L" ";  // temp buffer
 CCODE	ccode = {'\0', ccunicode, '\0'};  // temp charcode
+static bool colors_changed = FALSE;  // if colors palette was redefined
 #endif  // ROGUE_DOS_CURSES
 
 
@@ -1076,14 +1078,19 @@ attr_from_dos(byte dos_attr)
 	if (dos_attr == A_DOS_NORMAL)
 		return attr;
 
+	fg = color_from_dos(dos_attr, TRUE);
+	bg = color_from_dos(dos_attr, FALSE);
+
 	if (dos_attr & A_DOS_BLINK)
 		attr |= A_BLINK;
 
 	if (dos_attr & A_DOS_BRIGHT)
-		attr |= A_BOLD;
-
-	fg = color_from_dos(dos_attr, TRUE);
-	bg = color_from_dos(dos_attr, FALSE);
+	{
+		if (colors_changed)
+			fg += 8;
+		else
+			attr |= A_BOLD;
+	}
 
 	attr |= COLOR_PAIR_N(fg, bg);
 
@@ -1116,14 +1123,19 @@ attrw_from_dos(byte dos_attr, attr_t *attrs, short *color_pair)
 	if (dos_attr == A_DOS_NORMAL)
 		return;
 
+	fg = color_from_dos(dos_attr, TRUE);
+	bg = color_from_dos(dos_attr, FALSE);
+
 	if (dos_attr & A_DOS_BLINK)
 		*attrs |= WA_BLINK;
 
 	if (dos_attr & A_DOS_BRIGHT)
-		*attrs |= WA_BOLD;
-
-	fg = color_from_dos(dos_attr, TRUE);
-	bg = color_from_dos(dos_attr, FALSE);
+	{
+		if (colors_changed)
+			fg += 8;
+		else
+			*attrs |= WA_BOLD;
+	}
 
 	*color_pair = PAIR_INDEX(fg, bg);
 }
@@ -1135,6 +1147,8 @@ init_curses_colors(void)
 {
 	int fg, dos_fg, dfg;
 	int bg, dos_bg, dbg;
+	int coff;  // color index offset
+	int i;
 
 	start_color();
 
@@ -1144,7 +1158,7 @@ init_curses_colors(void)
 	 * method does not work), or even 256. Always respecting color capability
 	 * reported by curses via COLORS.
 	 */
-	colors = min(8, COLORS);
+	colors = min(16, COLORS);
 
 	dos_fg = color_from_dos(A_DOS_NORMAL, TRUE);
 	dos_bg = color_from_dos(A_DOS_NORMAL, FALSE);
@@ -1156,6 +1170,43 @@ init_curses_colors(void)
 	dfg = COLOR_WHITE;
 	dbg = COLOR_BLACK;
 #endif
+
+	if (can_change_color() && change_colors && colors >= 16)
+	{
+		colors_changed = TRUE;
+		coff = 16; // use the first plane of the color cube
+
+		/*
+		 * https://en.wikipedia.org/wiki/Color_Graphics_Adapter#Color_palette
+		 * red   := 2/3×(colorNumber & 4)/4 + 1/3×(colorNumber & 8)/8
+		 * green := 2/3×(colorNumber & 2)/2 + 1/3×(colorNumber & 8)/8
+		 * blue  := 2/3×(colorNumber & 1)/1 + 1/3×(colorNumber & 8)/8
+		 * if colorNumber = 6 then green := green / 2
+		 */
+#define CGA_COMP(c, i)	(1000 * ((c & i) * 2 / (3.0 * i) + (c & 8) / (3.0 * 8)))
+#define CGA_RED(c) 	CGA_COMP(c, 4)
+#define CGA_GREEN(c) 	CGA_COMP(c, 2)
+#define CGA_BLUE(c) 	CGA_COMP(c, 1)
+
+		for (i = 0; i < 16; i++)
+		{
+			/* To match CGA palette with ANSI, swap Red and Blue
+			 * components and special case dark yellow to get brown
+			 */
+			printw("Color %2d: Red=%6.1f, Green=%6.1f, Blue=%6.1f\n",
+					i, CGA_BLUE(i), CGA_GREEN(i) / (i == 3 ? 2 : 1), CGA_RED(i));
+			init_color(i + coff,
+					CGA_BLUE(i),
+					CGA_GREEN(i) / (i == 3 ? 2 : 1),
+					CGA_RED(i));
+		}
+		getch();
+	}
+	else
+	{
+		colors_changed = FALSE;
+		coff = 0; // use system colors
+	}
 
 	/*@
 	 * Notes on color assumptions, mappings and pairs:
@@ -1187,8 +1238,8 @@ init_curses_colors(void)
 		for (fg = colors - (bg ? 2 : 1); fg >= 0; fg--)
 		{
 			init_pair(PAIR_INDEX(fg, bg),
-					(fg == dos_fg) ? dfg : fg,
-					(bg == dos_bg) ? dbg : bg);
+					(fg == dos_fg) ? dfg : fg + coff,
+					(bg == dos_bg) ? dbg : bg + coff);
 		}
 	}
 }
@@ -1532,6 +1583,12 @@ cur_endwin()
 	if (init_curses)
 	{
 		endwin();
+		/*
+		if (changed_colors)
+		{
+			system("reset");
+		}
+		*/
 		init_curses = FALSE;
 #ifdef ROGUE_DEBUG
 		printf("Curses window closed\n");
