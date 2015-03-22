@@ -784,13 +784,16 @@ void	th_effect(THING *obj, THING *tp);
 bool	turn_see(bool turn_off);
 
 //@ protect.c
-void	protect();
+#ifndef ROGUE_NOGOOD
+void	protect(int UNUSED(drive));
+#else
+void	protect(int drive);
+#endif
 
 //@ rings.c
-void	ring_on();
-void	ring_off();
-char	*ring_num();
-int	gethand();
+void	ring_on(void);
+void	ring_off(void);
+char	*ring_num(THING *obj);
 int	ring_eat();
 
 //@ rip.c

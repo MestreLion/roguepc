@@ -67,16 +67,14 @@ getds(void)
 
 #ifndef ROGUE_NOGOOD
 void
-protect(drive)
-	int UNUSED(drive);
+protect(int UNUSED(drive))
 {
 	goodchk = 0xD0D;  //@ success marker: 0xD0D stands for "Dungeons Of Doom"
 	no_step = 0;
 }
 #else
 void
-protect(drive)
-	int drive;
+protect(int drive)
 {
 	int i, flags;
 	struct sw_regs rgs;

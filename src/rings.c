@@ -7,6 +7,7 @@
 #include "rogue.h"
 #include "curses.h"
 
+static int	gethand(void);
 
 /*
  * ring_on:
@@ -76,7 +77,7 @@ no_ring:
  *	Take off a ring
  */
 void
-ring_off()
+ring_off(void)
 {
 	register int ring;
 	register THING *obj;
@@ -109,8 +110,9 @@ ring_off()
  * gethand:
  *	Which hand is the hero interested in?
  */
+static
 int
-gethand()
+gethand(void)
 {
 	register int c;
 
@@ -135,8 +137,7 @@ gethand()
  *	How much food does this ring use up?
  */
 int
-ring_eat(hand)
-	register int hand;
+ring_eat(int hand)
 {
 	if (cur_ring[hand] == NULL)
 		return 0;
@@ -168,8 +169,7 @@ ring_eat(hand)
  *	Print ring bonuses
  */
 char *
-ring_num(obj)
-	register THING *obj;
+ring_num(THING *obj)
 {
 	if (!(obj->o_flags & ISKNOW))
 		return "";
