@@ -815,11 +815,11 @@ void	slime_split(THING *tp);
 bool	plop_monster(int r, int c, coord *cp);
 
 //@ sticks.c
-void	fix_stick();
-void	do_zap();
-void	drain();
-void	fire_bolt();
-char	*charge_str();
+void	fix_stick(THING *cur);
+void	do_zap(void);
+void	drain(void);
+void	fire_bolt(coord *start, coord *dir, char *name);
+char	*charge_str(THING *obj);
 
 //@ strings.c
 bool	is_alpha(char ch);
@@ -828,10 +828,10 @@ bool	is_lower(char ch);
 bool	is_digit(char ch);
 bool	is_space(char ch);
 bool	is_print(char ch);
-char	*stccpy();
-char	*stpblk();
-char	*endblk();
-void	lcase();
+char	*stccpy(char *s1, char *s2, int count);
+char	*stpblk(char *str);
+char	*endblk(char *str);
+void	lcase(char *str);
 
 //@ things.c
 char	*inv_name();
