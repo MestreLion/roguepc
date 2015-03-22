@@ -43,7 +43,7 @@ char *startmem = dummier + sizeof(dummier);  /* Pointer to the start of static m
 
 
 #define MIDSIZE 10
-char *msaveid = "AI Design";
+static char *msaveid = "AI Design";
 
 /*
  * BLKSZ: size of block read/written on each io operation
@@ -51,6 +51,8 @@ char *msaveid = "AI Design";
  *        so the screen can be read in exactly.
  */
 #define BLKSZ 512
+
+static int	save_ds(char *savename);
 
 /*
  * save_game:
@@ -113,6 +115,7 @@ save_game()
  *		and then dump data area determined previous to opening
  *		file.
  */
+static
 int
 save_ds(savename)
 	char *savename;

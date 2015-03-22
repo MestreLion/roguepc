@@ -797,26 +797,22 @@ void	demo(int endtype);
 #endif //DEMO
 
 //@ rooms.c
-void	do_rooms();
-void	draw_room();
-void	vert();
-void	horiz();
-void	rnd_pos();
-void	enter_room();
-void	leave_room();
+void	do_rooms(void);
+void	draw_room(struct room *rp);
+void	rnd_pos(struct room *rp, coord *cp);
+void	enter_room(coord *cp);
+void	leave_room(coord *cp);
 
 //@ save.c
-void	save_game();
-void	restore();
-int	save_ds();
+void	save_game(void);
+void	restore(char *savefile);
 
 //@ scrolls.c
-void read_scroll();
+void read_scroll(void);
 
 //@ slime.c
-void	slime_split();
-bool	new_slime();
-bool	plop_monster();
+void	slime_split(THING *tp);
+bool	plop_monster(int r, int c, coord *cp);
 
 //@ sticks.c
 void	fix_stick();

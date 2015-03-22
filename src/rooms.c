@@ -9,12 +9,15 @@
 
 #define GOLDGRP 1
 
+static void	vert( struct room *rp, int startx);
+static void	horiz(struct room *rp, int starty);
+
 /*
  * do_rooms:
  *	Create rooms and corridors with a connectivity graph
  */
 void
-do_rooms()
+do_rooms(void)
 {
 	register int i, rm;
 	struct room *rp;
@@ -144,8 +147,7 @@ do_rooms()
  *	Draw a box around a room and lay down the floor
  */
 void
-draw_room(rp)
-	struct room *rp;
+draw_room(struct room *rp)
 {
 	register int y, x;
 
@@ -172,10 +174,9 @@ draw_room(rp)
  * vert:
  *	Draw a vertical line
  */
+static
 void
-vert(rp, startx)
-	register struct room *rp;
-	register int startx;
+vert(struct room *rp, int startx)
 {
 	register int y;
 
@@ -187,10 +188,9 @@ vert(rp, startx)
  * horiz:
  *	Draw a horizontal line
  */
+static
 void
-horiz(rp, starty)
-	struct room *rp;
-	int starty;
+horiz(struct room *rp, int starty)
 {
 	register int x;
 
@@ -203,9 +203,7 @@ horiz(rp, starty)
  *	Pick a random spot in a room
  */
 void
-rnd_pos(rp, cp)
-	register struct room *rp;
-	register coord *cp;
+rnd_pos(struct room *rp, coord *cp)
 {
 	cp->x = rp->r_pos.x + rnd(rp->r_max.x - 2) + 1;
 	cp->y = rp->r_pos.y + rnd(rp->r_max.y - 2) + 1;
@@ -216,8 +214,7 @@ rnd_pos(rp, cp)
  *	Code that is executed whenver you appear in a room
  */
 void
-enter_room(cp)
-	register coord *cp;
+enter_room(coord *cp)
 {
 	register struct room *rp;
 	register int y, x;
@@ -255,8 +252,7 @@ enter_room(cp)
  *	Code for when we exit a room
  */
 void
-leave_room(cp)
-	register coord *cp;
+leave_room(coord *cp)
 {
 	register int y, x;
 	register struct room *rp;

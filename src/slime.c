@@ -14,6 +14,8 @@
 
 static coord slimy;
 
+static bool	new_slime(THING *tp);
+
 void
 slime_split(tp)
 	THING *tp;
@@ -31,6 +33,7 @@ slime_split(tp)
 	start_run(&slimy);
 }
 
+static
 bool
 new_slime(tp)
 	THING *tp;
