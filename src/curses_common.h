@@ -23,7 +23,7 @@
 	#define ROGUE_CHARSET	ASCII
 #endif
 
-//@ Columns mode
+//@ Columns mode - should (but currently isn't) be selected at run-time
 #ifndef ROGUE_COLUMNS
 #define ROGUE_COLUMNS 80
 #endif

@@ -40,39 +40,85 @@ int old_page_no;  //@ this is public, but page_no is not. Weird. See rip.c
 int scr_ds=0xB800;
 int svwin_ds = 0;
 #else
+// current terminal size as reported by curses. Will change on window resize
 extern int LINES, COLS;
+
+/*
+ * The following are not used by the application, so not really extern'ed in
+ * curses.h. But they could be, and some like change_colors should be set via
+ * env file / options
+ */
+
+// Terminal size we *want*, not necessarily what we will get
 int cur_LINES = min(25, MAXLINES);
 int cur_COLS  = min(ROGUE_COLUMNS, MAXCOLS);
-static int KEY_MASK;
-bool change_colors = TRUE;  // if user wants us to redefine color palette
+
+// if curses is initialized or not. If extern'ed, should be read-only
+bool init_curses = FALSE;
+
+/* Charset used. Could be initially set via env file, but should not be changed
+ * mid-game unless we create a function to re-draw the screen. The code should
+ * already graciously fallback to ASCII if UNICODE is requested here but not
+ * available, either because it was not compiled with wide char support or the
+ * current curses implementation does not support it. Both cases are tested
+ * with _XOPEN_CURSES. ROGUE_CHARSET is a factory default that already accounts
+ * for Unicode availability and compile-time options.
+ */
+int	charset = ROGUE_CHARSET;
+
+/*
+ * Number of colors we're working with, regardless if terminal has more colors
+ * available. This is set by init_curses_colors() and should be the result of
+ * many factors, not only terminal COLORS reported by curses but also `screen`
+ * env file setting (for bw), ROGUE_SCR_TYPE, etc.
+ *
+ * Values can be:
+ * -  0 for monochrome
+ * -  8 for 8 basic colors (light versions will use BOLD text attribute)
+ * - 16 if all DOS colors are directly indexable
+ *
+ * If extern'ed, should obviously be read-only
+ */
+int 	colors;
+
+// if user wants us to redefine color palette to match original RGB
+bool change_colors = TRUE;
 #endif
 
 //@ unused
 int tab_size = 8;
 
 //@ private
-int ch_attr = A_DOS_NORMAL;
-int page_no = 0;
-bool init_curses = FALSE;  //@ if curses is active or not
+static int ch_attr = A_DOS_NORMAL;
 #ifdef ROGUE_DOS_CURSES
-int c_row, c_col;   /*  Save cursor positions so we don't ask dos */
-int scr_row[25];
-char savewin[2048 * sizeof(chtype)];  //@ originally 4096 bytes
+static int page_no = 0;
+static int c_row, c_col;   /*  Save cursor positions so we don't ask dos */
+static int scr_row[25];
 #else
 #ifndef _XOPEN_CURSES
-chtype	savewin[MAXLINES][MAXCOLS + 1];  // temp buffer to hold screen contents
-chtype	curtain[MAXLINES][MAXCOLS + 1];  // temp buffer for curtain animations
+static chtype	curtain[MAXLINES][MAXCOLS + 1];  // temp buffer for curtain animations
 #else
-cchar_t	savewin[MAXLINES][MAXCOLS + 1];
-cchar_t	curtain[MAXLINES][MAXCOLS + 1];
-cchar_t	cctemp;
+static cchar_t	curtain[MAXLINES][MAXCOLS + 1];
+static cchar_t	cctemp;
 #endif // _XOPEN_CURSES
-int 	charset = ROGUE_CHARSET;  // allow run-time / env file selection
-int 	colors;  // number of basic colors
-wchar_t	ccunicode[2] = L" ";  // temp buffer
-CCODE	ccode = {'\0', ccunicode, '\0'};  // temp charcode
-static bool colors_changed = FALSE;  // if colors palette was redefined
+static int	KEY_MASK;
+static wchar_t	ccunicode[2] = L" ";  // temp buffer
+static CCODE	ccode = {'\0', ccunicode, '\0'};  // temp charcode
+static bool	colors_changed = FALSE;  // if colors palette was redefined
 #endif  // ROGUE_DOS_CURSES
+
+/*@
+ * "it's complicated" - extern'ed but should probably be static and have an API
+ * savewin is used in game save/restore, and I'm still not sure if exposing it
+ * is the best long term solution.
+ */
+#if   defined (ROGUE_DOS_CURSES)
+char savewin[2048 * sizeof(chtype)];  //@ originally 4096 bytes
+#elif defined (_XOPEN_CURSES)
+cchar_t	savewin[MAXLINES][MAXCOLS + 1];  // temp buffer to hold screen contents
+#else
+chtype	savewin[MAXLINES][MAXCOLS + 1];  // temp buffer to hold screen contents
+#endif
 
 
 #define MAXATTR 17
@@ -93,7 +139,7 @@ byte color_attr[] = {
 	1,  /* 13 blue           */
 	112,/* 14 reverse        */
 	15, /* 15 high intensity */
-   112, /* bold				 */
+	112,/* bold              */
 	0   /* no more           */
 } ;
 
@@ -114,7 +160,7 @@ byte monoc_attr[] = {
 	A_DOS_NORMAL,  /* 13 blue           */
 	120,           /* 14 reverse        */
 	A_DOS_NORMAL,  /* 15 white/hight    */
-	120,           /* 16 bold		   */
+	120,           /* 16 bold           */
 	0              /* no more           */
 } ;
 
@@ -1034,14 +1080,19 @@ charcode_from_dos(byte chd, CCODE *mapping)
 	return ccp;
 }
 
-
+/*
+ * Return a color index, based on DOS char attribute.
+ * For now index is in range 0-7, and the interpretation of A_DOS_BRIGHT bit to
+ * either `fg index += 8` or `color | [W]A_BOLD` is the caller's responsibility.
+ * This could be changed in the future.
+ */
 short
 color_from_dos(byte dos_attr, bool fg)
 {
 	byte color = (dos_attr >> (fg ? A_DOS_FG_COLOR : A_DOS_BG_COLOR)) & \
 			A_DOS_COLOR_MASK;
 
-	// swap red and blue
+	// swap red and blue components so DOS index match ANSI's
 	return swap_bits(color, 0, 2, 1);
 }
 
@@ -1078,21 +1129,27 @@ attr_from_dos(byte dos_attr)
 	if (dos_attr == A_DOS_NORMAL)
 		return attr;
 
-	fg = color_from_dos(dos_attr, TRUE);
-	bg = color_from_dos(dos_attr, FALSE);
-
 	if (dos_attr & A_DOS_BLINK)
 		attr |= A_BLINK;
 
+	fg = color_from_dos(dos_attr, TRUE);
+	bg = color_from_dos(dos_attr, FALSE);
+
 	if (dos_attr & A_DOS_BRIGHT)
 	{
-		if (colors_changed)
-			fg += 8;
-		else
+		if (colors < 16)
 			attr |= A_BOLD;
+		else
+			fg += 8;
 	}
 
-	attr |= COLOR_PAIR_N(fg, bg);
+	/*
+	 * BIG problem here: if colors == 0, we should not use color pairs at
+	 * all, but map the entries in monoc_attr from original intentions to
+	 * current curses A_* attributes like underline, bold, standout, etc.
+	 */
+	if (colors > 0)
+		attr |= COLOR_PAIR_N(fg, bg);
 
 	return attr;
 }
@@ -1123,21 +1180,22 @@ attrw_from_dos(byte dos_attr, attr_t *attrs, short *color_pair)
 	if (dos_attr == A_DOS_NORMAL)
 		return;
 
-	fg = color_from_dos(dos_attr, TRUE);
-	bg = color_from_dos(dos_attr, FALSE);
-
 	if (dos_attr & A_DOS_BLINK)
 		*attrs |= WA_BLINK;
 
+	fg = color_from_dos(dos_attr, TRUE);
+	bg = color_from_dos(dos_attr, FALSE);
+
 	if (dos_attr & A_DOS_BRIGHT)
 	{
-		if (colors_changed)
-			fg += 8;
-		else
+		if (colors < 16)
 			*attrs |= WA_BOLD;
+		else
+			fg += 8;
 	}
 
-	*color_pair = PAIR_INDEX(fg, bg);
+	if (colors > 0)
+		*color_pair = PAIR_INDEX(fg, bg);
 }
 #endif  // _XOPEN_CURSES
 
@@ -1147,55 +1205,81 @@ init_curses_colors(void)
 {
 	int fg, dos_fg, dfg;
 	int bg, dos_bg, dbg;
-	int coff;  // color index offset
 	int i;
-
-	start_color();
+	int colormode;
 
 	/*
-	 * DOS only uses 8 basic colors, bumped to 16 via bright attribute.
-	 * For now, we do the same, but this could be changed to 16 (if the A_BOLD
-	 * method does not work), or even 256. Always respecting color capability
-	 * reported by curses via COLORS.
+	 * Not sure if this test should include bwflag, as set via env file.
+	 * Original winit() doesn't, as it only cares about actual *hardware*
+	 * capabilities. But on modern machines bwflag is the only way for
+	 * players to simulate a bw hardware monitor like TTL or IBM's MDA,
+	 * which is very different from simply "using no colors": it had bright,
+	 * underline, blink, etc. We may consider a way to set this "hardware
+	 * bw monitor" mode even if terminal supports colors.
 	 */
-	colors = min(16, COLORS);
+	if (!has_colors() || COLORS < 8)
+	{
+		colors = 0;
+		return;
+	}
 
-	dos_fg = color_from_dos(A_DOS_NORMAL, TRUE);
-	dos_bg = color_from_dos(A_DOS_NORMAL, FALSE);
+	/*
+	 * Some notes on colors and mappings:
+	 *
+	 * DOS only uses 8 basic colors, and the foreground could be bumped to
+	 * 16 via bright attribute. So for all code outside this function,
+	 * background color index range from 0-7, foreground from 0-7 or 15,
+	 * so they only need at most 8 * 16 = 128 color pairs, always accessed
+	 * via PAIR_INDEX(fg, bg) or COLOR_PAIR_N(fg, bg) macros.
+	 *
+	 * Color indexes in DOS (actually, in CGA/VGA) are an RGB bitmap, blue
+	 * being the least significant bit, so DOS colors have the Red and Blue
+	 * components swapped compared to ANSI colors, which the curses named
+	 * constants derive from. color_from_dos() takes care of this, so fg/bg
+	 * indexes should be interpreted by ANSI table, ie, 1=Red, 4=Blue, etc
+	 *
+	 * The actual colors mapped to each of this 16 color indexes depends on
+	 * terminal color capabilities:
+	 * - If only 8, we achieve the 16 via curses [W]A_BOLD attribute.
+	 * - For 16 color terminals, we have a 1:1 mapping
+	 * - 88 and 256, we may use the first 16 or remap some (or even all)
+	 *   indexes to the 4x4x4 or 6x6x6 color cube. This is useful to make
+	 *   color 3 (dark yellow in ANSI) actually look brown (as in CGA)
+	 */
 
-#ifdef NCURSES_VERSION
-	use_default_colors();
-	dfg = dbg = -1;
-#else
-	dfg = COLOR_WHITE;
-	dbg = COLOR_BLACK;
-#endif
+	// colormode is only used here, colors is global
+	colors = 16;
+	if      (COLORS >= 256) colormode = 256;
+	else if (COLORS >=  88) colormode =  88;
+	else if (COLORS >=  16) colormode =  16;
+	else                    colormode = colors = 8;
 
-	if (can_change_color() && change_colors && colors >= 16)
+	// Now we can have one big switch(colormode) to set up the pairs, do
+	// mappings, redefine RGB etc, according to each terminal type
+
+	/*
+	 * https://en.wikipedia.org/wiki/Color_Graphics_Adapter#Color_palette
+	 * red   := 2/3×(colorNumber & 4)/4 + 1/3×(colorNumber & 8)/8
+	 * green := 2/3×(colorNumber & 2)/2 + 1/3×(colorNumber & 8)/8
+	 * blue  := 2/3×(colorNumber & 1)/1 + 1/3×(colorNumber & 8)/8
+	 * if colorNumber = 6 then green := green / 2
+	 */
+	#define CGA_COMP(c, i)	(1000 * ((c & i) * 2 / (3.0 * i) + (c & 8) / (3.0 * 8)))
+	#define CGA_RED(c) 	CGA_COMP(c, 4)
+	#define CGA_GREEN(c) 	CGA_COMP(c, 2)
+	#define CGA_BLUE(c) 	CGA_COMP(c, 1)
+
+	if (can_change_color() && change_colors)
 	{
 		colors_changed = TRUE;
-		coff = 16; // use the first plane of the color cube
-
-		/*
-		 * https://en.wikipedia.org/wiki/Color_Graphics_Adapter#Color_palette
-		 * red   := 2/3×(colorNumber & 4)/4 + 1/3×(colorNumber & 8)/8
-		 * green := 2/3×(colorNumber & 2)/2 + 1/3×(colorNumber & 8)/8
-		 * blue  := 2/3×(colorNumber & 1)/1 + 1/3×(colorNumber & 8)/8
-		 * if colorNumber = 6 then green := green / 2
-		 */
-#define CGA_COMP(c, i)	(1000 * ((c & i) * 2 / (3.0 * i) + (c & 8) / (3.0 * 8)))
-#define CGA_RED(c) 	CGA_COMP(c, 4)
-#define CGA_GREEN(c) 	CGA_COMP(c, 2)
-#define CGA_BLUE(c) 	CGA_COMP(c, 1)
-
-		for (i = 0; i < 16; i++)
+		for (i = 0; i < colors; i++)
 		{
 			/* To match CGA palette with ANSI, swap Red and Blue
 			 * components and special case dark yellow to get brown
 			 */
 			printw("Color %2d: Red=%6.1f, Green=%6.1f, Blue=%6.1f\n",
 					i, CGA_BLUE(i), CGA_GREEN(i) / (i == 3 ? 2 : 1), CGA_RED(i));
-			init_color(i + coff,
+			init_color(i,
 					CGA_BLUE(i),
 					CGA_GREEN(i) / (i == 3 ? 2 : 1),
 					CGA_RED(i));
@@ -1205,41 +1289,39 @@ init_curses_colors(void)
 	else
 	{
 		colors_changed = FALSE;
-		coff = 0; // use system colors
 	}
 
 	/*@
-	 * Notes on color assumptions, mappings and pairs:
-	 *
-	 * - Foreground and background colors used by DOS are indexed from 0 to 7.
-	 *   Index is actually an RGB bitmap, blue being the least significant bit,
-	 *   so in all colors the Red and Blue components are swapped compared to
-	 *   curses named constants (which are the ANSI color indexes).
-	 *
-	 * - Color pairs are set in a way the macro COLOR_PAIR_N(fg, bg) can
-	 *   retrieve a curses color pair attribute by foreground and background
-	 *   index instead of pair index.
+	 * More notes on color mappings and pairs:
 	 *
 	 * - Color pair 0 is not initialized, as per recommendation in curses
 	 *   documentation, and it is only used when DOS attributes are set to
 	 *   A_DOS_NORMAL, for example by cur_standend().
 	 *
-	 * - The default foreground and background colors used by DOS, as defined
-	 *   by A_DOS_NORMAL, were mapped to (COLOR_WHITE, COLOR_BLACK). If the
-	 *   curses implementation is ncurses, they are mapped to (-1, -1) instead,
-	 *   the user default foreground and background terminal colors.
-	 *
-	 * - Only 8 colors are being used for now. It is expected, but not hard-
-	 *   coded, that any color terminal has at least that. If 1983 CGA can, I'm
-	 *   sure a 2015 terminal can as well ;)
+	 * - The default foreground and background colors used by DOS, as
+	 *   defined by A_DOS_NORMAL, are mapped to (COLOR_WHITE, COLOR_BLACK).
+	 *   If the curses implementation is ncurses, they are mapped to (-1,-1)
+	 *   instead the user default foreground and background terminal colors.
+	 *   Still not sure how to integrate this with the newly proposed
+	 *   `colormode` model...
 	 */
+	dos_fg = color_from_dos(A_DOS_NORMAL, TRUE);
+	dos_bg = color_from_dos(A_DOS_NORMAL, FALSE);
+#ifdef NCURSES_VERSION
+	use_default_colors();
+	dfg = dbg = -1;
+#else
+	dfg = COLOR_WHITE;
+	dbg = COLOR_BLACK;
+#endif
+
 	for (bg = 0; bg < colors; bg++)
 	{
 		for (fg = colors - (bg ? 2 : 1); fg >= 0; fg--)
 		{
 			init_pair(PAIR_INDEX(fg, bg),
-					(fg == dos_fg) ? dfg : fg + coff,
-					(bg == dos_bg) ? dbg : bg + coff);
+					(fg == dos_fg) ? dfg : fg,
+					(bg == dos_bg) ? dbg : bg);
 		}
 	}
 }
@@ -1345,6 +1427,7 @@ winit(void)
 	 * initialization is any good because restarting game
 	 * has old values!!!
 	 * So reassign defaults
+	 * @ by "restarting" he means "restoring a saved game file"
 	 */
 	LINES   =  25;
 	COLS    =  80;
@@ -1433,10 +1516,25 @@ winit(void)
 	if (init_curses)
 		return;
 
-	//@ this should be in init_curses_colors() and integrated with rogue.opt
-	at_table = color_attr;
-
-	//@ this still affect the game. the goal is to remove it
+	/*@
+	 * ROGUE_SCR_TYPE should affect both columns and colors, and scr_type
+	 * is also used by game in various contexts with ambiguous meanings.
+	 *
+	 * My current implementation is "messy", to say the least:
+	 * ROGUE_SCR_TYPE is ignored, it does not affect neither columns
+	 * (controlled by ROGUE_COLUMNS) nor colors, and scr_type will be
+	 * inconsistent with if anything but 80-column color mode is used.
+	 *
+	 * I see 2 elegant approaches to solve this mess:
+	 * - scr_type is "crafted" based on colors and columns, reversing the
+	 *   logic in original winit() switch.
+	 * - scr_type is completely removed, and all tests based on that are
+	 *   changed to match original *intention*, if one can figure that out.
+	 *
+	 * Not to mention cur_COLS itself should not be defined only at
+	 * compile-time, but perhaps also subject to initial terminal size
+	 * and/or env file setting.
+	 */
 	scr_type = ROGUE_SCR_TYPE;
 
 	setenv("ESCDELAY", "25", FALSE);
@@ -1444,7 +1542,7 @@ winit(void)
 	init_curses = TRUE;
 	if ((LINES < cur_LINES) || (COLS < cur_COLS))
 	{
-		fatal("%u-column mode requires a %u x %u screen\n"
+		fatal("%u-column mode requires at least a %u x %u screen\n"
 				"Your terminal size is %u x %u\n",
 				cur_COLS, cur_COLS, cur_LINES, COLS, LINES);
 	}
@@ -1453,12 +1551,11 @@ winit(void)
 	printw("Setting up Rogue to: %3u x %3u\n", cur_LINES, cur_COLS);
 	wgetch(stdscr);
 #endif
-	resize_screen();
+	start_color();
 	cbreak();  //@ do not buffer input until ENTER
 	noecho();  //@ do not echo typed characters
 	nodelay(stdscr, FALSE); //@ use a blocking getch() (already the default)
 	keypad(stdscr, TRUE);   //@ enable directional arrows, keypad, home, etc
-	define_keys();
 
 	/*@
 	 * Immediately refresh() screen on *add{ch,str}() and friends.
@@ -1468,8 +1565,11 @@ winit(void)
 	 */
 	immedok(stdscr, TRUE);
 
-	if (has_colors())
-		init_curses_colors();
+	resize_screen();
+	define_keys();
+	init_curses_colors();
+
+	at_table = colors ? color_attr : monoc_attr;
 #endif
 }
 
@@ -1584,9 +1684,13 @@ cur_endwin()
 	{
 		endwin();
 		/*
-		if (changed_colors)
+		 * This is tricky, results depend on terminal and terminfo:
+		 * - Linux: curses resets colors (default ones are on terminfo)
+		 * - xterm: no terminfo, but `reset` command does the job
+		 * - gnome: no terminfo, `reset` does not affect colors
+		if (colors_changed)
 		{
-			system("reset");
+			system("type reset 2>/dev/null && reset");
 		}
 		*/
 		init_curses = FALSE;
