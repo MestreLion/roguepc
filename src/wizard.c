@@ -36,29 +36,24 @@ whatis(void)
 		} else
 			break;
 
-		/*@
-		 * using (size_t)NULL when all we want is to empty the string
-		 * is a nasty perversion of the NULL pointer. But it was done before
-		 * in misc.c, so using same method here for consistency.
-		 */
 		switch (obj->o_type) {
 		when SCROLL:
 			s_know[obj->o_which] = TRUE;
-			*s_guess[obj->o_which] = (size_t)NULL;
+			*s_guess[obj->o_which] = '\0';
 		when POTION:
 			p_know[obj->o_which] = TRUE;
-			*p_guess[obj->o_which] = (size_t)NULL;
+			*p_guess[obj->o_which] = '\0';
 		when STICK:
 			ws_know[obj->o_which] = TRUE;
 			obj->o_flags |= ISKNOW;
-			*ws_guess[obj->o_which] = (size_t)NULL;
+			*ws_guess[obj->o_which] = '\0';
 		when WEAPON:
 		case ARMOR:
 			obj->o_flags |= ISKNOW;
 		when RING:
 			r_know[obj->o_which] = TRUE;
 			obj->o_flags |= ISKNOW;
-			*r_guess[obj->o_which] = (size_t)NULL;
+			*r_guess[obj->o_which] = '\0';
 			break;
 		}
 		/*

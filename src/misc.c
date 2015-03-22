@@ -490,8 +490,8 @@ void
 call_it(bool know, char **guess)
 {
 	if (know && **guess)
-		**guess = (size_t)NULL;
-	else if (!know && **guess == (size_t)NULL) {
+		**guess = '\0';
+	else if (!know && **guess == '\0') {
 		msg("%scall it? ",noterse("what do you want to "));
 		getinfo(prbuf,MAXNAME);
 		if (*prbuf != ESCAPE)
@@ -802,22 +802,22 @@ call()
 	when RING:
 		guess = (char **)r_guess;
 		know = r_know;
-		elsewise = (*guess[obj->o_which] != (size_t)NULL ?
+		elsewise = (*guess[obj->o_which] != '\0' ?
 			guess[obj->o_which] : r_stones[obj->o_which]);
 	when POTION:
 		guess = (char **)p_guess;
 		know = p_know;
-		elsewise = (*guess[obj->o_which] != (size_t)NULL ?
+		elsewise = (*guess[obj->o_which] != '\0' ?
 			guess[obj->o_which] : p_colors[obj->o_which]);
 	when SCROLL:
 		guess = (char **)s_guess;
 		know = s_know;
-		elsewise = (*guess[obj->o_which] != (size_t)NULL ?
-			guess[obj->o_which] : (char *)(&s_names[obj->o_which]));
+		elsewise = (*guess[obj->o_which] != '\0' ?
+			guess[obj->o_which] : s_names[obj->o_which].storage);
 	when STICK:
 		guess = (char **)ws_guess;
 		know = ws_know;
-		elsewise = (*guess[obj->o_which] != (size_t)NULL ?
+		elsewise = (*guess[obj->o_which] != '\0' ?
 			guess[obj->o_which] : ws_made[obj->o_which]);
 	otherwise:
 		msg("you can't call that anything");
