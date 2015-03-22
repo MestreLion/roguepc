@@ -12,11 +12,7 @@
  *	The player attacks the monster.
  */
 bool
-fight(mp, mn, weap, thrown)
-register coord *mp;
-char mn;
-register THING *weap;
-bool thrown;
+fight(coord *mp, char mn, THING *weap, bool thrown)
 {
 	register THING *tp;
 	register char *mname;
@@ -89,8 +85,7 @@ bool thrown;
  *	The monster attacks the player
  */
 void
-attack(mp)
-THING *mp;
+attack(THING *mp)
 {
 	register char *mname;
 
@@ -267,8 +262,7 @@ THING *mp;
  *	Returns true if the swing hits
  */
 bool
-swing(at_lvl, op_arm, wplus)
-int at_lvl, op_arm, wplus;
+swing(int at_lvl, int op_arm, int wplus)
 {
 	register int res = rnd(20);
 	register int need = (20 - at_lvl) - op_arm;
@@ -281,7 +275,7 @@ int at_lvl, op_arm, wplus;
  *	Check to see if the guy has gone up a level.
  */
 void
-check_level()
+check_level(void)
 {
 	register int i, add, olevel;
 
@@ -306,9 +300,7 @@ check_level()
  *	Roll several attacks
  */
 bool
-roll_em(thatt, thdef, weap, hurl)
-THING *thatt, *thdef, *weap;
-bool hurl;
+roll_em(THING *thatt, THING *thdef, THING *weap, bool hurl)
 {
 	register struct stats *att, *def;
 	char *cp;
@@ -424,9 +416,7 @@ bool hurl;
  *	The print name of a combatant
  */
 char *
-prname(who, upper)
-register char *who;
-bool upper;
+prname(char *who, bool upper)
 {
 	*tbuf = '\0';
 	if (who == 0)
@@ -448,8 +438,7 @@ bool upper;
  *	Print a message to indicate a succesful hit
  */
 void
-hit(er, ee)
-register char *er, *ee;
+hit(char *er, char *ee)
 {
 	register char *s = "";
 
@@ -470,8 +459,7 @@ register char *er, *ee;
  *	Print a message to indicate a poor swing
  */
 void
-miss(er, ee)
-register char *er, *ee;
+miss(char *er, char *ee)
 {
 	register char *s = "";
 
@@ -493,9 +481,7 @@ register char *er, *ee;
  *	See if a creature save against something
  */
 bool
-save_throw(which, tp)
-int which;
-THING *tp;
+save_throw(int which, THING *tp)
 {
 	register int need;
 
@@ -508,8 +494,7 @@ THING *tp;
  *	See if he saves against various nasty things
  */
 bool
-save(which)
-register int which;
+save(int which)
 {
 	if (which == VS_MAGIC) {
 		if (ISRING(LEFT, R_PROTECT))
@@ -525,8 +510,7 @@ register int which;
  *	Compute bonus/penalties for strength on the "to hit" roll
  */
 int
-str_plus(str)
-register str_t str;
+str_plus(str_t str)
 {
 	register int add = 4;
 
@@ -548,8 +532,7 @@ register str_t str;
  *	Compute additional damage done for exceptionally high or low strength
  */
 int
-add_dam(str)
-register str_t str;
+add_dam(str_t str)
 {
 	int add = 6;
 
@@ -575,7 +558,7 @@ register str_t str;
  *	The guy just magically went up a level.
  */
 void
-raise_level()
+raise_level(void)
 {
 	pstats.s_exp = e_levels[pstats.s_lvl-1] + 1L;
 	check_level();
@@ -586,9 +569,7 @@ raise_level()
  *	A missile hit or missed a monster
  */
 void
-thunk(weap, mname, does, did)
-register THING *weap;
-register char *mname, *does, *did;
+thunk(THING *weap, char *mname, char *does, char *did)
 {
 	if (weap->o_type == WEAPON)
 		addmsg("the %s %s ", w_names[weap->o_which], does);
@@ -606,10 +587,7 @@ register char *mname, *does, *did;
  *	Remove a monster from the screen
  */
 void
-remove_monster(mp, tp, waskill)
-	register coord *mp;
-	THING *tp;
-	bool waskill;
+remove_monster(coord *mp, THING *tp, bool waskill)
 {
 	register THING *obj, *nexti;
 
@@ -642,8 +620,7 @@ remove_monster(mp, tp, waskill)
  *	Returns true if an object radiates magic
  */
 bool
-is_magic(obj)
-register THING *obj;
+is_magic(THING *obj)
 {
 	switch (obj->o_type)
 	{
@@ -666,9 +643,7 @@ register THING *obj;
  *	Called to put a monster to death
  */
 void
-killed(tp, pr)
-THING *tp;
-bool pr;
+killed(THING *tp, bool pr)
 {
 	pstats.s_exp += tp->t_stats.s_exp;
 	/*

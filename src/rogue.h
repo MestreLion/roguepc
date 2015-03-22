@@ -627,34 +627,34 @@ bool	setenv_from_file(char *envfile);
 void	fakedos(void);
 
 //@ fight.c
-bool	fight();
-bool	swing();
-bool	roll_em();
-bool	save_throw();
-bool	save();
-bool	is_magic();
-void	attack();
-void	check_level();
-void	hit();
-void	miss();
-void	raise_level();
-void	thunk();
-void	remove_monster();
-void	killed();
-int	str_plus();
-int	add_dam();
+bool	fight(coord *mp, char mn, THING *weap, bool thrown);
+bool	swing(int at_lvl, int op_arm, int wplus);
+bool	roll_em(THING *thatt, THING *thdef, THING *weap, bool hurl);
+bool	save_throw(int which, THING *tp);
+bool	save(int which);
+bool	is_magic(THING *obj);
+void	attack(THING *mp);
+void	check_level(void);
+void	hit(char *er, char *ee);
+void	miss(char *er, char *ee);
+void	raise_level(void);
+void	thunk(THING *weap, char *mname, char *does, char *did);
+void	remove_monster(coord *mp, THING *tp, bool waskill);
+void	killed(THING *tp, bool pr);
+int	str_plus(str_t str);
+int	add_dam(str_t str);
 
 //@ init.c
-void	init_player();
-void	init_things();
-void	init_colors();
-void	init_names();
-void	init_stones();
-void	init_materials();
-void	init_ds();
-void	free_ds();
-char	*getsyl();
-char	rchr();
+void	init_player(void);
+void	init_things(void);
+void	init_colors(void);
+void	init_names(void);
+void	init_stones(void);
+void	init_materials(void);
+void	init_ds(void);
+void	free_ds(void);
+char	*getsyl(void);
+char	rchr(char *string);
 
 //@ io.c
 void	ifterse(const char *tfmt, const char *fmt, ...);
