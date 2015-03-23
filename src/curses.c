@@ -82,7 +82,7 @@ int	charset = ROGUE_CHARSET;
 int 	colors;
 
 // if user wants us to redefine color palette to match original RGB
-bool change_colors = TRUE;
+bool change_colors = FALSE;
 #endif
 
 //@ unused
@@ -969,8 +969,8 @@ cur_addch(byte chr)
 	{
 	default:
 	case ASCII:
-		waddch(stdscr, ascii_from_dos(chr, ctab) | attr_from_dos(ch_attr));
-		break;
+		chr = ascii_from_dos(chr, ctab);
+		/* no break */
 	case CP437:
 		waddch(stdscr, chr | attr_from_dos(ch_attr));
 		break;
@@ -1205,8 +1205,9 @@ init_curses_colors(void)
 {
 	int fg, dos_fg, dfg;
 	int bg, dos_bg, dbg;
-	int i;
+	int i, r, g, b, cube;
 	int colormode;
+	int cmap[16];
 
 	/*
 	 * Not sure if this test should include bwflag, as set via env file.
@@ -1254,41 +1255,40 @@ init_curses_colors(void)
 	else if (COLORS >=  16) colormode =  16;
 	else                    colormode = colors = 8;
 
-	// Now we can have one big switch(colormode) to set up the pairs, do
-	// mappings, redefine RGB etc, according to each terminal type
-
-	/*
-	 * https://en.wikipedia.org/wiki/Color_Graphics_Adapter#Color_palette
-	 * red   := 2/3×(colorNumber & 4)/4 + 1/3×(colorNumber & 8)/8
-	 * green := 2/3×(colorNumber & 2)/2 + 1/3×(colorNumber & 8)/8
-	 * blue  := 2/3×(colorNumber & 1)/1 + 1/3×(colorNumber & 8)/8
-	 * if colorNumber = 6 then green := green / 2
-	 */
-	#define CGA_COMP(c, i)	(1000 * ((c & i) * 2 / (3.0 * i) + (c & 8) / (3.0 * 8)))
-	#define CGA_RED(c) 	CGA_COMP(c, 4)
-	#define CGA_GREEN(c) 	CGA_COMP(c, 2)
-	#define CGA_BLUE(c) 	CGA_COMP(c, 1)
-
 	if (can_change_color() && change_colors)
-	{
 		colors_changed = TRUE;
-		for (i = 0; i < colors; i++)
-		{
-			/* To match CGA palette with ANSI, swap Red and Blue
-			 * components and special case dark yellow to get brown
-			 */
-			printw("Color %2d: Red=%6.1f, Green=%6.1f, Blue=%6.1f\n",
-					i, CGA_BLUE(i), CGA_GREEN(i) / (i == 3 ? 2 : 1), CGA_RED(i));
-			init_color(i,
-					CGA_BLUE(i),
-					CGA_GREEN(i) / (i == 3 ? 2 : 1),
-					CGA_RED(i));
-		}
-		getch();
-	}
 	else
-	{
 		colors_changed = FALSE;
+
+	for (i = 0; i < colors; i++)
+	{
+		cmap[i] = i;  // 1:1 mapping by default
+
+		if (colors_changed)
+		{
+			init_color(i,
+					1000 * CGA_RED(i),
+					1000 * CGA_GREEN(i),
+					1000 * CGA_BLUE(i));
+			continue;
+		}
+
+		switch(colormode)
+		{
+		case  88:
+			cube = 4;
+			break;
+		case 256:
+			cube = 6;
+			break;
+		default:
+			// nothing we can do about 8 and 16 colors
+			continue;
+		}
+		r = (cube - 1) * CGA_RED(i);
+		g = (cube - 1) * CGA_GREEN(i);
+		b = (cube - 1) * CGA_BLUE(i);
+		cmap[i] = 16 + cube * cube * r + cube * g + b;
 	}
 
 	/*@
@@ -1302,17 +1302,26 @@ init_curses_colors(void)
 	 *   defined by A_DOS_NORMAL, are mapped to (COLOR_WHITE, COLOR_BLACK).
 	 *   If the curses implementation is ncurses, they are mapped to (-1,-1)
 	 *   instead the user default foreground and background terminal colors.
-	 *   Still not sure how to integrate this with the newly proposed
-	 *   `colormode` model...
+	 *   Still not sure how to best integrate this with the newly proposed
+	 *   `colormode` and mapping model...
 	 */
+
 	dos_fg = color_from_dos(A_DOS_NORMAL, TRUE);
 	dos_bg = color_from_dos(A_DOS_NORMAL, FALSE);
+	if ((A_DOS_NORMAL & A_DOS_BRIGHT) && colors > 8)
+		dos_fg += 8;
+
 #ifdef NCURSES_VERSION
+	/*
+	 * One could argue that if change_colors == TRUE we should not use
+	 * default terminal foreground / background but instead force WHITE
+	 * on BLACK
+	 */
 	use_default_colors();
 	dfg = dbg = -1;
 #else
-	dfg = COLOR_WHITE;
-	dbg = COLOR_BLACK;
+	dfg = cmap[COLOR_WHITE];
+	dbg = cmap[COLOR_BLACK];
 #endif
 
 	for (bg = 0; bg < colors; bg++)
@@ -1320,8 +1329,8 @@ init_curses_colors(void)
 		for (fg = colors - (bg ? 2 : 1); fg >= 0; fg--)
 		{
 			init_pair(PAIR_INDEX(fg, bg),
-					(fg == dos_fg) ? dfg : fg,
-					(bg == dos_bg) ? dbg : bg);
+					(fg == dos_fg) ? dfg : cmap[fg],
+					(bg == dos_bg) ? dbg : cmap[bg]);
 		}
 	}
 }
@@ -1683,17 +1692,31 @@ cur_endwin()
 	if (init_curses)
 	{
 		endwin();
+
 		/*
-		 * This is tricky, results depend on terminal and terminfo:
-		 * - Linux: curses resets colors (default ones are on terminfo)
-		 * - xterm: no terminfo, but `reset` command does the job
-		 * - gnome: no terminfo, `reset` does not affect colors
+		 * Curses resets color RGB based on terminfo, which is somewhat
+		 * useless, as (1) few terminals have terminfo default colors
+		 * entries (linux does, xterm does not), and (2) those terminfo
+		 * colors might not be the current ones before game start: user
+		 * might have themed the terminal in .bashrc, .Xresources, etc.
+		 *
+		 * So we have 2 choices: we can redefine colors back to ANSI's
+		 * default RGB, which is also useless on (2), or we can try
+		 * `system("type reset 2>/dev/null && reset");`, which reset
+		 * colors on some terminals (xterm, but not gnome-terminal)
+		 *
+		 * There's also a 3rd choice: do nothing! After all, user told
+		 * us to change_colors = TRUE, didn't they? So we did it :)
+		 *
+		 * For now, I'll settle with #3 ;)
+		 *
 		if (colors_changed)
 		{
-			system("type reset 2>/dev/null && reset");
+			// ?
 		}
-		*/
+		 */
 		init_curses = FALSE;
+
 #ifdef ROGUE_DEBUG
 		printf("Curses window closed\n");
 #endif
@@ -1714,8 +1737,8 @@ cur_line(byte chd, int length, bool orientation)
 
 	switch (charset)
 	{
-	// ASCII, and also UNICODE if wide not available
 	default:
+	case ASCII:
 		ch = ascii_from_dos(chd, btab);
 		if (ch == '\0')
 			ch = ascii_from_dos(chd, ctab);

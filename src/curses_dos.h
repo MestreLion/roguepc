@@ -72,6 +72,22 @@ void	wsetmem(void *buffer, int count, chtype attrchar);
 #define PAIR_INDEX(fg, bg)	(bg * colors + fg + 1)
 #define COLOR_PAIR_N(fg, bg)	COLOR_PAIR(PAIR_INDEX(fg, bg))
 
+/*
+ * Original CGA colors
+ * https://en.wikipedia.org/wiki/Color_Graphics_Adapter#Color_palette
+ * red   := 2/3 * (colorNumber & 4)/4 + 1/3 * (colorNumber & 8)/8
+ * green := 2/3 * (colorNumber & 2)/2 + 1/3 * (colorNumber & 8)/8
+ * blue  := 2/3 * (colorNumber & 1)/1 + 1/3 * (colorNumber & 8)/8
+ * if colorNumber = 6 then green := green / 2
+ *
+ * These macros swap Red and Blue components, so `c` is ANSI index (brown is 3)
+ * Return a float in range [0, 1] (both ends included!)
+ */
+#define CGA_COMP(c, i)	(!!(c & i) * 2 / 3.0 + !!(c & 8) * 1 / 3.0)
+#define CGA_RED(c)	 CGA_COMP(c, 1)
+#define CGA_GREEN(c)	(CGA_COMP(c, 2) / (c == 3 ? 2 : 1))
+#define CGA_BLUE(c)	 CGA_COMP(c, 4)
+
 #define ALENGTH(arr)	(sizeof (arr) / sizeof (*arr))
 #define ASIZE(arr)	(arr + ALENGTH(arr))
 
