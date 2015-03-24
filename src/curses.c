@@ -82,7 +82,7 @@ int	charset = ROGUE_CHARSET;
 int 	colors;
 
 // if user wants us to redefine color palette to match original RGB
-bool change_colors = FALSE;
+bool change_colors = TRUE;
 #endif
 
 //@ unused
@@ -1306,40 +1306,51 @@ init_curses_colors(void)
 	else if (COLORS >=  16) colormode =  16;
 	else                    colormode = colors = 8;
 
-	if (can_change_color() && change_colors)
-		colors_changed = TRUE;
-	else
-		colors_changed = FALSE;
-
-	for (i = 0; i < colors; i++)
+	switch(colormode)
 	{
-		cmap[i] = i;  // 1:1 mapping by default
+	case 8:
+	case 16:
+		cube = 0;
+		if (can_change_color() && change_colors)
+		{
+			colors_changed = TRUE;
+		}
+		break;
+	case  88:
+		cube = 4;
+		break;
+	case 256:
+		cube = 6;
+		break;
+	}
 
-		if (colors_changed)
+	if (cube)
+	{
+		for (i = 0; i < colors; i++)
+		{
+			r = (cube - 1) * CGA_RED(i);
+			g = (cube - 1) * CGA_GREEN(i);
+			b = (cube - 1) * CGA_BLUE(i);
+			cmap[i] = 16 + cube * cube * r + cube * g + b;
+		}
+	}
+	else if (colors_changed)
+	{
+		for (i = 0; i < colors; i++)
 		{
 			init_color(i,
 					1000 * CGA_RED(i),
 					1000 * CGA_GREEN(i),
 					1000 * CGA_BLUE(i));
-			continue;
+			cmap[i] = i;  // 1:1 mapping
 		}
-
-		switch(colormode)
+	}
+	else
+	{
+		for (i = 0; i < colors; i++)
 		{
-		case  88:
-			cube = 4;
-			break;
-		case 256:
-			cube = 6;
-			break;
-		default:
-			// nothing we can do about 8 and 16 colors
-			continue;
+			cmap[i] = i;  // 1:1 mapping
 		}
-		r = (cube - 1) * CGA_RED(i);
-		g = (cube - 1) * CGA_GREEN(i);
-		b = (cube - 1) * CGA_BLUE(i);
-		cmap[i] = 16 + cube * cube * r + cube * g + b;
 	}
 
 	/*@
