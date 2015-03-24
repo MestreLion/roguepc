@@ -47,7 +47,8 @@ fight(coord *mp, char mn, THING *weap, bool thrown)
 			thunk(weap, mname, "hits", "hit");
 		else
 			hit(NULL, mname);
-		if (weap->o_type == POTION) {
+		//@ original missed NULL check for weap
+		if (weap && weap->o_type == POTION) {
 			th_effect(weap, tp);
 			if (!thrown) {
 				if (weap->o_count > 1)
