@@ -81,8 +81,11 @@ int	charset = ROGUE_CHARSET;
  */
 int 	colors;
 
-// if user wants us to redefine color palette to match original RGB
+// if user allows us to redefine color palette to match original RGB
 bool change_colors = TRUE;
+
+// if user wants to use default terminal foreground / background color
+bool use_terminal_fgbg = TRUE;
 #endif
 
 //@ unused
@@ -1174,7 +1177,9 @@ attr_from_dos(byte dos_attr)
 	 * operates on the background color, making it impossible to get yellow
 	 * as foreground.
 	 */
-	if (((dos_attr & A_DOS_STANDOUT) == A_DOS_STANDOUT) && colors != 8)
+	if (((dos_attr & A_DOS_STANDOUT) == A_DOS_STANDOUT)
+			&& colors != 8
+			&& use_terminal_fgbg)
 	{
 		attr |= A_REVERSE;
 
@@ -1235,7 +1240,9 @@ attrw_from_dos(byte dos_attr, attr_t *attrs, short *color_pair)
 	}
 
 #ifdef NCURSES_VERSION
-	if (((dos_attr & A_DOS_STANDOUT) == A_DOS_STANDOUT) && colors != 8)
+	if (((dos_attr & A_DOS_STANDOUT) == A_DOS_STANDOUT)
+			&& colors != 8
+			&& use_terminal_fgbg)
 	{
 		*attrs |= WA_REVERSE;
 
@@ -1362,10 +1369,9 @@ init_curses_colors(void)
 	 *
 	 * - The default foreground and background colors used by DOS, as
 	 *   defined by A_DOS_NORMAL, are mapped to (COLOR_WHITE, COLOR_BLACK).
-	 *   If the curses implementation is ncurses, they are mapped to (-1,-1)
-	 *   instead the user default foreground and background terminal colors.
-	 *   Still not sure how to best integrate this with the newly proposed
-	 *   `colormode` and mapping model...
+	 *   If the curses implementation is ncurses and the user allows it,
+	 *   they are mapped to (-1,-1), the default foreground and background
+	 *   terminal colors.
 	 */
 
 	dos_fg = color_from_dos(A_DOS_NORMAL, TRUE);
@@ -1373,17 +1379,21 @@ init_curses_colors(void)
 	if ((A_DOS_NORMAL & A_DOS_BRIGHT) && colors > 8)
 		dos_fg += 8;
 
-#ifdef NCURSES_VERSION
-	/*
-	 * One could argue that if change_colors == TRUE we should not use
-	 * default terminal foreground / background but instead force WHITE
-	 * on BLACK
-	 */
-	use_default_colors();
-	dfg = dbg = -1;
-#else
 	dfg = cmap[COLOR_WHITE];
 	dbg = cmap[COLOR_BLACK];
+
+#ifdef NCURSES_VERSION
+	/*
+	 * One could argue that change_colors == TRUE should imply
+	 * use_terminal_fgbg == TRUE, but currently they are independent.
+	 */
+	if (use_terminal_fgbg)
+	{
+		use_default_colors();
+		dfg = dbg = -1;
+	}
+#else
+	use_terminal_fgbg = FALSE;
 #endif
 
 	for (bg = 0; bg < colors; bg++)
