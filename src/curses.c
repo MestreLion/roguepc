@@ -1154,6 +1154,36 @@ attr_from_dos(byte dos_attr)
 			fg += 8;
 	}
 
+#ifdef NCURSES_VERSION
+	/*
+	 * Set terminal reverse attribute when Rogue implies it
+	 *
+	 * CGA does not have a "reverse" mode, Rogue achieves it by manually
+	 * setting a white background with black foreground (black by default,
+	 * but foreground could also be set to other colors, see cur_addch()).
+	 * Thus, A_DOS_STANDOUT require no special handling and could be treated
+	 * like any other color pair, and this block is entirely optional.
+	 *
+	 * By activating the terminal reverse mode and swapping fg with bg to
+	 * revert Rogue's reversal, we allow the default fg/bg terminal colors
+	 * to be used instead of hard-coded black on white, making reversed
+	 * A_DOS_STANDOUT text consistent with A_DOS_NORMAL text even if user's
+	 * terminal color theme is different from Rogue's default.
+	 *
+	 * This does not work with 8-color terminals: on reversed mode, A_BOLD
+	 * operates on the background color, making it impossible to get yellow
+	 * as foreground.
+	 */
+	if (((dos_attr & A_DOS_STANDOUT) == A_DOS_STANDOUT) && colors != 8)
+	{
+		attr |= A_REVERSE;
+
+		short tmp = bg;
+		bg = fg;
+		fg = tmp;
+	}
+#endif
+
 	/*
 	 * BIG problem here: if colors == 0, we should not use color pairs at
 	 * all, but map the entries in monoc_attr from original intentions to
@@ -1187,7 +1217,6 @@ attrw_from_dos(byte dos_attr, attr_t *attrs, short *color_pair)
 	*attrs = WA_NORMAL;
 	*color_pair = 0;
 
-	// shortcut to avoid setting (and calculating) a spurious color pair
 	if (dos_attr == A_DOS_NORMAL)
 		return;
 
@@ -1204,6 +1233,17 @@ attrw_from_dos(byte dos_attr, attr_t *attrs, short *color_pair)
 		else
 			fg += 8;
 	}
+
+#ifdef NCURSES_VERSION
+	if (((dos_attr & A_DOS_STANDOUT) == A_DOS_STANDOUT) && colors != 8)
+	{
+		*attrs |= WA_REVERSE;
+
+		short tmp = bg;
+		bg = fg;
+		fg = tmp;
+	}
+#endif
 
 	if (colors > 0)
 		*color_pair = PAIR_INDEX(fg, bg);
