@@ -1395,6 +1395,41 @@ init_curses_colors(void)
 					(bg == dos_bg) ? dbg : cmap[bg]);
 		}
 	}
+
+#ifdef ROGUE_DEBUG
+	int j;
+	printw("COLOR TEST - Displayed colors should match [R,G,B] values\n");
+	printw("Color mode: %d colors, using %s\n", colormode,
+			cube ? "color cube" :
+			colors_changed ? "RGB" :
+			colors > 8 ? "ANSI 16" :
+			"ANSI 8 + Bold");
+	for (i = 0; i < 8; i++)
+	{
+		printw(" %d [%3d,%3d,%3d] #%02X%02X%02X ",
+				i,
+				(int)(255 * CGA_RED(i)),
+				(int)(255 * CGA_GREEN(i)),
+				(int)(255 * CGA_BLUE(i)),
+				(int)(255 * CGA_RED(i)),
+				(int)(255 * CGA_GREEN(i)),
+				(int)(255 * CGA_BLUE(i))
+		);
+		for(j=15;j;j--) waddch(stdscr, '#' | COLOR_PAIR_N(i, 0));
+		if (colors > 8)
+			for(j=15;j;j--) waddch(stdscr, '#' | COLOR_PAIR_N(i + 8, 0));
+		else
+			for(j=15;j;j--) waddch(stdscr, '#' | COLOR_PAIR_N(i, 0) | A_BOLD);
+		printw(" #%02X%02X%02X [%3d,%3d,%3d]\n",
+				(int)(255 * CGA_RED(i+8)),
+				(int)(255 * CGA_GREEN(i+8)),
+				(int)(255 * CGA_BLUE(i+8)),
+				(int)(255 * CGA_RED(i+8)),
+				(int)(255 * CGA_GREEN(i+8)),
+				(int)(255 * CGA_BLUE(i+8))
+		);
+	}
+#endif
 }
 
 
@@ -1620,7 +1655,6 @@ winit(void)
 #ifdef ROGUE_DEBUG
 	printw("Real terminal size:  %3u x %3u\n", LINES, COLS);
 	printw("Setting up Rogue to: %3u x %3u\n", cur_LINES, cur_COLS);
-	wgetch(stdscr);
 #endif
 	start_color();
 	cbreak();  //@ do not buffer input until ENTER
@@ -1641,7 +1675,10 @@ winit(void)
 	init_curses_colors();
 
 	at_table = colors ? color_attr : monoc_attr;
+#ifdef ROGUE_DEBUG
+	wgetch(stdscr);
 #endif
+#endif  // ROGUE_DOS_CURSES
 }
 
 
