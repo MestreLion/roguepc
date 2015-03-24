@@ -1287,8 +1287,8 @@ init_curses_colors(void)
 	 *
 	 * DOS only uses 8 basic colors, and the foreground could be bumped to
 	 * 16 via bright attribute. So for all code outside this function,
-	 * background color index range from 0-7, foreground from 0-7 or 15,
-	 * so they only need at most 8 * 16 = 128 color pairs, always accessed
+	 * background and foreground color indexes range from 0-15, so at most
+	 * 16 * 16 = 256 color pairs are needed, and should be always accessed
 	 * via PAIR_INDEX(fg, bg) or COLOR_PAIR_N(fg, bg) macros.
 	 *
 	 * Color indexes in DOS (actually, in CGA/VGA) are an RGB bitmap, blue
@@ -1299,11 +1299,11 @@ init_curses_colors(void)
 	 *
 	 * The actual colors mapped to each of this 16 color indexes depends on
 	 * terminal color capabilities:
-	 * - If only 8, we achieve the 16 via curses [W]A_BOLD attribute.
-	 * - For 16 color terminals, we have a 1:1 mapping
-	 * - 88 and 256, we may use the first 16 or remap some (or even all)
-	 *   indexes to the 4x4x4 or 6x6x6 color cube. This is useful to make
-	 *   color 3 (dark yellow in ANSI) actually look brown (as in CGA)
+	 * - If only 8, achieve the 16 via curses [W]A_BOLD attribute.
+	 * - For 16 color terminals there's a 1:1 mapping
+	 * - For 8 and 16, try to redefine terminal RGB values to match CGA
+	 * - 88 and 256, remap the 16 color indexes to the 4x4x4 or 6x6x6 color
+	 *   cube to get an exact CGA color match.
 	 */
 
 	// colormode is only used here, colors is global
