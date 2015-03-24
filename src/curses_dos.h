@@ -54,21 +54,47 @@ void	putchr(byte ch);
 void	wsetmem(void *buffer, int count, chtype attrchar);
 #endif
 
-//@ new stuff
+/*@
+ * New stuff from now on
+ */
+
+#define A_DOS_BLACK    0x00
+#define A_DOS_BLUE     0x01
+#define A_DOS_GREEN    0x02
+#define A_DOS_RED      0x04
+#define A_DOS_WHITE    0x07
+#define A_DOS_BRIGHT   0x08
+#define A_DOS_BLINK    0x80
+
+#define A_DOS_CYAN     A_DOS_BLUE  | A_DOS_GREEN
+#define A_DOS_MAGENTA  A_DOS_BLUE  | A_DOS_RED
+#define A_DOS_BROWN    A_DOS_GREEN | A_DOS_RED
+#define A_DOS_YELLOW   A_DOS_BROWN | A_DOS_BRIGHT
+
+#define A_DOS_FG_COLOR    0  // foreground color shift offset
+#define A_DOS_BG_COLOR    4  // background color shift offset
+#define A_DOS_COLOR_MASK  7  // to extract color after shifting
+
+#define A_DOS_BG(fg)	(((fg) & A_DOS_COLOR_MASK) << A_DOS_BG_COLOR)
+
+/*@
+ * The DOS attribute set on standend(), also the initial value of ch_attr
+ * Light Gray ("non-bright White") on Black
+ */
+#define A_DOS_NORMAL	A_DOS_WHITE
+
+// AKA "reverse"
+#define A_DOS_STANDOUT	A_DOS_BG(A_DOS_WHITE)
+
+/*
+ * Actually, for underline just setting foreground to 1 would be enough,
+ * but the game uses 17 (0x11) in uline()/set_attr(12) for monoc_attr, setting
+ * also the background. Not needed, but harmless
+ */
+#define A_DOS_BW_ULINE    1 | A_DOS_BG(1)
+#define A_DOS_BW_STANDOUT A_DOS_STANDOUT | A_DOS_BRIGHT
+
 #ifndef ROGUE_DOS_CURSES
-#define A_DOS_FG_BLUE	  1
-#define A_DOS_FG_GREEN	  2
-#define A_DOS_FG_RED	  4
-#define A_DOS_BRIGHT	  8
-#define A_DOS_BG_BLUE	 16
-#define A_DOS_BG_GREEN	 32
-#define A_DOS_BG_RED	 64
-#define A_DOS_BLINK 	128
-
-#define A_DOS_COLOR_MASK  7
-#define A_DOS_FG_COLOR    0
-#define A_DOS_BG_COLOR    4
-
 #define PAIR_INDEX(fg, bg)	(bg * colors + fg + 1)
 #define COLOR_PAIR_N(fg, bg)	COLOR_PAIR(PAIR_INDEX(fg, bg))
 

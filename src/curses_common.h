@@ -53,31 +53,25 @@
 #define CTRL(ch)	((ch) & 037)
 #endif
 
-#define cur_standend() set_attr(0)
-#define green() set_attr(1)
-#define cyan() set_attr(2)
-#define red() set_attr(3)
-#define magenta() set_attr(4)
-#define brown() set_attr(5)
-#define dgrey() set_attr(6)
-#define lblue() set_attr(7)
-#define lgrey() set_attr(8)
-#define lred() set_attr(9)
-#define lmagenta() set_attr(10)
-#define yellow() set_attr(11)
-#define uline() set_attr(12)
-#define blue() set_attr(13)
-#define cur_standout() set_attr(14)
-#define high() set_attr(15)
-#define bold() set_attr(16)
+#define cur_standend() set_attr( 0)  //@ normal white (light gray) on black
+#define green()        set_attr( 1)
+#define cyan()         set_attr( 2)
+#define red()          set_attr( 3)
+#define magenta()      set_attr( 4)
+#define brown()        set_attr( 5)  //@ yellow, made brown by CGA hardware
+#define dgrey()        set_attr( 6)  //@ "bright black". unused
+#define lblue()        set_attr( 7)
+#define lgrey()        set_attr( 8)  //@ bright *green*, not gray. unused
+#define lred()         set_attr( 9)
+#define lmagenta()     set_attr(10)
+#define yellow()       set_attr(11)
+#define uline()        set_attr(12)  //@ bright white on color, underline on bw
+#define blue()         set_attr(13)
+#define cur_standout() set_attr(14)  //@ black on normal white (reverse)
+#define high()         set_attr(15)  //@ bright white on color, normal on bw
+#define bold()         set_attr(16)  //@ black on normal white (reverse)
 
 #define cur_getch()	cur_getch_timeout(-1)
-
-/*@
- * The DOS attribute set on standend(), also the initial value of ch_attr
- * Light Gray ("non-bright White") on Black
- */
-#define A_DOS_NORMAL	0x07
 
 /*
  * Things that appear on the screens

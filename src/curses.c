@@ -120,51 +120,61 @@ cchar_t	savewin[MAXLINES][MAXCOLS + 1];  // temp buffer to hold screen contents
 chtype	savewin[MAXLINES][MAXCOLS + 1];  // temp buffer to hold screen contents
 #endif
 
-
+/*@
+ * Original used decimal literals for both tables
+ */
 #define MAXATTR 17
-byte color_attr[] = {
-	A_DOS_NORMAL,  /*  0 normal         */
-	2,  /*  1 green          */
-	3,  /*  2 cyan           */
-	4,  /*  3 red            */
-	5,  /*  4 magenta        */
-	6,  /*  5 brown          */
-	8,  /*  6 dark grey      */
-	9,  /*  7 light blue     */
-	10, /*  8 light green    */
-	12, /*  9 light red      */
-	13, /* 10 light magenta  */
-	14, /* 11 yellow         */
-	15, /* 12 uline          */
-	1,  /* 13 blue           */
-	112,/* 14 reverse        */
-	15, /* 15 high intensity */
-	112,/* bold              */
-	0   /* no more           */
+static byte color_attr[] = {
+	A_DOS_NORMAL,                  /*  0 normal         */
+	A_DOS_GREEN,                   /*  1 green          */
+	A_DOS_CYAN,                    /*  2 cyan           */
+	A_DOS_RED,                     /*  3 red            */
+	A_DOS_MAGENTA,                 /*  4 magenta        */
+	A_DOS_BROWN,                   /*  5 brown          */
+	A_DOS_BRIGHT | A_DOS_BLACK,    /*  6 dark grey      */
+	A_DOS_BRIGHT | A_DOS_BLUE,     /*  7 light blue     */
+	A_DOS_BRIGHT | A_DOS_GREEN,    /*  8 light green    */
+	A_DOS_BRIGHT | A_DOS_RED,      /*  9 light red      */
+	A_DOS_BRIGHT | A_DOS_MAGENTA,  /* 10 light magenta  */
+	A_DOS_BRIGHT | A_DOS_BROWN,    /* 11 yellow         */
+	A_DOS_BRIGHT | A_DOS_WHITE,    /* 12 uline          */
+	A_DOS_BLUE,                    /* 13 blue           */
+	A_DOS_STANDOUT,                /* 14 reverse        */
+	A_DOS_BRIGHT | A_DOS_NORMAL,   /* 15 high intensity */
+	A_DOS_STANDOUT,                /* bold              */
+	0                              /* no more           */
 } ;
 
-byte monoc_attr[] = {
-	A_DOS_NORMAL,  /*  0 normal         */
-	A_DOS_NORMAL,  /*  1 green          */
-	A_DOS_NORMAL,  /*  2 cyan           */
-	A_DOS_NORMAL,  /*  3 red            */
-	A_DOS_NORMAL,  /*  4 magenta        */
-	A_DOS_NORMAL,  /*  5 brown          */
-	A_DOS_NORMAL,  /*  6 dark grey      */
-	A_DOS_NORMAL,  /*  7 light blue     */
-	A_DOS_NORMAL,  /*  8 light green    */
-	A_DOS_NORMAL,  /*  9 light red      */
-	A_DOS_NORMAL,  /* 10 light magenta  */
-	A_DOS_NORMAL,  /* 11 yellow         */
-	17,            /* 12 uline          */
-	A_DOS_NORMAL,  /* 13 blue           */
-	120,           /* 14 reverse        */
-	A_DOS_NORMAL,  /* 15 white/hight    */
-	120,           /* 16 bold           */
-	0              /* no more           */
+/*@
+ * Reverse and Bold (standout(), bold()) are set differently than their color
+ * table counterparts, using dark gray ("light black") as foreground. Visually
+ * the difference is minor, but perhaps it was also meant to circumvent the
+ * cur_addch() processing of A_DOS_STANDOUT used for passages/mazes.
+ *
+ * And surprisingly high()/set_attr(15) is set to normal white (ie, light gray)
+ */
+static byte monoc_attr[] = {
+	A_DOS_NORMAL,      /*  0 normal         */
+	A_DOS_NORMAL,      /*  1 green          */
+	A_DOS_NORMAL,      /*  2 cyan           */
+	A_DOS_NORMAL,      /*  3 red            */
+	A_DOS_NORMAL,      /*  4 magenta        */
+	A_DOS_NORMAL,      /*  5 brown          */
+	A_DOS_NORMAL,      /*  6 dark grey      */
+	A_DOS_NORMAL,      /*  7 light blue     */
+	A_DOS_NORMAL,      /*  8 light green    */
+	A_DOS_NORMAL,      /*  9 light red      */
+	A_DOS_NORMAL,      /* 10 light magenta  */
+	A_DOS_NORMAL,      /* 11 yellow         */
+	A_DOS_BW_ULINE,    /* 12 uline          */
+	A_DOS_NORMAL,      /* 13 blue           */
+	A_DOS_BW_STANDOUT, /* 14 reverse        */
+	A_DOS_NORMAL,      /* 15 white/hight    */
+	A_DOS_BW_STANDOUT, /* 16 bold           */
+	0                  /* no more           */
 } ;
 
-byte *at_table;
+static byte *at_table;
 
 /*@
  * Changes in ASCII chars from Unix Rogue (and roguelike ASCII tradition):
@@ -176,7 +186,7 @@ byte *at_table;
  * the one to break such a well-known convention, and get flamed for heresy.
  * You do it.
  */
-CCODE ctab[] = {
+static CCODE ctab[] = {
 		/*
 		 * Dungeon chars. If a char in this block is not unique, such as
 		 * the ASCII for room corners, cur_inch() reverse search will map
@@ -223,7 +233,7 @@ CCODE ctab[] = {
 		{'`', L"`", 0}  // if ` appears on screen, something went wrong!
 };
 
-CCODE btab[] = {
+static CCODE btab[] = {
 		// single-width box glyphs
 		{'|', L"\x2502", VLINE},      // │
 		{'-', L"\x2500", HLINE},      // ─
@@ -288,20 +298,20 @@ static TTYSEQ ttymap[] = {
 		{TTY_CSI "4~", KEY_END},
 };
 
-byte dbl_box[BX_SIZE] = {
+static byte dbl_box[BX_SIZE] = {
 	DULCORNER, DURCORNER, DLLCORNER, DLRCORNER, DVLINE, DHLINE, DHLINE
 };
 
-byte sng_box[BX_SIZE] = {
+static byte sng_box[BX_SIZE] = {
 	ULCORNER, URCORNER, LLCORNER, LRCORNER, VLINE, HLINE, HLINE
 };
 
-//@ unused
-byte fat_box[BX_SIZE] = {
+/*@ unused
+static byte fat_box[BX_SIZE] = {
 	0xdb, 0xdb, 0xdb, 0xdb, 0xdb, 0xdf, 0xdc
 };
-
-byte spc_box[BX_SIZE] = {
+*/
+static byte spc_box[BX_SIZE] = {
 	0x20, 0x20, 0x20, 0x20, 0x20, 0x20, 0x20
 };
 
@@ -885,20 +895,20 @@ cur_addch(byte chr)
 			case URWALL:
 			case LLWALL:
 			case LRWALL:
-				ch_attr = 6;  /* brown */
+				ch_attr = A_DOS_BROWN;  /* brown */
 				break;
 			case FLOOR:
-				ch_attr = 10;  /* light green */
+				ch_attr = A_DOS_GREEN | A_DOS_BRIGHT;  /* light green */
 				break;
 			case STAIRS:
-				ch_attr = 160; /* black on green*/
+				ch_attr = A_DOS_BLACK | A_DOS_BG(A_DOS_GREEN) | A_DOS_BLINK; /* black on green */
 				break;
 			case TRAP:
-				ch_attr = 5;  /* magenta */
+				ch_attr = A_DOS_MAGENTA;  /* magenta */
 				break;
 			case GOLD:
 			case PLAYER:
-				ch_attr = 14;  /* yellow */
+				ch_attr = A_DOS_YELLOW;  /* yellow */
 				break;
 			case POTION:
 			case SCROLL:
@@ -907,24 +917,24 @@ cur_addch(byte chr)
 			case AMULET:
 			case RING:
 			case WEAPON:
-				ch_attr = 9;
+				ch_attr = A_DOS_BLUE | A_DOS_BRIGHT;
 				break;
 			case FOOD:
-				ch_attr = 4;
+				ch_attr = A_DOS_RED;
 				break;
 			}
 		}
 		/* if inside a passage or a maze */
-		else if (ch_attr == 112)
+		else if (ch_attr == A_DOS_STANDOUT)
 		{
 			switch(chr)
 			{
 			case FOOD:
-				ch_attr = 116;   /* red */
+				ch_attr = A_DOS_RED | A_DOS_STANDOUT ;  /* red @ on white */
 				break;
 			case GOLD:
 			case PLAYER:
-				ch_attr = 126;  /* yellow on white */
+				ch_attr = A_DOS_YELLOW | A_DOS_STANDOUT;  /* yellow on white */
 				break;
 			case POTION:
 			case SCROLL:
@@ -933,12 +943,13 @@ cur_addch(byte chr)
 			case AMULET:
 			case RING:
 			case WEAPON:
-				ch_attr = 113;    /* blue on white */
+				ch_attr = A_DOS_BLUE | A_DOS_STANDOUT;  /* blue on white */
 				break;
 			}
 		}
-		else if (ch_attr == 15 && chr == STAIRS)
-			ch_attr = 160;
+		//@ I suspect STAIRS used with high() is a case that never happen...
+		else if (ch_attr == (A_DOS_BRIGHT | A_DOS_NORMAL) && chr == STAIRS)
+			ch_attr = A_DOS_BLACK | A_DOS_BG(A_DOS_GREEN) | A_DOS_BLINK;
 	}
 
 #ifdef ROGUE_DOS_CURSES
