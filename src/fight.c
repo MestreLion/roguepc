@@ -360,6 +360,13 @@ roll_em(THING *thatt, THING *thdef, THING *weap, bool hurl)
 			weap->o_charges = 0;
 		}
 	}
+
+	//@ New NULL check to prevent segfault on atoi()
+	if (cp == NULL)
+	{
+		return FALSE;
+	}
+
 	/*
 	 * If the creature being attacked is not running (alseep or held)
 	 * then the attacker gets a plus four bonus to hit.
