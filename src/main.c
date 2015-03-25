@@ -36,15 +36,22 @@ main(argc, argv)
 	char **argv;
 {
 	register char *curarg, *savfile=0;
-	struct sw_regs _treg;
-	long junk = 0L;
 	int sl;
 
+	//@ Allow non-ASCII output in <curses.h>
 	setlocale(LC_ALL, "");
 
-	regs = &_treg;
+#ifdef ROGUE_DOS_CLOCK
+	long junk = 0L;
+	/*@
+	 * I suspect this seemingly innocent dmaout(&junk) is neither innocent
+	 * nor junk, but part of the self-integrity, anti-debugger measures.
+	 * clock() had some checks on zeroed values on low DS offsets, which I
+	 * guess were set by this call.
+	 */
 	dmaout(&junk,2,0,4);
 	clock_on();
+#endif
 	epyx_yuck();
 	init_ds();
 

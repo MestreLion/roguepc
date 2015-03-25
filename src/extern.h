@@ -131,11 +131,14 @@ typedef unsigned char byte;
  */
 //@ mach_dep.c originals
 int 	md_srand(), bdos(), swint(), sysint();
-void	setup(), clock_on(), no_clock(), flush_type(), credits(),
-		unsetup(), one_tick();
+void	setup(), flush_type(), credits(), one_tick();
 char	*newmem();
 byte	readchar();
 bool	isjr(), set_ctrlb();
+#ifdef ROGUE_DOS_CLOCK
+void	clock_on(void);
+void	no_clock(void);
+#endif
 
 //@ new functions
 byte	swap_bits(byte data, unsigned i, unsigned j, unsigned width);

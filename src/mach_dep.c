@@ -23,7 +23,8 @@ static int ocb;
  * Permanent stack data
  * @ originally defined in main.c
  */
-struct sw_regs *regs;
+static struct sw_regs _treg;
+struct sw_regs *regs = &_treg;
 
 #ifdef ROGUE_DEBUG
 /*
@@ -341,7 +342,6 @@ noper()
 }
 
 void (*cls_)() = noper;
-#endif
 
 
 /*@
@@ -368,7 +368,6 @@ void (*cls_)() = noper;
 void
 clock_on()
 {
-#ifdef ROGUE_DOS_CLOCK
 	/*@
 	 * CS register value. Originally an extern set by begin.asm
 	 * Set to dummy value of a "Hello World!" program as reported by gdb
@@ -395,7 +394,6 @@ clock_on()
 	dmain(clk_vec, 2, 0, TICK_ADDR);
 	dmaout(new_vec, 2, 0, TICK_ADDR);
 	cls_ = no_clock;
-#endif
 }
 
 
@@ -406,10 +404,9 @@ clock_on()
 void
 no_clock()
 {
-#ifdef ROGUE_DOS_CLOCK
 	dmaout(clk_vec, 2, 0, TICK_ADDR);
-#endif
 }
+#endif  // ROGUE_DOS_CLOCK
 
 
 /*@
