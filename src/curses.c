@@ -827,6 +827,15 @@ real_rc(pn, rp,cp)
 }
 #endif
 
+//@ Not in original
+void
+cur_refresh(void)
+{
+#ifndef ROGUE_DOS_CURSES
+	wrefresh(stdscr);
+#endif
+}
+
 /*
  *	clrtoeol
  */
@@ -1672,14 +1681,6 @@ winit(void)
 	nodelay(stdscr, FALSE); //@ use a blocking getch() (already the default)
 	keypad(stdscr, TRUE);   //@ enable directional arrows, keypad, home, etc
 
-	/*@
-	 * Immediately refresh() screen on *add{ch,str}() and friends.
-	 * Needed for arrow/bolt animations. See tick_pause() and its callers.
-	 * May also be needed in other places, as original did not have refresh()
-	 * If this is ever removed, adjust {drop,raise}_curtain() accordingly.
-	 */
-	immedok(stdscr, TRUE);
-
 	resize_screen();
 	define_keys();
 	init_curses_colors();
@@ -2175,8 +2176,6 @@ drop_curtain(void)
 	int r;
 	int delay = CURTAIN_TIME / LINES;
 
-	immedok(stdscr, FALSE);
-
 	cursor(FALSE);
 	green();
 	vbox(sng_box, 0, 0, LINES-1, COLS-1);
@@ -2226,8 +2225,6 @@ raise_curtain(void)
 	}
 	wmove(stdscr, c_row, c_col);
 	is_saved = FALSE;
-
-	immedok(stdscr, TRUE);
 }
 #endif
 

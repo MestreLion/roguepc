@@ -148,6 +148,7 @@ byte	xlate_ch(int ch);
 void	cur_clear(void);
 bool	cursor(bool ison);
 void	getrc(int *rp, int *cp);
+void	cur_refresh(void);
 void	cur_clrtoeol(void);
 void	cur_mvaddstr(int r, int c, char *s);
 void	cur_mvaddch(int r, int c, byte chr);

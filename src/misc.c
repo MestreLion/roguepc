@@ -518,7 +518,7 @@ step_ok(byte ch)
 	case LRWALL:
 		return FALSE;
 	default:
-		return ((ch < 'A') || (ch > 'Z'));
+		return (!ismonster(ch));
 	}
 }
 

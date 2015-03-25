@@ -334,5 +334,6 @@ tick_pause(void)
 		md_clock();
 #endif
 */
+	cur_refresh();
 	msleep(55);
 }
