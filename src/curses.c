@@ -31,7 +31,6 @@
  *  (extern'ed in curses.h)
  */
 int is_saved = FALSE;  //@ in practice, TRUE disables status updates in SIG2()
-int no_check = FALSE;
 int scr_type = -1;
 #ifdef ROGUE_DOS_CURSES
 int LINES=25, COLS=80;
@@ -97,6 +96,7 @@ static int ch_attr = A_DOS_NORMAL;
 static int page_no = 0;
 static int c_row, c_col;   /*  Save cursor positions so we don't ask dos */
 static int scr_row[25];
+static int no_check = FALSE;  //@ do not wait for video retrace. Former extern
 #else
 #ifndef _XOPEN_CURSES
 static chtype	curtain[MAXLINES][MAXCOLS + 1];  // temp buffer for curtain animations
@@ -1668,6 +1668,10 @@ winit(void)
 	cur_move(c_row, c_col);
 	if (isjr())
 		no_check = TRUE;
+
+	//@ this was right after all calls to winit(), so moved here
+	if (!no_check)
+		no_check = do_force;
 #else
 	if (init_curses)
 		return;
@@ -1721,14 +1725,22 @@ winit(void)
 	wgetch(stdscr);
 #endif
 #endif  // ROGUE_DOS_CURSES
+	/*@
+	 * The only common code in winit() for both old and new curses.
+	 * it was scattered after all winit() calls, so moved here.
+	 * This replaces disabled forcebw()
+	 */
+	if (bwflag)
+		at_table = monoc_attr;
 }
 
-
+/*@ no longer needed, integrated in winit()
 void
 forcebw()
 {
 	at_table = monoc_attr;
 }
+*/
 
 #ifdef ROGUE_DOS_CURSES
 /*

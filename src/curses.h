@@ -55,7 +55,6 @@
  */
 extern int LINES, COLS;
 extern int is_saved;
-extern int no_check;
 extern int scr_type;
 #ifdef ROGUE_DOS_CURSES
 extern bool iscuron;

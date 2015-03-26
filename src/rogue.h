@@ -556,13 +556,8 @@ extern char *ring_buf;
  */
 
 
-//@ main.c
-extern char do_force;  //@ used in save.c
-extern int bwflag;     //@ used in save.c
-
-
 //@ protect.c
-extern int no_step;  //@ used in clock(), originally by dos.asm
+extern int no_step;  //@ used in clock(), originally set by dos.asm
 
 
 /*

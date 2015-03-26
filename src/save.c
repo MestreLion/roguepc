@@ -193,7 +193,7 @@ restore(char *savefile)
  *  will be missing. This can't be good...
  */
 #ifndef DEMO
-	int oldrev, oldver, old_check;
+	int oldrev, oldver; //@, old_check;
 	register int oldcols;
 	register FILE *file;
 	char errbuf[11], save_name[MAXSTR];
@@ -204,11 +204,7 @@ restore(char *savefile)
 
 	oregs = regs;
 	winit();
-	if (bwflag)
-		forcebw();
-	if (no_check == 0)
-		no_check = do_force;
-	old_check = no_check;
+	//@ old_check = no_check;  //@ no_check is now inside winit()
 	strcpy(errbuf,read_error);
 	/*
 	 * save things that will be bombed on when the
@@ -284,7 +280,7 @@ rok:
 	wrestor();
 
 	fclose(file);
-	no_check = old_check;
+	//@ no_check = old_check;  //@ no longer your concern
 	mpos = 0;
 	ifterse1("%s, Welcome back!","Hello %s, Welcome back to the Dungeons of Doom!",whoami);
 	dnum = srand();     /* make it a little tougher on cheaters */

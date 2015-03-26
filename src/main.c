@@ -20,8 +20,11 @@
 #define is_key(s) ((*s=='-')||(*s=='/'))
 #define is_char(c1,c2) ((c1==c2)||((c1+'a'-'A')==c2))
 
+//@ both derived from `screen` in env file and used in curses.c
 int bwflag = FALSE;
+#ifdef ROGUE_DOS_CURSES
 char do_force = FALSE;
+#endif
 #ifdef LOGFILE
 int log_read, log_write;
 #endif
@@ -36,7 +39,6 @@ main(argc, argv)
 	char **argv;
 {
 	register char *curarg, *savfile=0;
-	int sl;
 
 	//@ Allow non-ASCII output in <curses.h>
 	setlocale(LC_ALL, "");
@@ -61,12 +63,16 @@ main(argc, argv)
 	 * Parse the screen environment variable.  if the string starts with
 	 * "bw", then we force black and white mode.  If it ends with "fast"
 	 * then we disable retrace checking
+	 * @ do_force is deprecated, so "fast" is useless now
 	 */
 	if (strncmp(s_screen, "bw", 2) == 0)
 		bwflag = TRUE;
+#ifdef ROGUE_DOS_CURSES
+	int sl;
 	if ((sl = strlen(s_screen)) >= 4
 	  && strncmp(&s_screen[sl - 4], "fast", 4) == 0)
 		do_force = TRUE;
+#endif
 	dnum = 0;
 #ifdef PROTECTED
 	while (--argc && goodchk == 0xD0D) {
@@ -106,10 +112,6 @@ main(argc, argv)
 	if (savfile == 0) {
 		savfile = 0;
 		winit();
-		if (bwflag)
-			forcebw();
-		if (no_check == 0)
-			no_check = do_force;
 		credits();
 		if (dnum == 0)
 			dnum = srand();
@@ -207,10 +209,6 @@ playit(sname)
 {
 	if (sname) {
 		restore(sname);
-		if (bwflag)
-			forcebw();
-		if (no_check == 0)
-			no_check = do_force;
 		setup();
 #ifdef ROGUE_DOS_CURSES
 		iscuron = TRUE;  //@ force the following cursor() call to turn it off

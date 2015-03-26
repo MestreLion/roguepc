@@ -157,7 +157,6 @@ void	cur_addch(byte chr);
 void	cur_addstr(char *s);
 void	set_attr(int bute);
 void	winit(void);
-void	forcebw(void);
 void	wdump(void);
 void	wrestor(void);
 void	cur_endwin(void);

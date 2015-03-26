@@ -182,6 +182,10 @@ void	md_exit(int status);
 #ifdef ROGUE_DOS_CLOCK
 extern unsigned int tick;  //@ from dos.asm
 #endif
+#ifdef ROGUE_DOS_CURSES
+extern char do_force;
+#endif
+extern int bwflag;  //@ from main.c, originally declared in rogue.h
 extern struct sw_regs *regs; //@ from main.c, originally declared in swint.h
 #ifdef ROGUE_DEBUG
 extern bool print_int_calls;
