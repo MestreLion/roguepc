@@ -36,6 +36,16 @@ struct sw_regs *regs = &_treg;
 bool print_int_calls = TRUE;
 #endif
 
+#ifndef ROGUE_DOS_DRIVE
+/*@
+ * These were created for fakedos() to replace DOS INT 19h and 0Eh calls, and
+ * are independent from env file s_drive[], just like the original. Created as
+ * externs to allow future integration with env file and run-time selection.
+ */
+int current_drive = ROGUE_CURRENT_DRIVE;  //@ current fake drive (A=0, B=1, ...)
+int last_drive = ROGUE_LAST_DRIVE;  //@ last available drive
+#endif
+
 
 byte swap_bits(
 	byte data,

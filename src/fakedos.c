@@ -1,11 +1,6 @@
 /*
  * routines for writing a fake dos
  *
- * @FIXME: replace bdos() calls with appropriate fake ones, possibly reading
- *         from s_drive[] instead of 19h call (unlike the original, which
- *         ignores s_drive here), and perhaps creating a s_maxdrive[] option
- *         instead of 0Eh.
- *
  * @FIXME: Scrolling is bugged. Need support from curses.c to expose scrlok()
  *         or perhaps a higher-level API to properly enable and disable it.
  *
@@ -19,6 +14,7 @@
 #include	"curses.h"
 
 static bool	dodos(char *com);
+static int	select_drive(int drv);
 
 void
 fakedos(void)
@@ -30,15 +26,23 @@ fakedos(void)
 	clear();
 	move (0,0);
 	cursor(TRUE);
+#ifdef ROGUE_DOS_DRIVE
 	*savedir = bdos(0x19,0) + 'A';
+#else
+	*savedir = current_drive + 'A';  //@ save current drive
+#endif
 	do {
 		setmem(comline, sizeof(comline), 0);
+#ifdef ROGUE_DOS_DRIVE
 		printw("\n%c>",bdos(0x19,0)+'A');
+#else
+		printw("\n%c>",current_drive+'A');
+#endif
 		getinfo(comline,130);
 		comhead = stpblk(comline);
 		endblk(comhead);
 	} while (dodos(comhead));
-	dodos(savedir);
+	dodos(savedir);  //@ restore current drive
 	cursor(FALSE);
 	clear();
 	wrestor();
@@ -64,7 +68,7 @@ dodos(com)
 		drv = (*com & 0x1f) - 1;
 
 		printw("\n");
-		if ((!is_alpha(*com)) || drv >= bdos(0x0e, drv))
+		if ((!is_alpha(*com)) || drv >= select_drive(drv))
 		{
 			printw("Invalid drive specification\n");
 		}
@@ -74,4 +78,23 @@ dodos(com)
 		printw("\nBad command or file name\n");
 	}
 	return TRUE;
+}
+
+/*
+ * Fake DOS INT 0Eh call. Could be in mach_dep.c, but it's only used here.
+ * Original called bdos() directly in dodos()
+ */
+static
+int
+select_drive(int drv)
+{
+#ifdef ROGUE_DOS_DRIVE
+	return bdos(0x0e, drv);
+#else
+	if (drv >= 0 && drv <= last_drive)
+	{
+		current_drive = drv;
+	}
+	return last_drive;
+#endif
 }
