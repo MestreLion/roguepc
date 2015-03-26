@@ -1521,6 +1521,37 @@ set_cursor(void)
 	real_rc(regs->bx >> 8, &c_row, &c_col);
 */
 }
+
+/*@
+ * Return TRUE if the system is identified as an IBM PCJr ("PC Junior")
+ *
+ * Moved from mach_dep.c, only used for setting no_check in winit().
+ *
+ * 0xF000:0xFFFE 1  IBM computer-type code; see also BIOS INT 15h/C0h
+ *  0xFF = Original PC
+ *  0xFE = XT or Portable PC
+ *  0xFD = PCjr
+ *  0xFC = AT (or XT model 286) (or PS/2 Model 50/60)
+ *  0xFB = XT with 640K motherboard
+ *  0xFA = PS/2 Model 30
+ *  0xF9 = Convertible PC
+ *  0xF8 = PS/2 Model 80
+ */
+#define PC  0xff
+#define XT  0xfe
+#define JR  0xfd
+#define AT  0xfc
+bool
+isjr()
+{
+	static int machine = 0;
+
+	if (machine == 0) {
+		dmain(&machine,1,0xf000,0xfffe);
+		machine &= 0xff;
+	}
+	return machine == JR;
+}
 #endif
 
 /*

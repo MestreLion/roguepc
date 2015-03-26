@@ -144,7 +144,7 @@ int 	md_srand(), bdos(), swint(), sysint();
 void	setup(), flush_type(), credits(), one_tick();
 char	*newmem();
 byte	readchar();
-bool	isjr(), set_ctrlb();
+bool	set_ctrlb();
 #ifdef ROGUE_DOS_CLOCK
 void	clock_on(void);
 void	no_clock(void);
