@@ -44,7 +44,7 @@
 #define stpchr	strchr
 #define setmem(dest,length,ch)	memset(dest,ch,length)
 
-//@ sprintf(), f{open,read,seek,write,close}(), remove(), access(), putchar()
+//@ sprintf(), f{open,read,seek,write,close}(), remove(), putchar()
 //@ popen(), fgets(), pclose()
 #include <stdio.h>
 

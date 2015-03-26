@@ -206,12 +206,12 @@ bload(unsigned int segment)
 }
 
 /*@
- * Find the drive where the game runs from
+ * Find the drive where game files are located, only used for copy protection.
  *
  * Return an int corresponding to the current drive or the "drive" value
  * from the fake environment (rogue.opt), where 0=A, 1=B, etc
  *
- * Also contains a no-op code which checked the existence of a file named
+ * Also contained a no-op code which checked the existence of a file named
  * "jatgnas.8ys" in the root of such drive, but ignored the check result.
  *
  * Btw... what is this function doing here?
@@ -219,9 +219,12 @@ bload(unsigned int segment)
 int
 find_drive(void)
 {
+#ifdef ROGUE_DOS_DRIVE
 	int drive = bdos(0x19);  //@ Get Current Default Drive (0=A, 1=B, etc)
+#else
+	int drive = current_drive;
+#endif
 	char spec = s_drive[0];
-	char filename[30];
 
 	if (is_alpha(spec))
 	{
@@ -238,12 +241,12 @@ find_drive(void)
 	 * The following nonsense strongly indicates this is either a partial,
 	 * work in progress function, or a leftover, or an already cracked version.
 	 * access() is a useless call as its return code is not being checked.
-	 * Thus, the whole block, along with the then-unused filename var, is a
-	 * no-op and so could be safely removed with no functionality loss.
-	 */
+	 * It is now disabled.
+	char filename[30];
 	strcpy(filename,"a:jatgnas.8ys");
 	filename[0] += (char)drive;
 	access(filename);
+	 */
 
 	return drive;
 }
