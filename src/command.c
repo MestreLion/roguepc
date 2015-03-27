@@ -30,13 +30,17 @@ command()
 				msg("you can move again");
 				no_command = 0;
 			}
+			cur_refresh();  //@ sleeping, fainted, frozen, etc
 		} else
 			execcom();
 		do_fuses();
 		do_daemons();
 		for (ntimes = LEFT; ntimes <= RIGHT; ntimes++)
+		{
 			if (cur_ring[ntimes])
-				switch (cur_ring[ntimes]->o_which) {
+			{
+				switch (cur_ring[ntimes]->o_which)
+				{
 				when R_SEARCH:
 					search();
 				when R_TELEPORT:
@@ -44,6 +48,8 @@ command()
 						teleport();
 					break;
 				}
+			}
+		}
 	}
 }
 
@@ -84,7 +90,7 @@ get_prefix()
 
 	after = TRUE;
 	fastmode = faststate;
-	look(TRUE);
+	look(TRUE); //@ draw player in updated position on every non-sleep frame
 	if (!running)
 		door_stop = FALSE;
 	do_take = TRUE;
@@ -93,11 +99,13 @@ get_prefix()
 		do_take = lasttake;
 		retch = lastch;
 		fastmode = FALSE;
+		cur_refresh();  //@ repeated commands, ie, "10s"
 	} else {
 		count = 0;
 		if (running) {
 			retch = runch;
 			do_take = lasttake;
+			cur_refresh();  //@ running ("H", "fh", "L", etc)
 		} else {
 			for (retch = 0; retch == 0; ) {
 				switch (ch = com_char()) {

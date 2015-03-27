@@ -681,6 +681,7 @@ readchar()
 
 	if (*typebuf) {
 		SIG2();
+		cur_refresh();  //@ macros
 		return(*typebuf++);
 	}
 	/*
@@ -688,7 +689,10 @@ readchar()
 	 * update the status line at the bottom of the screen
 	 */
 	do
-		SIG2();				/* Rogue spends a lot of time here */
+	{
+		SIG2();  /* Rogue spends a lot of time here @ you bet! */
+		cur_refresh();  //@ command input
+	}
 	while ((xch = getch_timeout(250)) == NOCHAR);
 	ch = xlate_ch(xch);
 	if (ch == ESCAPE)

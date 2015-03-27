@@ -1821,6 +1821,7 @@ wrestor(void)
 		cur_mvaddchnstr(line, 0, savewin[line], COLS);
 	}
 	wmove(stdscr, c_row, c_col);
+	wrefresh(stdscr);
 
 	is_saved = FALSE;
 }
@@ -2137,6 +2138,7 @@ implode()
 		}
 		vbox(spc_box, r, c, er, ec);
 	}
+	wrefresh(stdscr);
 }
 
 
