@@ -233,6 +233,9 @@ static CCODE ctab[] = {
 		{'>', L"\x2192", 0x1A},       // → right
 		{'<', L"\x2190", 0x1B},       // ← left
 
+		// F2 help screen
+		{'#', L"\x2593", 0xB2},       // ▓ 'passage', different char
+
 		{'`', L"`", 0}  // if ` appears on screen, something went wrong!
 };
 

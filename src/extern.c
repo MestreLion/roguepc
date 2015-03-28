@@ -237,7 +237,7 @@ struct h_list helpobjs[] = {
 	H_CHSTR(STICK,   "a magic staff"),
 	H_CHSTR(POTION,  "a potion"),
 	H_CHSTR(RING,    "a magic ring"),
-	H_CHSTR(PASSAGE, "a passage"),
+	H_CHSTR(0xB2,    "a passage"),  //@ surprisingly it's not PASSAGE
 	/* make sure in 40 or 80 column none of line draw set connects */
 	/* this is currently in column 1 for 80 */
 	H_CHSTR(DOOR,    "a door"),
