@@ -2,3 +2,6 @@
 !.gitignore
 src/*.o
 src/rogue
+*.sav
+*.opt
+*.scr
