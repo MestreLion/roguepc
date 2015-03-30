@@ -2229,6 +2229,7 @@ drop_curtain(void)
 	vbox(sng_box, 0, 0, LINES-1, COLS-1);
 	cur_mvinchnstr(0, 0, curtain[0], COLS);
 	wrefresh(stdscr);
+	msleep(delay);  // not in original
 	yellow();
 	for (r = 1; r < LINES-1; r++) {
 		cur_mvhline(r, 1, FILLER, COLS-2);
@@ -2237,6 +2238,7 @@ drop_curtain(void)
 		msleep(delay);
 	}
 	cur_mvinchnstr(LINES-1, 0, curtain[LINES-1], COLS);
+	msleep(delay);  // not in original, optional
 	cur_move(0,0);
 	cur_standend();
 	wclear(stdscr);
@@ -2262,7 +2264,6 @@ raise_curtain(void)
 	{
 		cur_mvaddchnstr(line, 0, curtain[line], COLS);
 	}
-	wrefresh(stdscr);
 
 	// progressively restore screen
 	for (line = LINES-1; line >= 0; line--)
