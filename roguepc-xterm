@@ -1,0 +1,150 @@
+#!/bin/bash
+#
+# roguepc-xterm - XTerm customization for roguepc
+#
+#    Copyright (C) 2015 Rodrigo Silva (MestreLion) <linux@rodrigosilva.com>
+#
+#    This program is free software: you can redistribute it and/or modify
+#    it under the terms of the GNU General Public License as published by
+#    the Free Software Foundation, either version 3 of the License, or
+#    (at your option) any later version.
+#
+#    This program is distributed in the hope that it will be useful,
+#    but WITHOUT ANY WARRANTY; without even the implied warranty of
+#    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#    GNU General Public License for more details.
+#
+#    You should have received a copy of the GNU General Public License
+#    along with this program. See <http://www.gnu.org/licenses/gpl.html>
+#
+# Launches the game in a new, customized xterm window
+
+# default options
+fullscreen=0
+fontsize=24
+columns=80
+linechars=0
+border=0
+fg=gray
+bg=black
+term=xterm-256color
+title='Rogue PC'
+fontname='Perfect DOS VGA 437 Unicode'
+
+rogueargs=()
+gamecmd=$(dirname "$(readlink -f "$0")")/src/rogue
+
+usage() {
+	echo "Launch Rogue PC in a new, customized Xterm window"
+	echo "Usage: ${0##.*/} [-h]" \
+		"[-f|--fullscreen]" \
+		"[-l|--line-chars]" \
+		"[-b|--border]" \
+		"[-fs|--font-size SIZE]" \
+		"[roguepc args]"
+	exit
+}
+
+# Pre-parse for `help`
+for arg in "$@"; do [[ "$arg" == "-h" || "$arg" == "--help" ]] && usage ; done
+
+while (( $# )); do
+	case "$1" in
+	-f |--full-screen) fullscreen=1;;
+	-l |--line-chars ) linechars=1;;
+	-b |--border     ) border=1;;
+#	-c |--columns    ) shift ; columns="$1";;
+#	    --columns=*  )         columns="${1#*=}";;
+	-fs|--font-size  ) shift ; fontsize="$1";;
+	    --font-size=*)         fontsize="${1#*=}";;
+	*                ) rogueargs+=("$1");;
+	esac
+	shift
+done
+
+# XTerm options
+
+# -uc
+#	Makes the cursor underlined instead of a box.
+#
+#  Just like DOS :)
+
+# -bc
+#	Turn on text cursor blinking.
+#
+#  Annoying, but faithful to original
+
+# -b 0
+#	Specifies the size of the inner border
+#
+#  No border by default, just like DOSBox ;)
+
+# +bdc
+#	Display characters with bold attribute as color rather than bold.
+#
+#  Not really needed, as bold is not used under 256 color mode set by `-tn`.
+
+# +fbx
+#	Assume that the normal and bold fonts have VT100 line-drawing characters.
+#
+#  This improves the resolution and disable color AA of line and box drawing
+#  chars such as U+2592 "▒", used in Rogue for passages, mazes, curtain and zoom
+#  animations. It enhances their visual display and also make sure they nicely
+#  connect vertically and horizontaly regadless of the True Type font size.
+#  On the other hand, this is an enchancement not in original Rogue, so it's
+#  disabled by default.
+
+# -fa 'Perfect DOS VGA 437 Unicode'
+#	Specifies the pattern for the font selected from the FreeType library.
+#
+#  Selecting the custom DOS 437 font with IBM VGA glyphs.
+
+# -geometry 80x25
+#	Specifies the preferred size and position of the VT102 window.
+#
+#  Rogue default size is 80x25, and it also has a 40x25 mode. Currently columns
+#  are a compile-time option, so for now it's set to 80.
+
+# -fs 24
+#	Sets the pointsize for fonts selected from the FreeType library
+#
+#  Current custom font requires a multiple of 3 for best results, 12 for 1:1
+#  matching. 24 satisfies both and is large enough to look great while still
+#  fitting a 1280x800 screen. 30 is the largest good-looking size to fit a
+#  Full HD 1920x1080 monitor
+
+# -title 'Rogue PC'
+#	Specifies the window title string, (...) the default is the command line
+#	specified after the -e option, if any.
+#
+#  "Rogue PC" is better than "rogue", "roguepc" or "xterm"
+
+# -tn 'xterm-256color'
+#	Specifies the name of the terminal type to be set in the TERM environment
+#	variable. (...) This terminal type must exist in the terminal database.
+#	(...) If the terminal type is not found, xterm uses the built-in list
+#	“xterm”, “vt102”, etc.
+#
+#  Enable 256 colors.
+
+# -fg gray
+#	Specifies the color to use for displaying text
+#
+#  xterm default usually is white
+
+# -bg black
+#	Specifies the color to use for the background of the window
+#
+#  xterm default usually is already black
+
+xtargs=(-uc -bc +bdc -title "$title" -tn "$term" -fg "$fg" -bg "$bg"
+	-fa "$fontname")
+
+if  ((fullscreen)); then xtargs+=(-fullscreen); fi
+if  ((linechars));  then xtargs+=(+fbx); fi
+if !((border));     then xtargs+=(-b 0); fi
+
+xtargs+=(-fs "$fontsize")
+xtargs+=(-geometry "$columns"x25)
+
+xterm "${xtargs[@]}" -e "$gamecmd" "${rogueargs[@]}"
