@@ -359,6 +359,7 @@ static struct xlate {
 	{KEY_UP,	'k'},
 	{KEY_PPAGE,	'u'},  //@ Page Up
 	{KEY_A3,	'u'},  //@ Keypad upper right (9)
+	{KEY_BACKSPACE, 'h'},
 	{KEY_LEFT,	'h'},
 	{KEY_RIGHT,	'l'},
 	{KEY_END,	'b'},
