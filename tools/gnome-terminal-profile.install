@@ -1,0 +1,103 @@
+#!/bin/bash -e
+#
+# Install the gnome-terminal custom profile and VGA font for Rogue
+#
+#    Copyright (C) 2015 Rodrigo Silva (MestreLion) <linux@rodrigosilva.com>
+#
+#    This program is free software: you can redistribute it and/or modify
+#    it under the terms of the GNU General Public License as published by
+#    the Free Software Foundation, either version 3 of the License, or
+#    (at your option) any later version.
+#
+#    This program is distributed in the hope that it will be useful,
+#    but WITHOUT ANY WARRANTY; without even the implied warranty of
+#    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#    GNU General Public License for more details.
+#
+#    You should have received a copy of the GNU General Public License
+#    along with this program. See <http://www.gnu.org/licenses/gpl.html>
+#
+# Adapted from gnome-terminal.install at https://github.com/MestreLion/scripts
+
+# User input
+# None so far. See $name below
+
+# Constants
+name=rogue  # must match profile name used by ../roguepc-gnome-terminal !
+gconfdata=gnome-terminal-profile.gconf.xml
+
+# Environment
+mydir=$(dirname "$(readlink -f "$0")")
+version=$(gnome-terminal --version | awk '{print $NF}')
+
+usage() {
+	echo "Install the gnome-terminal custom profile and VGA font for Rogue"
+	echo "Optional, but makes Rogue look just like the PC-DOS version"
+	echo "Usage: ${0##.*/}"
+	exit
+}
+
+version_sort() {
+	# print one argument per line sorted on version ordering
+	printf "%s\n" "$@" | LC_ALL=C sort --version-sort
+}
+
+version_compare() {
+	# Usage: version_compare <greater|lesser> version [versions...]
+	# Return 0 if version is the greatest (or the least) of all versions,
+	# non-zero otherwise
+	if [[ "$1" == "greater" ]]; then
+		local cmd=(tail -n1)
+	else
+		local cmd=(head -n1)
+	fi
+	shift
+	if ! [[ "$(version_sort "$@" | "${cmd[@]}")" == "$1" ]]; then
+		return 1
+	fi
+}
+
+gt_gconf() {
+	local pname=$1
+	local pdata=$2
+
+	local gconftool=gconftool
+	local gcrootkey=/apps/gnome-terminal
+	local gclistkey=$gcrootkey/global/profile_list
+	local gcprofrootkey=$gcrootkey/profiles
+
+	# Get the first profile key available
+	local i=-1
+	local prefix=Profile
+	while "$gconftool" --dir-exists "$gcprofrootkey"/"$prefix$((++i))"; do :
+	done
+	local profile="${prefix}${i}"
+	local profkey="$gcprofrootkey"/"$profile"
+
+	echo "Creating Gnome Terminal profile: $profile ($pname) '${pdata##*/}'"
+
+	# Load the new profile key
+	"$gconftool" --load <(\
+		sed "/^[ ]*<entrylist/s/[0-9]*\">\$/$i\">/" "$pdata") &&
+
+	# Change the name
+	"$gconftool" --type string --set "$profkey"/visible_name "$pname" &&
+
+	# Update the profile list
+	"$gconftool" --type list --list-type string --set "$gclistkey" \
+		"$("$gconftool" --get "$gclistkey" | sed "s/]/,$profile]/")"
+}
+
+for arg in "$@"; do [[ "$arg" == "-h" || "$arg" == "--help" ]] && usage ; done
+
+if ! version_compare "greater" "$version" 3.8; then
+	gt_gconf "$name" "$mydir"/"$gconfdata"
+else
+	echo "Your Gnome Terminal version ($version) is not yet supported."
+	exit 1
+fi
+
+"$mydir"/perfect-dos-unicode-font.install
+
+echo "Done!"
+echo "Use gnome-terminal launcher for the ultimate Rogue experience!"
