@@ -15,6 +15,9 @@ LDLIBS:=
 UNICODE=3
 ROGUE_CHARSET:=$(UNICODE)
 
+# Defines from original Rogue turned on by default here:
+CFLAGS+=-DMINROG
+
 ifdef ROGUE_RELEASE
 CFLAGS+=-s -O2
 else
