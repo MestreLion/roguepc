@@ -1,3 +1,4 @@
+#@@ the following note was preserved from original, everything afterwards is new
 #
 # Make file for building Rogue
 # Michael Toy, AI Design, May 1984
@@ -12,12 +13,11 @@
 TARGET:=rogue
 CFLAGS:=-Wall -Wextra -std=c99 -pedantic
 LDLIBS:=
-UNICODE=3
-ROGUE_CHARSET:=$(UNICODE)
 
-# Defines from original Rogue turned on by default here:
+# Defines from original Rogue code turned on by default here:
 CFLAGS+=-DMINROG
 
+# New defines: ROGUE_*
 ifdef ROGUE_RELEASE
 CFLAGS+=-s -O2
 else
@@ -29,6 +29,13 @@ endif
 ifdef ROGUE_DEMO
 CFLAGS+=-DROGUE_DEMO
 endif
+UNICODE=3
+# Valid values for ROGUE_CHARSET:
+# 1 - ASCII, requires ncurses. Looks like Rogue UNIX, but with color
+# 2 - CP437, requires ncurses, configured terminal and CP437 font. Good luck.
+# 3 - Unicode (as defined above), requires ncursesw and Unicode font. Default
+# See curses_common.h
+ROGUE_CHARSET:=$(UNICODE)
 ifeq ($(ROGUE_CHARSET),$(UNICODE))
 CFLAGS+=$(shell pkg-config ncursesw --cflags-only-I)
 LDLIBS+=$(shell pkg-config ncursesw --libs)
