@@ -1,5 +1,7 @@
-ROGUEPC - Original DOS Rogue (1985) ported to modern PCs
-========================================================
+ROGUEPC
+===============================================================================
+
+### Original DOS Epyx Rogue (1985) ported to modern PCs!
 
 - Uses original source code from 1985, adapted to compile in modern PCs.
     - All comments from original authors preserved.
@@ -30,5 +32,5 @@ make ROGUE_CHARSET=1
 ```
 
 Strongly suggested:
-- Install the custom `PerfectDOSVGA437Unicode.ttf` font. See [tools](tree/master/tools)
-- If `xterm` is available, run using [`roguepc-xterm`](blob/master/roguepc-xterm)
+- Install the custom `PerfectDOSVGA437Unicode.ttf` font. See [tools](tools/)
+- If `xterm` is available, run using [`roguepc-xterm`](roguepc-xterm)
