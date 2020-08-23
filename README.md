@@ -3,6 +3,10 @@ ROGUEPC
 
 ### Original DOS Epyx Rogue (1985) ported to modern PCs!
 
+![Title Screen](screenshots/title.png)![Level 1, fully explored](screenshots/level1.png)
+
+<sup>*(Yes, these are actual in-game screenshots using `xterm` with the custom font)*</sup>
+
 - Uses original source code from 1985, adapted to compile in modern PCs.
     - All comments from original authors preserved.
     - All changes needed for portability from 16-bit DOS fully marked and explained.
@@ -14,6 +18,9 @@ ROGUEPC
 - Runs in any terminal, text-only, using nothing but `curses`, just like the original.
 - Colors and gameplay intact.
 - Non-ASCII characters updaded from DOS CP437 to suitable Unicode codepoints.
+
+![Game over screen](screenshots/rip.png)
+<sup>*(Better get used to, you'll see this... a **lot**)*</sup>
 
 For Debian / Ubuntu systems:
 ```sh
@@ -34,3 +41,7 @@ make ROGUE_CHARSET=1
 Strongly suggested:
 - Install the custom `PerfectDOSVGA437Unicode.ttf` font. See [tools](tools/)
 - If `xterm` is available, run using [`roguepc-xterm`](roguepc-xterm)
+
+![splash image](rogue.png)
+
+<sup>*(Sorry, the CGA splash image is not really used in-game. **Yet.**)*</sup>
