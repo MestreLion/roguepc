@@ -18,30 +18,22 @@
 #    along with this program. See <http://www.gnu.org/licenses/gpl.html>
 #
 # Launches the game in a new Gnome Terminal window using the custom profile
-
+#------------------------------------------------------------------------------
 
 # default options
 fullscreen=0
-terms=({gnome,xterm}-256color xterm)
 title='Rogue PC'
-profile='rogue'
+profile='RoguePC'
+
+#------------------------------------------------------------------------------
 
 rogueargs=()
 gamecmd=$(dirname "$(readlink -f "$0")")/src/rogue
 
 usage() {
 	echo "Launch Rogue PC in a new Gnome Terminal window using the custom profile"
-	echo "Usage: ${0##.*/} [-h] [-f|--fullscreen] [rogue args]"
+	echo "Usage: ${0##.*/} [-h|--help] [-f|--fullscreen] [rogue args...]"
 	exit
-}
-
-has_terminfo() {
-	local term=$1
-	local termfile=terminfo/${term:0:1}/$term
-	[[ -r /lib/"$termfile"       ||  # ncurses-base package
-	   -r /usr/share/"$termfile" ||  # ncurses-term package
-	   -r /etc/"$termfile"       ||  # empty by default
-	   -r "$HOME"/."$termfile"   ]]  # dir may not exist
 }
 
 # Pre-parse for `help`
@@ -50,21 +42,21 @@ for arg in "$@"; do [[ "$arg" == "-h" || "$arg" == "--help" ]] && usage ; done
 while (( $# )); do
 	case "$1" in
 	-f|--full-screen) fullscreen=1;;
-	*) rogueargs+=("$1");;
+	*) rogueargs+=( "$1" );;
 	esac
 	shift
 done
 
-for term in "${terms[@]}"; do
-	if has_terminfo "$term"; then
-		break
-	fi
-done
-
-gtargs=(--profile "$profile" --title "$title")
+gtargs=(
+	--profile "$profile"
+	--title "$title"
+	--window
+	--hide-menubar
+	--geometry=80x25
+)
 
 if ((fullscreen)); then
 	gtargs+=(--full-screen)
 fi
 
-gnome-terminal "${gtargs[@]}" --execute env TERM="$term" "$gamecmd" "${rogueargs[@]}"
+gnome-terminal "${gtargs[@]}" -- "$gamecmd" "${rogueargs[@]}"
