@@ -1,4 +1,4 @@
-#!/bin/bash -e
+#!/bin/bash -eu
 #
 # Import Rogue sources to src/ dir, preparing them for initial git commit
 #
@@ -16,32 +16,35 @@
 #
 #    You should have received a copy of the GNU General Public License
 #    along with this program. See <http://www.gnu.org/licenses/gpl.html>
-
-sourcedir=$1
+#------------------------------------------------------------------------------
 
 myname=$(basename "$0")
 mydir=$(dirname "$(readlink -f "$0")")
 
 targetdir=$mydir/src
+force=0
+
+#------------------------------------------------------------------------------
 
 usage(){
 	cat <<-USAGE
-	Usage: $myname SOURCE_DIR
+	Usage: ${myname} [-h|--help] [-f|--force] [--] SOURCE_DIR [TARGET_DIR]
 
-	Copy original sources from SOURCE_DIR to target dir $targetdir
-	(deleting target dir first, so beware!) and perform the following:
+	Copy original sources from SOURCE_DIR to TARGET_DIR and:
 	- Remove executable bit (if any)
 	- Lowercase all file names (MAKEFILE is renamed Makefile)
 	- Remove 0x1A (^Z) char (usually as last char in file)
 	- Change newline from Windows/DOS (CRLF) to Unix (LF)
 	- Remove blank lines from end of file
 	- Fix indentations using tabs
+
+	TARGET_DIR defaults to: ${targetdir}
+	Will refuse to copy to a non-empty directory unless '--force' is used.
 	USAGE
 	exit
 }
-if ! [[ -d "$sourcedir" ]]; then usage; fi
 
-fatal() { [[ "$1" ]] && echo "$myname: error: $1" >&2 ; exit ${2:-1} ; }
+fatal() { [[ "${1:-}" ]] && echo "$myname: error: $1" >&2 || :; exit ${2:-1} ; }
 
 
 # emulate sed's --in-place for commands that lack it, such as unexpand
@@ -64,7 +67,7 @@ inplace() {
 
 	for outfile; do
 		tmpfile=$(mktemp) || fatal
-		trap 'rm -f -- "$tmpfile"' EXIT
+		trap 'rm -f -- "$tmpfile"' RETURN
 
 		"${cmd[@]}" -- "$outfile" > "$tmpfile" && {
 		chmod --reference "$outfile" "$tmpfile" # GNU-only
@@ -72,9 +75,50 @@ inplace() {
 	done
 }
 
-rm -rf "$targetdir"
-mkdir "$targetdir"
-cp "$sourcedir"/* "$targetdir"
+#------------------------------------------------------------------------------
+
+# Pre-parse for `help`
+for arg in "$@"; do [[ "$arg" == "-h" || "$arg" == "--help" ]] && usage ; done
+dirs=()
+while (( $# )); do
+	case "$1" in
+	-f|--force) force=1;;
+	--) shift; dirs+=( "$@" ); break;;
+	-*) fatal "invalid option: $1";;
+	*) dirs+=( "$1" );;
+	esac
+	shift
+done
+if (( "${#dirs[@]}" < 1 || "${#dirs[@]}" > 2 )); then usage; fi
+
+sourcedir=${dirs[0]}
+targetdir=${dirs[1]:-$targetdir}
+
+if   [[ -z "$sourcedir" ]]; then usage; fi
+if ! [[ -d "$sourcedir" ]]; then fatal "SOURCE_DIR is not a directory: $sourcedir"; fi
+
+sources=()
+while read -r src; do sources+=( "$src" )
+done < <(find "$sourcedir" -maxdepth 1 -type f)
+
+if ! (( "${#sources[@]}" )); then fatal "source directory is empty: $sourcedir"; fi
+
+if ! ((force)) && [[ "$(command ls "$targetdir" 2>/dev/null)" ]]; then
+	fatal "target directory is not empty, and --force was not used: $targetdir"
+fi
+
+if ! type rename &>/dev/null; then
+	printf '%s\n' "Required command 'rename' not found." \
+		"On Debian/Ubuntu this can be installed with:" \
+		"	sudo apt install rename" >&2
+	exit 1
+fi
+
+#------------------------------------------------------------------------------
+
+mkdir --parents -- "$targetdir"
+cp --no-preserve mode --target-directory "$targetdir" -- "${sources[@]}" ||
+	fatal "could not copy cource files"
 
 cd "$targetdir"
 
@@ -83,6 +127,7 @@ rename 'y/A-Z/a-z/' *
 
 shopt -s nullglob
 files=(*.{asm,bat,c,h,opt} makefile? objs? tags?)
+if ! ((${#files[@]})); then exit; fi
 
 sed -i 's/\x1A//'                 -- "${files[@]}"  # ^Z
 sed -i 's/\r//'                   -- "${files[@]}"  # CRLF to LF
