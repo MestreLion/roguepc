@@ -9,36 +9,37 @@
 
 /*@
  * References for 3D8h and 3D9h:
+ * http://minuszerodegrees.net/5150_5160/cards/5150_5160_cards.htm#cga
  * http://www.scribd.com/doc/251557562/CGA-IBM-Color-Graphics-Monitor-Adapter
  * http://www.seasip.info/VintagePC/cga.html
  */
 
 /*@
  * 3D8h = CGA Select Mode port, 6-bits, write only:
- * Bit 0 - 0=40x25, 1=80x25 (for text mode, ignored if bit 1=0)
+ * Bit 0 - 0=40x25, 1=80x25 (for text mode, ignored if bit 1 = 0)
  * Bit 1 - 0=Text,  1=320x200 Graphics
  * Bit 2 - 0=Color, 1=Mono, or "burst color" for 3rd palette when in 320x200 **
  * Bit 3 - 1=(re-)enables video signal, which is disabled when mode changes
  * Bit 4 - 1=640x200 mono graphics mode
  * Bit 5 - 1=Enable blink attribute for text modes
  *
- * * When in 320x200 mode, Bit 2 acts as "burst color" bit that activates
- *   an undocumented 3d palette (Default/Cyan/Red/Magenta)
+ * ** When in 320x200 mode, Bit 2 acts as "burst color" bit that activates
+ *    an undocumented 3d palette (Default/Cyan/Red/Magenta)
  */
 #define MODEREG    0x3d8  //@ CGA Select Mode port address
 #define BWENABLE   0x004  //@ Bit 2 mask, for BW mode / 3rd palette burst bit
-#define MODESAVE   0x065  //@ Offset for current mode value in BIOS Data 40h
+#define MODESAVE   0x065  //@ BIOS Data Area 40:65: current value of 3D8h port
 
 /*@
- * 3D9h = CGA Select Color port, 6-bits, write only. For mode 4 (320x200x4):
- * Bit 0 - Blue background component
- * Bit 1 - Green background component
- * Bit 2 - Red background component
+ * 3D9h = CGA Select Color port, 6-bits, write only. For mode 4 (320x200x4c):
+ * Bit 0 - Background/Default color, Blue  component
+ * Bit 1 - Background/Default color, Green component
+ * Bit 2 - Background/Default color, Red   component
  * Bit 3 - Intensified background color
  * Bit 4 - Alternate, intensified set of colors (the "i" palette variation)
  * Bit 5 - Active color set (Palette 0 or 1)
- *         Palette 0: Defaut, Red, Green, Yellow
- *         Palette 1: Default, Cyan, Magenta, White
+ *         Palette 0: 0-Background/Default, 1-Red,  2-Green,   3-Yellow
+ *         Palette 1: 0-Background/Default, 1-Cyan, 2-Magenta, 3-White
  */
 #define COLREG     0x3d9  //@ CGA Select Color port address
 #define HIGHENABLE 0x010  //@ Bit 4 mask, for intensified palette
@@ -52,8 +53,9 @@ static char *store;
 
 /*@
  * block size used when reading image file
- * A packed CGA 320x200x2bit image (4 colors) requires 16000 bytes + headers
- * initial block size, 0x4000 = 16384, is enough to read file in 1 pass
+ * A packed CGA 320x200x2bit image (4 colors) requires 16384 bytes:
+ *   16000 total of pixel data + 2 x 192-byte padding
+ * Initial requested block size, 0x4000=16384, is enough to read file in 1 pass
  */
 static int blksize = 0x4000;
 static FILE *file;
@@ -103,13 +105,14 @@ epyx_yuck(void)
  * http://www.shikadi.net/moddingwiki/Raw_CGA_Data#Interlaced_CGA_Data
  * http://en.wikipedia.org/wiki/BSAVE_%28bitmap_format%29#Graphics
  *
- * 'ROGUE.PIC' contains:
- * - BSAVE header
+ * 'ROGUE.PIC', 16391 bytes, contains:
+ * - BSAVE header - 7 bytes
  * - CGA Interlaced data, 2 blocks, even lines and odd lines. Each block is:
  *   - 8000 bytes of image
  *   -  192 bytes of padding
+ * - (it does *not* contain the trailer byte 1Ah (CPM EOF)
  *
- * 7-byte header, ignored by bload()
+ *    7 bytes BSAVE header, ignored by bload():
  *  BYTE Marker         Data type                  FDh = unpacked data
  *  WORD ScreenSegment  PC screen memory segment B800h = CGA video address
  *  WORD ScreenOffset   PC screen memory offset  0000h = no offset
@@ -122,17 +125,17 @@ epyx_yuck(void)
  *     02 Magenta
  *     11 White
  *
- * 192 bytes of padding
- *   ?                  Signature                 'PCPaint V1.0'
- *   BYTE PaletteID     Current Palette number    05h = Palette 1i ?
- *   BYTE BackColor     Color for index 00        00h = Black
- *   *    Padding       Padding                   55h
+ * 192 bytes of padding, but PC Paint also stores metadata in this first block
+ *    12B Signature     Editor used to create    'PCPaint V1.0'
+ *   BYTE PaletteID     Current Palette number    05h = Palette 1i (Why?)
+ *   BYTE BackColor     Color of Default(index 0) 00h = Black
+ *   178B Padding       Padding                   55h x 178
  *
  * 8000 bytes of image data for odd rows
  *   Same format as even rows
  *
  * 192 bytes of padding
- *   *    Padding       Padding                   55h
+ *   192B Padding       Padding                   55h x 192
 */
 static
 void
@@ -141,12 +144,16 @@ scr_load(void)
 	int palette, background;
 	int mode, burst;
 
-	//@ 0xb800 = Video memory address for CGA mode 04h
+	//@ Write the file. 0xb800 = Video memory address for CGA mode 04h
 	bload(0xb800);
 
-	//@ read image palette and bgcolor from CGA memory, written inside padding
-	palette = peekb(8012,0xB800);     //@ 5 = CGA palette 1i
-	background = peekb(8013,0xB800);  //@ 0
+	/*@
+	 * read image palette and bgcolor from CGA memory that was just written
+	 * with the file data. Offsets 8012 and 8013 are in the first 192-byte
+	 * padding block, right after the 'PCPaint V1.0' signature
+	 */
+	palette = peekb(8012,0xB800);     //@ 5 = CGA palette 1i, see below
+	background = peekb(8013,0xB800);  //@ 0 = Color index 0 (BG) is Black
 
 	//@ Intensified palette, enable bit 4 for the COLREG write
 	if (palette >= 3)
@@ -154,10 +161,11 @@ scr_load(void)
 
 	/*@
 	 * Not sure why all this switch cases and palette remapping
-	 * if in the end palette is not used any more, and mode is read
-	 * from BIOS. In any case, modifications to the corresponding
+	 * if in the end the palette just sets the burst bit and is
+	 * not used anymore. mode is read from BIOS Data Area and re-applied
+	 * with bust enabled. In any case, modifications to the corresponding
 	 * bytes in ROGUE.PIC does not seem to have any effect on display
-	 * in Epyx v1.49, so this code might have changed there.
+	 * in Epyx v1.49 (using DOSBox), so this code might have changed there.
 	 */
 	burst   = 0;
 	switch(palette)
@@ -183,7 +191,7 @@ scr_load(void)
 	mode = peekb(MODESAVE,0x40) & (~BWENABLE);
 	if (burst == 1)
 		mode = mode | BWENABLE;  //@ enable burst bit
-	pokeb(MODESAVE,0x40,mode);   //@ write mode to BIOS
+	pokeb(MODESAVE,0x40,mode);   //@ write new mode to BIOS Data Area
 	out(MODEREG,mode);           //@ write mode to CGA 6845 controller
 }
 
