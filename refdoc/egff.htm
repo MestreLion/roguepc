@@ -1,0 +1,771 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link href="https://fonts.googleapis.com/css?family=Open+Sans:400,400italic,700,700italic" rel="stylesheet" type="text/css" />
+<link href="/css/bootstrap.css" rel="stylesheet" />
+<link href="/css/font-awesome.css" rel="stylesheet" />
+<link href="/css/override.css" rel="stylesheet" />
+<script src="/js/jquery-1.8.2.min.js" type="text/javascript" ></script>
+<script src="/js/bootstrap.min.js"></script>
+<!-- Le HTML5 shim, for IE6-8 support of HTML5 elements -->
+<!--[if lt IE 9]>
+	<script src="https://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+<![endif]-->
+<div>
+<script src="/js/share.js" type="text/javascript" ></script>
+</div>
+
+<title>Pictor PC Paint: Summary from the Encyclopedia of Graphics File Formats</title>
+</head>
+<body>
+<div id="content">
+
+<table class="plain" width="100%">
+<tr>
+<td align="center">
+<!-- from https://support.google.com/adsense/answer/6307124 -->
+<style>
+.my_ad_top { width: 320px; height: 50px; }
+@media(min-width: 500px) { .my_ad_top { width: 468px; height: 60px; } }
+@media(min-width: 800px) { .my_ad_top { width: 728px; height: 90px; } }
+.my_ad_bottom { width: 320px; height: 100px; }
+@media(min-width: 500px) { .my_ad_bottom { width: 468px; height: 60px; } }
+@media(min-width: 800px) { .my_ad_bottom { width: 728px; height: 90px; } }
+</style>
+<script async src="//pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
+<!-- Responsive for FileFormatInfo -->
+<ins class="adsbygoogle my_ad_top"
+     style="display:block"
+     data-ad-client="ca-pub-6975096118196151"
+     data-ad-slot="2820691629"
+     data-ad-format="auto"></ins>
+<script>
+(adsbygoogle = window.adsbygoogle || []).push({});
+</script>
+</td>
+</tr>
+</table>
+
+<h1>Pictor PC Paint File Format Summary</h1>
+
+
+<p>
+<b>Also Known As:</b> PC Paint, PIC, .PIC, .CLP
+<p>
+<hr>
+<p>
+
+<p>
+<table class="table table-bordered table-striped table-auto">
+<tr valign=top>
+  <td align="left"><b>Type</b></td>
+  <td align="left">Bitmap</td>
+</tr>
+<tr valign=top>
+  <td align="left"><b>Colors</b></td>
+  <td align="left">24-bit maximum</td>
+</tr>
+<tr valign=top>
+  <td align="left"><b>Compression</b></td>
+  <td align="left">RLE, uncompressed</td>
+</tr>
+<tr valign=top>
+  <td align="left"><b>Maximum Image Size</b></td>
+  <td align="left">64Kx64K pixels</td>
+</tr>
+<tr valign=top>
+  <td align="left"><b>Multiple Images Per File</b></td>
+  <td align="left">No</td>
+</tr>
+<tr valign=top>
+  <td align="left"><b>Nemerical Format</b></td>
+  <td align="left">Little-endian</td>
+</tr>
+<tr valign=top>
+  <td align="left"><b>Originator</b></td>
+  <td align="left">Paul Mace Inc.</td>
+</tr>
+<tr valign=top>
+  <td align="left"><b>Platform</b></td>
+  <td align="left">MS-DOS</td>
+</tr>
+<tr valign=top>
+  <td align="left"><b>Supporting Applications</b></td>
+  <td align="left">Too numerous to list</td>
+</tr>
+<tr valign=top>
+  <td align="left"><b>See Also</b></td>
+  <td align="left"><A HREF="../pcx/index.htm">PCX</A></td>
+</tr>
+</table>
+<p>
+<b>Usage</b><br>
+Paint programs.
+<p>
+<b>Comments</b><br>
+A device-specific format designed for PC
+	  (MS-DOS) hardware.
+<p>
+<a href="spec/index.htm">Vendor specifications</a>
+are available for this format.
+<p>
+<!--SOFTWARE:pictor-->
+<p>
+<hr>
+<p>
+<A NAME="PICTOR-DMYID.1"><!-- Overview anchor --></A>
+<P>
+
+
+The Pictor PC Paint format is device-dependent and is specifically
+designed
+around the needs of the IBM family of display adapters (CGA, EGA, VGA,
+and so on).
+Because of this, the PIC format resembles PCX, another popular paint
+file format designed specifically for IBM hardware. This format uses
+the .PIC extension.
+
+
+<P>
+<B>Contents:</B><br>
+<A HREF="#PICTOR-DMYID.2">File Organization</A><br>
+<A HREF="#PICTOR-DMYID.3">File Details</A><br>
+<A HREF="#PICTOR-DMYID.4">For Further Information</A><br>
+
+<h2><A NAME="PICTOR-DMYID.2">File Organization</A></h2>
+
+<P>
+The header structure for the Pictor PC Paint format is 17 bytes long and
+consists of the following fields:
+<pre>typedef struct _PicHeader
+{
+WORD  Id;               /* Magic number (always 1234h) */
+WORD  Width;   	        /* Width of image in pixels */
+WORD  Height;           /* Height of image in pixels */
+WORD  XOffset;          /* X of lower left corner of image */
+WORD  YOffset;          /* Y of lower left corner of image */
+BYTE  PlaneInfo;        /* BPP and number color planes */
+BYTE  PaletteFlag;      /* Color palette/video flag */
+BYTE  VideoMode;        /* Video mode of image */
+WORD  PaletteType;      /* Type of color palette */
+WORD  PaletteSize;      /* Size of color palette */
+} PICHEAD;
+</pre>
+<h2><A NAME="PICTOR-DMYID.3">File Details</A></h2>
+
+<P>
+Id is an identification value. This value is
+always 1234h.
+
+<P>
+Width and Height contain the size of the image in pixels.
+
+<P>
+XOffset and YOffset indicate the position of the image on the display screen.
+The default values of 0 and 0 indicate that the image starts at the origin
+point in the lower-left corner of the screen.
+
+<P>
+PlaneInfo contains two values. Bits 0 through 3 contain the number of bits per
+pixel per plane in the image. Bits 4 through 7 contain the number of additional
+color planes; there is always a minimum of one color plane. This value is 0 for
+one color plane, 2 for three color planes, and so on. These values may be used
+to determine the type of display hardware for which the image data is
+formatted. A value of 02h in this field indicates CGA data; a value of 31h
+indicates EGA data; and a value of 08h indicates VGA data.
+
+<P>
+The original version of the PC Paint format did not include any information on
+video modes or color palettes. Version 2.0 of the format adds the ability to
+store this additional information and increases the size of the header.
+
+<P>
+PaletteFlag contains the value FFh if the version of the PC Paint file is 2.0
+or greater. In this case, data is present for the remaining three fields
+of the header. If the Marker field value is not FFh, then image data
+immediately follows the header.
+
+<P>
+VideoMode contains a single ASCII alphanumeric character indicating the
+screen mode used to create the image. This is useful only for setting the
+screen mode before displaying the image. The following mode values are used:
+<pre>0   40 column text      F   EGA 640x350x4
+1   80 column text      G   EGA 640x350x16
+2   Monochrome text     H   EGA 720x348x2 (Hercules)
+3   EGA 43-line text    I   EGA 320x200x16 (Plantronics)
+4   VGA 50-line text    J   EGA 320x200x16
+A   CGA 320x200x4       K   EGA 640x400x2 (AT&amp;T or Toshiba 3100)
+B   EGA 320x200x16      L   VGA 320x200x256
+C   CGA 640x200x2       M   VGA 640x480x16
+D   EGA 640x200x16      N   EGA 720x348x16 (Hercules InColor)
+E   EGA 640x350x2       O   VGA 640x480x2
+</pre>
+<P>
+PaletteType indicates the type of color palette that is found after the
+header. A value of 0 indicates that no color palette is present (i.e., the
+image does not use a color palette, typical of monochrome image data). A value
+of 1 indicates a CGA color palette and border color. A value of 2 indicates a
+PC Jr. or non-ECD 16-color palette. A value of 3 indicates an EGA palette. A
+value of 4 indicates a VGA palette.
+
+<P>
+The CGA palette data is a single byte in size and the border data is also one
+byte in size. (See the <A HREF="../pcx/index.htm">PCX</A> article for information on interpreting CGA palette
+data.) PC Jr. palette data, which may also be a generic 16-color palette, is
+stored as a 16-byte palette, one color value per byte. The VGA palette is
+stored as 256 3-byte triples, the same as in the PCX format.
+
+<P>
+PaletteSize stores the number of bytes of palette data that follow the header.
+For a CGA palette, this value is 2. For the PC Jr. and EGA palettes, this
+value is 16. For a VGA palette, this value is 768.
+
+<h3><A NAME="PICTOR-DMYID.3.1">Image Data Encoding</A></h3>
+
+<P>
+The image data in a Pictor Paint image file may be stored in a compressed RLE
+format. Following the color palette data (if present) is a 16-bit data word
+that indicates how many run-length encoded blocks of data follow. If the image
+data in the Pictor file is not compressed, this value is 0.
+
+<P>
+Raw Pictor images never contain any color palette information, although the
+color palette information fields may be present in the header. The image data
+begins immediately after the header and is displayed starting at the
+bottom-left corner of the display screen. The image data always is stored by
+scan line and in consecutive color planes.
+
+<P>
+The RLE scheme used in the PC Paint format encodes runs of identical pixel
+values into blocks (also called packets). The number of data blocks in an image
+file is indicated by the 16-bit
+value found after the color palette
+information.
+
+<P>
+Each run-length encoded block begins with a 5-byte header. This header, which
+contains the information necessary to decode the image data stored in its data
+block, has the following format:
+<pre>typedef struct _PicBlockHead
+{
+WORD  BlockSize;    /* Size of encoded block including header */
+WORD  RunLength;    /* Size of decoded pixel data */
+BYTE  RunMarker;    /* Start-of-run indicator */
+} PICBLKHEAD;
+</pre>
+<P>
+BlockSize is the size of the entire block of encoded image data including the
+block header. This value is useful for reading the entire data block into
+memory before decoding it.
+
+<P>
+RunLength contains the total number of pixels encoded in this block.
+
+<P>
+RunMarker contains a unique character marker that identifies the start of an
+encoded run in this block. Data blocks may contain multiple runs of pixels, and
+this marker delineates the start of each encoded run in the block.
+
+<P>
+Each encoded data block may contain one or more runs of pixel data. The runs
+may be eight bits in length (1 to 255 pixels), or 16 bits in length (1 to 65,535
+pixels). For buffering reasons, a run typically does not exceed 8192 pixels (or
+bytes) in length. It is also possible to store a literal run of pixels in a
+data block that is not encoded at all.
+
+<P>
+The first five bytes of an encoded data block make up the block header.
+Following the header is normally a RunMarker character designating the start of
+an encoded run. The byte following a RunMarker is the RunLength. This is an
+8-bit value that stores the length of the pixel run. If this value is not zero,
+then the byte that follows it, the RunValue, is the actual pixel value that is
+to be repeated RunLength times:
+<pre>WORD  BlockSize   Size of encoded block including header
+WORD  RunLength   Size of decoded pixel data
+BYTE  RunMarker   Start-of-run indicator
+BYTE  RunMarker   Start-of-run indicator
+BYTE  RunLength   Length of the pixel run (8-bit run length)
+BYTE  RunValue    The value of the pixel run
+</pre>
+<P>
+If the RunLength value is 0 then a 16-bit word value, the RunCount, follows
+the RunLength field. The byte following the RunCount is the actual pixel run
+that is to be repeated RunCount times:
+<pre>WORD  BlockSize   Size of encoded block including header
+WORD  RunLength   Size of decoded pixel data
+BYTE  RunMarker   Start-of-run indicator
+BYTE  RunMarker   Start-of-run indicator
+BYTE  RunLength   Length of the pixel run (8-bit run length)
+WORD  RunCount    Length of the pixel run (16-bit run length)
+BYTE  RunValue    The value of the pixel run
+</pre>
+<P>
+If the RunMarker is missing from a data block, the byte read is assumed to
+be a literal pixel value and is written directly to the output:
+<pre>WORD  BlockSize   Size of encoded block including header
+WORD  RunLength   Size of decoded pixel data
+BYTE  RunMarker   Start-of-run indicator
+BYTE  PixelValue  No RunMarker, literal pixel value
+</pre>
+<P>
+The RunMarker character is an arbitrary value chosen to delineate the start of
+each encoded run in a data block. The RunMarker value should not be the same as
+any RunValue or PixelValue in the data block. Each data block uses a
+RunMarker value appropriate to the data in the data block. The following
+example is of a data block that uses a RunMarker value that is the same as a
+pixel RunLength value. This arrangement could confuse a Pictor RLE decoder:
+<pre>WORD  BlockSize   Size of encoded block including header
+WORD  RunLength   Size of decoded pixel data
+BYTE  RunMarker   Start-of-run indicator
+BYTE  RunMarker   Start-of-run indicator
+BYTE  RunLength   Length of the pixel run (8-bit run length)
+BYTE  RunValue    The value of the pixel run
+</pre>
+<P>
+Because there is no "end of data block" marker, a PC Paint decoder must keep
+track of the number of pixels decoded in each data block, and must compare this value
+to the value of the RunLength field of the block header. When these values are
+equal, the block is finished and the next block, if any, should be read.
+
+<P>
+The decoded format of the image data varies depending upon the type of graphics
+display adapter that was used to create the image. Monochrome images are stored
+eight pixels per byte. EGA images are stored two pixels per byte in four
+planes of 4-bit index values each, in a BGRI order. VGA image data is stored
+one pixel per byte, each byte being an index value into the color palette. When
+there is more than one color plane, the image data is stored by plane first, then
+by pixel (plane 0, plane 1, plane 2, and so on).
+
+<P>
+The following pseudocode details the decoding process of the Pictor
+RLE image data:
+<P>
+<pre><i>
+StartOfDataBlock:
+   Read BlockSize value from data block header
+   Read RunLength value from data block header
+   Read RunMarker value from data block header
+StartOfRun:
+   If the next byte is a RunMarker
+	   If the byte following the RunMarker is not 0
+		  Read the next byte as the RunLength
+		  Read the next byte as the RunValue
+		  Write the RunValue `RunLength' times.
+	  else
+		 If the byte following the RunMarker is 0
+			Read the next word as the RunCount
+			Read the next byte as the RunValue
+			Write the RunValue `RunCount' times.
+   else
+	  If the byte following the header is not a RunMarker
+		 Write the byte as a literal PixelValue
+	  If the number of pixels written so far equals the RunLength
+		 Goto StartOfDataBlock:
+   else
+   If the number of pixels written so far does not equal the RunLength
+	  Goto StartOfRun:
+</i></pre>
+<P>
+<P>
+Below are several examples of Pictor PC Paint run-length encoded data blocks.
+These examples show how one or more different types of runs may be encoded in
+the same data block.
+
+<P>
+The following encoded data block is 10 bytes in size and contains a single run
+800 pixels in length. The start-of-run indicator is the value FFh. The
+RunLength field is 0, so the RunCount field contains the number of pixels in
+the run. The RunValue is the actual pixel value in the run.
+<pre>WORD  BlockSize   Size of encoded block including header
+WORD  RunLength   Size of decoded pixel data (800)
+BYTE  RunMarker   Start-of-run indicator
+BYTE  RunMarker   Start-of-run indicator (run 1)
+BYTE  RunLength   Length of the literal run
+WORD  RunCount    Length of the encoded run
+BYTE  RunValue    The value of the pixel run
+</pre>
+<P>
+The following encoded data block is 13 bytes in size and contains two runs. A
+total of 8256 pixels are encoded in this data block and the RunMarker is the
+value 80h. This first run is 64 pixels in length and has a value of 7. The
+second run is 8192 pixels in length and has a value of 1.
+<pre>WORD  BlockSize   Size of data block including header
+WORD  RunLength   Size of decoded pixel data (64 + 8192)
+BYTE  RunMarker   Start-of-run indicator
+BYTE  RunMarker   Start-of-run indicator (Run 1)
+BYTE  RunLength   Length of the pixel run
+BYTE  RunValue    Value of the pixel run
+BYTE  RunMarker   Start-of-run indicator (Run 2)
+BYTE  RunLength   Value is 0, get 16-bit RunCount
+WORD  RunCount    Length of the pixel run
+BYTE  RunValue    Value of the pixel run
+</pre>
+<P>
+The following encoded data block is 1039 bytes in size and contains two encoded
+runs and a literal run. The RunMarker in this block is the value 00h. The
+value FFh cannot be used because the block contains a run with this value. The
+first run is 1024 pixels in length, and each pixel has the value 01h. Following
+this run are three literal pixel values that are considered the second run in
+the block (literal pixel runs are not prefaced with a RunMarker). The third
+run contains 12 pixels each of the value FFh.
+<pre>WORD  BlockSize   Size of data block including header
+WORD  RunLength   Size of decoded pixel data (1024+1+1+1+12)
+BYTE  RunMarker   Start-of-run indicator
+BYTE  RunMarker   Start-of-run indicator (Run 1)
+BYTE  RunLength   Value is 0, get 16-bit RunCount
+WORD  RunCount    Length of the pixel run
+BYTE  RunValue    Value of the pixel run
+BYTE  PixelValue  No RunMarker, literal pixel value (Run 2)
+BYTE  PixelValue  No RunMarker, literal pixel value
+BYTE  PixelValue  No RunMarker, literal pixel value
+BYTE  RunMarker   Start-of-run indicator (Run 3)
+BYTE  RunLength   Length of the pixel run
+BYTE  RunValue    Value of the pixel run
+</pre>
+<h4><A NAME="PICTOR-DMYID.3.1.1">HiColor format</A></h4>
+
+<P>
+Four changes were made to Pictor PC Paint to support hicolor (65.536K colors) and
+truecolor (16,777,216 colors) video modes, and to correct past problems in
+compressing text-mode images.
+
+<P>
+First, the two 4-bit fields for the number of bit planes and number of bits
+per pixel (PlaneInfo) were combined into one field to support pixel depths
+greater than eight bits. The newly supported modes, and their hex values, are:
+<pre>01      1 bit plane     1 bit per pixel 2 colors
+02      1 bit plane     2 bits per pixel 4 colors
+04      1 bit plane     4 bits per pixel 16 colors
+11      2 bit planes    1 bit per pixel 4 colors
+31      4 bit planes    1 bit per pixel 16 colors
+08      1 bit plane     8 bits per pixel 256 colors
+10      1 bit plane     16 bits per pixel 32,768 and 65,536 colors
+18      1 bit plane     24 bits per pixel 16,777,216 colors
+28      3 bit planes    8 bits per pixel 16,777,216 colors
+</pre>
+<P>
+Second, all text-mode images are now stored at 16 bits per pixel instead of
+eight bits per pixel, as in the past.
+
+<P>
+Third, the video mode may now be specified using two letters. The mark field,
+which always contained the value 0xFF in the past, is now the second letter.
+Valid values for the mark field are currently the ASCII characters 1, 2,
+and 3.
+
+<P>
+The hicolor extensions expanded the list of video modes supported by the .PIC
+format:
+<pre>0	10  40x25 color text
+1	10  80x25 color text
+2	10  80x25 B&amp;W text
+3	10  EGA 80x43, VGA 80x50 color text
+4	10  VESA 80x60 color text
+5	10  VESA 132x25 color text
+6	10  VESA 132x43 color text
+7	10  VESA 132x50 color text
+8	10  VESA 132x60 color text
+A	02  CGA 4 color
+B	04  PCjr/Tandy 16 color
+C	01  CGA 640x200 2 color
+D	31  EGA 640x200 16 color
+E	01  EGA 640x350 2 color
+F	11  EGA 640x350 4 color
+G	31  EGA 640x350 16 color
+H	01  Hercules 720x348 2 color
+I	31  VGA 640x350 16 color
+J	31  EGA 320x200 16 color
+K	01  AT&amp;T/Toshiba 640x400 2 color
+L	08  VGA/MCGA 320x200 256 color
+M	31  VGA 640x480 16 color
+N	31  Hercules InColor 720x348 16 color
+O	01  VGA/MCGA 640x480 2 color
+P	01  EGA/VGA 800x600 2 color
+Q	31  EGA/VGA 800x600 16 color
+R	08  S-VGA 640x400 256 color
+S	08  S-VGA 640x480 256 color
+T	08  S-VGA 800x600 256 color
+U	01  S-VGA 1024x768 2 color
+V	31  S-VGA 1024x768 16 color
+W	08  VGA 360x480 256 color
+X	08  S-VGA 1024x768 256 color
+Y	31  S-VGA 1280x1024 16 color
+Z	08  S-VGA 1280x1024 256 color
+L1	10  S-VGA 320x200 hicolor 15
+s1	10  S-VGA 640x480 hicolor 15
+t1	10  S-VGA 800x600 hicolor 15
+x1	10  S-VGA 1024x768 hicolor 15
+z1	10  S-VGA 1280x1024 hicolor 15
+l2	10  S-VGA 320x200 hicolor 16
+s2	10  S-VGA 640x480 hicolor 16
+t2	10  S-VGA 800x600 hicolor 16
+x2	10  S-VGA 1024x768 hicolor 16
+z2	10  S-VGA 1280x1024 hicolor 16
+l3	18  S-VGA 320x200 hicolor 24
+S3	18  S-VGA 640x480 hicolor 24
+T3	18  S-VGA 800x600 hicolor 24
+X3	18  S-VGA 1024x768 hicolor 24
+Z3	18  S-VGA 1280x1024 hicolor 24
+</pre>
+<P>
+The last change modified the compression algorithm to include 16- and 24-bit
+images. Each packed block has a similar format to the original byte-packed
+blocks of the previous compression method.
+
+<P>
+The first two bytes are 16-bit lengths of packed data, including the 4-byte
+header. The second two bytes are 16-bit lengths of unpacked data. What follows
+is a signed, 16-bit integer which, if negative, is a repeat count followed by a
+16-bit repeat value (or 24-bit repeat value in 24-bit images). If the signed
+16-bit integer is positive, then it is a run count of the number of 16-bit
+values (or 24-bit values) that follow. This repeats until the end of the
+packed block is reached.
+
+<h4><A NAME="PICTOR-DMYID.3.1.2">BSAVE format</A></h4>
+
+<P>
+Pictor PC Paint 1.0 was developed for Mouse Systems in 1984 and supported only
+the BSAVE unpacked screen file format and stored only images using the 4-color
+CGA mode. PC Paint 1.5 supported a modified BSAVE format that allowed images
+larger than the screen to be stored and supported a rudimentary form of image
+compression. This revision 1.5 format was very short-lived, and very few image
+files of this format exist.
+
+<P>
+The header for the BSAVE format is as follows:
+<pre>typedef struct _BsaveHeader
+{
+  BYTE Marker;              /* Marker value for packed data */
+  WORD ScreenSegment;       /* PC screen memory segment */
+  WORD ScreenOffset;        /* PC screen memory offset */
+  WORD DataSize;            /* Size of screen data */
+} BSAVEHEAD;
+</pre>
+<P>
+Marker is the byte value used to mark the start of an packed data run. This
+value is typically FDh or FEh if the image data is packed.
+
+<P>
+ScreenSegment is the segment address of the CGA video memory on the PC creating
+the BSAVE file. This value is typically B800h.
+
+<P>
+ScreenOffset is the offset address of the CGA video memory on the PC creating
+the BSAVE file. This value is typically 00h.
+
+<P>
+DataSize is the size of the screen image data stored in the file. This value is
+16,384 for 4-color images, 32,768 for 16-color images, and 00h if the image
+data is packed. If DataSize is not 00h, then the image data immediately follows
+the header and is written literally to the PC's video memory. If the value is
+00h, then two additional fields appear in the header:
+<pre>WORD SizeOfData;       /* Total size of unpacked data in bytes */
+WORD NumberOfBlocks;   /* Number of packed blocks */
+</pre>
+<P>
+SizeOfData is the total size of unpacked image data in bytes.
+
+<P>
+NumberOfBlocks is the number of packed data blocks stored in the file.
+
+<P>
+Following these fields is the image data in packed format.
+
+<P>
+At offset 8000 in each BSAVE file is the string "PCPAINT 1.0" or "PC Paint
+V1.5" indicating the format of the file. This ID string is followed by a byte
+indicating the current palette number and a second byte current border color
+number.
+
+<h4><A NAME="PICTOR-DMYID.3.1.3">Clipping format</A></h4>
+
+<P>
+Early versions of Pictor PC Paint supported an image file format used to store
+image sections "clipped" from larger images. This clipping format uses the file
+extension .CLP and may store data in either a packed or unpacked form.
+
+<P>
+The header of the Pictor PC Paint clipping format is 11 or 13 bytes in length,
+depending upon how the image data is stored. The following 11 bytes appear in
+the header of every .CLP file:
+<pre>typedef struct _ClpHeader
+{
+  WORD NumberOfBytes;       /* Size of the file, including header */
+  WORD XSize;               /* Width of image in pixels */
+  WORD YSize;               /* Length of image in pixels */
+  WORD XOffset;             /* Left offset of image on display */
+  WORD YOffset;             /* Top offset of image on display */
+  BYTE BitsPerPixel;        /* Pixel depth */
+} CLPHEAD;
+</pre>
+<P>
+NumberOfBytes is the total number of bytes in the clipped image.
+
+<P>
+XSize and YSize specify the size of the image in pixels.
+
+<P>
+XOffset and YOffset specify the location of the image on the display.
+
+<P>
+BitsPerPixel is the size of each pixel in bits. If this value is FFh, then the
+clipped image data is stored packed; otherwise, it is stored unpacked. If the
+BitsPerPixel value is not FFh, then the uncompressed image data follows the
+11-byte header. If the BitsPerPixel value is FFh, then two additional fields
+appear in the header:
+<pre>  BYTE RealBits;            /* Number of bits per pixel */
+  BYTE Marker;              /* Marker byte value for packed data */
+</pre>
+<P>
+RealBits contains the number of bits per pixel (the value stored in
+BitsPerPixel if the data were not packed).
+
+<P>
+Marker is the value used to mark the beginning of a packed run.
+
+<P>
+The packed data then follows these fields. Packed data is stored as three
+bytes: the marker value, the run count, and the run value. A run value is
+repeated run count times. If a byte is read, and it does not contain the
+expected marker value, then the byte is written literally to the output.
+
+<h4><A NAME="PICTOR-DMYID.3.1.4">Overlay format</A></h4>
+
+<P>
+Pictor PC Paint supports an image file format used to store collections of
+other images (usually .PIC and .CLP) in a single file. This Overlay format uses
+the file extension .OVR.
+It is also possible for .OVR files to contain other
+types of data besides image data. This is accomplished by appending a dummy
+11-byte .PIC header to the data to fool PC Paint.
+
+<P>
+The header of an .OVR file is a list of each image file stored in the Overlay
+file. There is one entry in this list for each file stored in the .OVR file,
+plus an additional NULL entry to mark the end of the list. The format of this
+array is as follows:
+<pre>typedef struct _PictureName
+{
+  WORD SizeOfList;          /* Size of the name list in bytes */
+  struct _NameList          /* List of files in .OVR file */
+  {
+	LONG FileOffset;        /* Location of image in the .OVR file */
+	CHAR Name[12];          /* Name of image file */
+  } NameList[SizeOfList / sizeof(NameList)];
+} PICTURENAME[];
+</pre>
+<P>
+SizeOfList is the total size of the name list in bytes, including the NULL
+entry at the end of the list.
+
+<P>
+NameList is an array of structures. There is one element per file stored,
+plus an additional NULL entry to mark the end of the list.
+
+<P>
+FileOffset is the location of this entry's file in the .OVR file. This offset
+is measured from the beginning of the .OVR file, and this value is 00h for
+the NULL list entry.
+
+<P>
+Name is the original filename of the file. This field is NULL padded for names
+shorter than 12 bytes and contains all NULLs for the NULL list entry.
+
+<P>
+The actual images stored in the .OVR file follows the NULL list entry.
+
+<P>
+As an example, let's say we have two files called IMAGE.PIC (2048 bytes in
+size) and IMAGE1.CLP (384 bytes in size) stored in an .OVR file. The internal
+format of the .OVR file would be as follows:
+<pre>  Field Name    Value
+  SizeOfList    48
+  FileOffset    50
+  Name          "IMAGE.PIC\0\0\0"
+  FileOffset    2097
+  Name          "IMAGE.CLP\0\0\0"
+  FileOffset    0
+  Name          "\0\0\0\0\0\0\0\0\0\0\0\0"
+  [ Image data for IMAGE.PIC starting at offset 50 ]
+  [ Image data for IMAGE.CLP starting at offset 2097 ]
+</pre>
+<h2><A NAME="PICTOR-DMYID.4">For Further Information</A></h2>
+
+<P>
+For further information about the Pictor PC Paint format, see the specification
+included on the CD-ROM.
+
+<P>
+The Pictor PC Paint image file format is supported
+by Paul Mace Software.
+
+<P>
+Paul Mace Software   	<br>
+Attn: Steven Belsky<br>
+400 Williamson Way   <br>
+Ashland, OR 97520 <br>
+Voice: 503-488-0224   <br>
+FAX: 503-488-1549  <br>
+BBS: 503-482-7435<br>
+WWW: <I>http://www.pmace.com/</I>
+
+<P>
+<p>
+
+<hr>
+<p>
+<P>
+This page is taken from the <a href="/resource/book/1565921615/index.htm">Encyclopedia
+of Graphics File Formats</a> and is licensed by <a href="https://www.oreilly.com/">O'Reilly</a>
+under the Creative Common/Attribution license.</p>
+<p><a href="internal.htm">More Resources</a></p>
+
+
+<p>
+<table class="plain" width="100%">
+<tr>
+<td align="center">
+<!-- from https://support.google.com/adsense/answer/6307124 -->
+<style>
+.my_ad_top { width: 320px; height: 50px; }
+@media(min-width: 500px) { .my_ad_top { width: 468px; height: 60px; } }
+@media(min-width: 800px) { .my_ad_top { width: 728px; height: 90px; } }
+.my_ad_bottom { width: 320px; height: 100px; }
+@media(min-width: 500px) { .my_ad_bottom { width: 468px; height: 60px; } }
+@media(min-width: 800px) { .my_ad_bottom { width: 728px; height: 90px; } }
+</style>
+<script async src="//pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
+<!-- Responsive for FileFormatInfo -->
+<ins class="adsbygoogle my_ad_top"
+     style="display:block"
+     data-ad-client="ca-pub-6975096118196151"
+     data-ad-slot="2820691629"
+     data-ad-format="auto"></ins>
+<script>
+(adsbygoogle = window.adsbygoogle || []).push({});
+</script>
+</td>
+</tr>
+</table>
+
+		</div><!--/span-->
+	</div><!--/row-->
+	<footer>
+	<p align="center"><a href="/about/tos.htm">Terms of Service</a> | <a href="/about/privacy.htm">Privacy Policy</a> | <a href="/about/contact.htm">Contact Info</a></p>
+	</footer>
+</div><!--/container-->
+<script type="text/javascript">
+var _gaq = _gaq || [];
+_gaq.push(['_setAccount', 'UA-328425-1']);
+_gaq.push(['_trackPageview']);
+(function() {
+var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+(document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(ga);
+ })();
+</script>
+
+</body>
+</html>
