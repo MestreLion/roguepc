@@ -37,11 +37,11 @@ gamecmd=$(dirname "$(readlink -f "$0")")/src/rogue
 usage() {
 	echo "Launch Rogue PC in a new, customized Xterm window"
 	echo "Usage: ${0##.*/} [-h]" \
-		"[-f|--fullscreen]" \
+		"[-f|--full[-]screen]" \
 		"[-l|--line-chars]" \
 		"[-b|--border]" \
 		"[-fs|--font-size SIZE]" \
-		"[roguepc args]"
+		"[--] [roguepc args]"
 	exit
 }
 
@@ -50,17 +50,20 @@ for arg in "$@"; do [[ "$arg" == "-h" || "$arg" == "--help" ]] && usage ; done
 
 while (( $# )); do
 	case "$1" in
-	-f |--full-screen) fullscreen=1;;
+	-f |--full-screen|--fullscreen) fullscreen=1;;
 	-l |--line-chars ) linechars=1;;
 	-b |--border     ) border=1;;
 #	-c |--columns    ) shift ; columns="$1";;
 #	    --columns=*  )         columns="${1#*=}";;
 	-fs|--font-size  ) shift ; fontsize="$1";;
 	    --font-size=*)         fontsize="${1#*=}";;
-	*                ) rogueargs+=("$1");;
+	--) shift; rogueargs+=( "$@" ); break;;
+	-*) echo "invalid option: $1" >&2; exit 1;;
+	*) rogueargs+=( "$1" );;
 	esac
 	shift
 done
+rogueargs+=("$@")
 
 # XTerm options
 

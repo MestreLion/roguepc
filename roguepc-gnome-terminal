@@ -32,7 +32,7 @@ gamecmd=$(dirname "$(readlink -f "$0")")/src/rogue
 
 usage() {
 	echo "Launch Rogue PC in a new Gnome Terminal window using the custom profile"
-	echo "Usage: ${0##.*/} [-h|--help] [-f|--fullscreen] [rogue args...]"
+	echo "Usage: ${0##.*/} [-h|--help] [-f|--full[-]screen] [--] [rogue args...]"
 	exit
 }
 
@@ -41,7 +41,9 @@ for arg in "$@"; do [[ "$arg" == "-h" || "$arg" == "--help" ]] && usage ; done
 
 while (( $# )); do
 	case "$1" in
-	-f|--full-screen) fullscreen=1;;
+	-f|--full-screen|--fullscreen) fullscreen=1;;
+	--) shift; rogueargs+=( "$@" ); break;;
+	-*) echo "invalid option: $1" >&2; exit 1;;
 	*) rogueargs+=( "$1" );;
 	esac
 	shift
