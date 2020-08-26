@@ -159,9 +159,9 @@ csum()
  * value is typed as byte to make clear that the high byte is ignored.
  */
 void
-pokeb(segment, offset, value)
-	int UNUSED(segment);
+pokeb(offset, segment, value)
 	int UNUSED(offset);
+	int UNUSED(segment);
 	byte UNUSED(value);
 {
 	;  // it was written, I promise!
@@ -174,11 +174,13 @@ pokeb(segment, offset, value)
  * Dummy, always return 0
  *
  * Originally in dos.asm. It zeroed AH so return is explicitly typed as byte.
+ *
+ * Only used in load.c to read CGA (0xB800) and BIOS (0x40) data
  */
 byte
-peekb(segment, offset)
-	int UNUSED(segment);
+peekb(offset, segment)
 	int UNUSED(offset);
+	int UNUSED(segment);
 {
 	return 0;  // we just rebooted, so...
 }
