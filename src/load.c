@@ -88,7 +88,16 @@ epyx_yuck(void)
 	//@ originally a busy loop of 18 * 10 ticks
 	sleep(10);
 #else
-	//@ originally a busy loop of 18 * 60 * 5 ticks with no_char() shortcut
+	/*@
+	 *  Blocking timeout mode does not work with standard ncurses, as the
+	 *  underlying functions wtimeout() / wget_wch() only work properly after
+	 *  curses initialization with initscr(), done later in main() by calling
+	 *  winit(). As it is, it's non-blocking and returns immediately.
+	 *  Not an issue considering the whole image display is dummy as there is no
+	 *  (portable) way to switch to CGA graphics mode in standard C in 2020.
+	 *
+	 *  Originally a busy loop of 18 * 60 * 5 ticks with no_char() shortcut.
+	 */
 	getch_timeout(1000 * 60 * 5);
 #endif  // LOGFILE
 	video_mode(type); //@ restore previous mode

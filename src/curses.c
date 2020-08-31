@@ -431,7 +431,9 @@ cur_beep(void)
  *
  * msdelay has same meaning as delay in timeout(): If no key was pressed after
  * msdelay milliseconds, return ERR. Negative values will block until a key
- * is pressed.
+ * is pressed. Both blocking and timeout mode require a properly initialized
+ * curses with initscr() (in winit()), otherwise it will be non-blocking.
+ * This requirement did not exist in original
  *
  * After the wgetch() call, input will always restore to blocking mode using
  * nodelay(FALSE);
@@ -452,6 +454,7 @@ cur_getch_timeout(int msdelay)
 	int ch = 0;
 
 	wtimeout(stdscr, msdelay);
+
 
 #ifdef _XOPEN_CURSES
 	wint_t wchi;
@@ -1687,7 +1690,7 @@ winit(void)
 	 * My current implementation is "messy", to say the least:
 	 * ROGUE_SCR_TYPE is ignored, it does not affect neither columns
 	 * (controlled by ROGUE_COLUMNS) nor colors, and scr_type will be
-	 * inconsistent with if anything but 80-column color mode is used.
+	 * inconsistent with it if anything but 80-column color mode is used.
 	 *
 	 * I see 2 elegant approaches to solve this mess:
 	 * - scr_type is "crafted" based on colors and columns, reversing the

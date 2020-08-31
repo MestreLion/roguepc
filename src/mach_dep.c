@@ -560,7 +560,10 @@ flush_type()
 	typebuf = "";
 }
 
-//@ I wonder why this is here instead of main.c (or *anywhere* else)
+/*@
+ * I wonder why this is here instead of main.c (or *anywhere* else)
+ * Granted, the staff and companies to credit vary by platform, but still...
+ */
 void
 credits()
 {
