@@ -5,11 +5,13 @@
 #include <string.h>
 
 
+static const char * const PICFILE = "../rogue.pic";
+
 char* PROGNAME;  // == argv[0], set by main()
 
 void usage(FILE* stream)
 {
-	fprintf(stream, "Usage: %s [-h|--help] PICFILE\n", PROGNAME);
+	fprintf(stream, "Usage: %s [-h|--help] [PICFILE]\n", PROGNAME);
 }
 
 _Noreturn void fatal(const char *fmt, ...)
@@ -30,7 +32,7 @@ _Noreturn void fatal(const char *fmt, ...)
 int main(int argc, char* argv[])
 {
 	char* arg;
-	char* path = NULL;
+	const char* path = NULL;
 
 	PROGNAME = argv[0];
 
@@ -38,7 +40,8 @@ int main(int argc, char* argv[])
 		arg = *(++argv);
 		if (!strcmp("-h", arg) || !strcmp("--help", arg)) {
 			printf("Display a 320x200 PIC image in BSAVE format using SDL\n");
-			printf("Will display using CGA colors, palette 1i\n");
+			printf("With CGA colors, palette 1i (Black / Cyan / Magenta / White)\n");
+			printf("Default image path: %s\n", PICFILE);
 			usage(stdout);
 			return 0;
 		}
@@ -53,9 +56,12 @@ int main(int argc, char* argv[])
 		path = arg;
 	}
 	if (!path) {
-		if (!argc--)
-			fatal("missing <PIC_FILE> argument");
-		path = *(++argv);
+		if (argc) {
+			path = *(++argv);
+			argc--;
+		}
+		else
+			path = PICFILE;
 	}
 	if (argc)
 		fatal("too many arguments: %s", *(++argv));
