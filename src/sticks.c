@@ -259,7 +259,7 @@ do_zap()
 					tp->t_flags &= ~ISHASTE;
 				else
 					tp->t_flags |= ISSLOW;
-					tp->t_turn = TRUE;
+				tp->t_turn = TRUE;
 			}
 			delta.y = y;
 			delta.x = x;

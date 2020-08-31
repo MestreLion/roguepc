@@ -214,6 +214,16 @@ look(bool wakeup)
 	if (door_stop && !firstmove && passcount > 1)
 		running = FALSE;
 	move(hero.y, hero.x);
+	/*@
+	 * The expression (was_trapped > TRUE) would never evaluate to true if
+	 * `was_trapped` was a real boolean. I guess this is specifically testing
+	 * for the `was_trapped++` case in be_trapped() at move.c, triggered by
+	 * a teletransporting trap.
+	 * Not an issue in the original code, as bool was typedef'd to unsigned char.
+	 * This test helped reverting `was_trapped` to an unsigned char. However,
+	 * I guess int would be a better type, or perhape another logic to detect
+	 * teleport traps.
+	 */
 	if ((flat(hero.y,hero.x) & F_PASS) || (was_trapped > TRUE)
 					|| (flat(hero.y,hero.x) & F_MAZE))
 		standout();

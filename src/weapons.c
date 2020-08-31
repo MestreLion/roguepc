@@ -288,7 +288,7 @@ fallpos(THING *obj, coord *newpos)
 	register int y, x, cnt = 0, ch;
 	THING *onfloor;
 
-	for (y = obj->o_pos.y - 1; y <= obj->o_pos.y + 1; y++)
+	for (y = obj->o_pos.y - 1; y <= obj->o_pos.y + 1; y++) {
 		for (x = obj->o_pos.x - 1; x <= obj->o_pos.x + 1; x++) {
 			/*
 			 * check to make certain the spot is empty, if it is,
@@ -314,7 +314,8 @@ fallpos(THING *obj, coord *newpos)
 				return 2;
 			}
 		}
-		return(cnt != 0);
+	}
+	return(cnt != 0);
 }
 
 

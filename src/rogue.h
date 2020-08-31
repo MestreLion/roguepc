@@ -474,8 +474,10 @@ extern char *s_guess[], *p_guess[], *r_guess[], *ws_guess[];
 extern char f_damage[];
 
 extern bool amulet, after, again, door_stop, expert, fastmode, faststate,
-			firstmove, noscore, playing, running, save_msg, saw_amulet, terse,
-			was_trapped;
+			firstmove, noscore, playing, running, save_msg, saw_amulet, terse;
+
+//@ originally a bool. See extern.c, move.c, misc.c
+extern unsigned char was_trapped;
 #ifdef WIZARD
 bool wizard;
 #endif

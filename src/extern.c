@@ -314,7 +314,12 @@ bool expert = FALSE;
 #ifdef ME
 int is_me;
 #endif
-bool was_trapped = FALSE;		/* Was a trap sprung */
+/*@
+ * `was_trapped` was originally a bool, which in original code was typedef'd as
+ * unsigned char. As it is used in ++ increment and > test, I've reverted it
+ * to its original (real) type. See be_trapped() in move.c and look() in misc.c
+ */
+unsigned char was_trapped = FALSE;		/* Was a trap sprung */
 #ifdef WIZARD
 bool wizard = FALSE;			/* True if allows wizard commands */
 #endif

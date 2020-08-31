@@ -173,6 +173,7 @@ scr_load(void)
 	case 2:
 	case 5:
 		burst = 1;
+		__attribute__ ((fallthrough));
 		/* no break */
 	case 0:
 	case 3:

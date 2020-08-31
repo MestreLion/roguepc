@@ -273,6 +273,13 @@ be_trapped(coord *tc)
 		teleport();
 		mvaddch(tc->y, tc->x, TRAP); /* since the hero's leaving, look()
 						won't put it on for us */
+		/*@
+		 * I guess this increment is used solely to signal look() at move.c
+		 * about the teleport trap. However, since this increment violates
+		 * boolean logic conventions, `was_trapped++` had to be reverted the
+		 * real type that bool was typdef'd to in original code: unsigned char.
+		 * Either this or refactor the original detection for teleport traps.
+		 */
 		was_trapped++;
 	when T_DART:
 		if (swing(pstats.s_lvl+1, pstats.s_arm, 1)) {

@@ -28,41 +28,42 @@ whatis(void)
 		return;
 	}
 
-	for (;;)
+	for (;;) {
 		if ((obj = get_item("identify", 0)) == NULL) {
 			msg("You must identify something");
 			msg(" ");
 			mpos = 0;
 		} else
 			break;
+	}
 
-		switch (obj->o_type) {
-		when SCROLL:
-			s_know[obj->o_which] = TRUE;
-			*s_guess[obj->o_which] = '\0';
-		when POTION:
-			p_know[obj->o_which] = TRUE;
-			*p_guess[obj->o_which] = '\0';
-		when STICK:
-			ws_know[obj->o_which] = TRUE;
-			obj->o_flags |= ISKNOW;
-			*ws_guess[obj->o_which] = '\0';
-		when WEAPON:
-		case ARMOR:
-			obj->o_flags |= ISKNOW;
-		when RING:
-			r_know[obj->o_which] = TRUE;
-			obj->o_flags |= ISKNOW;
-			*r_guess[obj->o_which] = '\0';
-			break;
-		}
-		/*
-		 * If it is vorpally enchanted, then reveal what type of monster it is
-		 * vorpally enchanted against
-		 */
-		if (obj->o_enemy)
-			obj->o_flags |= ISREVEAL;
-		msg(inv_name(obj, FALSE));
+	switch (obj->o_type) {
+	when SCROLL:
+		s_know[obj->o_which] = TRUE;
+		*s_guess[obj->o_which] = '\0';
+	when POTION:
+		p_know[obj->o_which] = TRUE;
+		*p_guess[obj->o_which] = '\0';
+	when STICK:
+		ws_know[obj->o_which] = TRUE;
+		obj->o_flags |= ISKNOW;
+		*ws_guess[obj->o_which] = '\0';
+	when WEAPON:
+	case ARMOR:
+		obj->o_flags |= ISKNOW;
+	when RING:
+		r_know[obj->o_which] = TRUE;
+		obj->o_flags |= ISKNOW;
+		*r_guess[obj->o_which] = '\0';
+		break;
+	}
+	/*
+	 * If it is vorpally enchanted, then reveal what type of monster it is
+	 * vorpally enchanted against
+	 */
+	if (obj->o_enemy)
+		obj->o_flags |= ISREVEAL;
+	msg(inv_name(obj, FALSE));
 }
 
 #ifdef WIZARD

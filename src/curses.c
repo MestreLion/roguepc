@@ -997,6 +997,7 @@ cur_addch(byte chr)
 	default:
 	case ASCII:
 		chr = ascii_from_dos(chr, ctab);
+		__attribute__((fallthrough));
 		/* no break */
 	case CP437:
 		waddch(stdscr, chr | attr_from_dos(ch_attr));
@@ -1901,6 +1902,7 @@ cur_line(byte chd, int length, bool orientation)
 		if (ch == '\0')
 			ch = ascii_from_dos(chd, ctab);
 		chd = (byte)ch;
+		__attribute__((fallthrough));
 		/* no break */
 	case CP437:
 		ch = chd | attr_from_dos(ch_attr);
