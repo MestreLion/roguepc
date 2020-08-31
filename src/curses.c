@@ -997,8 +997,7 @@ cur_addch(byte chr)
 	default:
 	case ASCII:
 		chr = ascii_from_dos(chr, ctab);
-		__attribute__((fallthrough));
-		/* no break */
+		/* fallthrough */
 	case CP437:
 		waddch(stdscr, chr | attr_from_dos(ch_attr));
 		break;
@@ -1614,7 +1613,7 @@ winit(void)
 		 */
 		case 1:
 			at_table = color_attr;
-			/* no break */
+			/* fallthrough */
 		case 0:
 			COLS = 40;
 			break;
@@ -1624,7 +1623,7 @@ winit(void)
 		 */
 		case 3:
 			at_table = color_attr;
-			/* no break */
+			/* fallthrough */
 		case 2:
 			break;
 		case 7:
@@ -1902,8 +1901,7 @@ cur_line(byte chd, int length, bool orientation)
 		if (ch == '\0')
 			ch = ascii_from_dos(chd, ctab);
 		chd = (byte)ch;
-		__attribute__((fallthrough));
-		/* no break */
+		/* fallthrough */
 	case CP437:
 		ch = chd | attr_from_dos(ch_attr);
 		if (orientation == VERTICAL)

@@ -160,7 +160,7 @@ hit_bound:
 		ch = be_trapped(&nh);
 		if (ch == T_DOOR || ch == T_TELEP)
 			return;
-		/* no break */
+		/* fallthrough */
 	case PASSAGE:
 		goto move_stuff;
 	case FLOOR:

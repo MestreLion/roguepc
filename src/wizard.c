@@ -141,7 +141,7 @@ create_obj(void)
 		when R_AGGR:
 		case R_TELEPORT:
 			obj->o_flags |= ISCURSED;
-			/* no break */
+			/* fallthrough */
 		}
 	else if (obj->o_type == STICK)
 		fix_stick(obj);

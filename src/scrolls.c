@@ -114,8 +114,7 @@ read_scroll()
 						ch = _level[index] = DOOR;
 						_flags[index] &= ~F_REAL;
 					}
-					__attribute__ ((fallthrough));
-					/* no break */
+					/* fallthrough */
 				case DOOR:
 				case PASSAGE:
 				case STAIRS:

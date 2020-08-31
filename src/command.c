@@ -147,7 +147,7 @@ get_prefix()
 			}
 			retch = toupper(retch);
 		}
-		/* no break */
+		/* fallthrough */
 	case 'H': case 'J': case 'K': case 'L':
 	case 'Y': case 'U': case 'B': case 'N':
 	case 'q': case 'r': case 's': case 'z':

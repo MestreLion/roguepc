@@ -173,8 +173,7 @@ scr_load(void)
 	case 2:
 	case 5:
 		burst = 1;
-		__attribute__ ((fallthrough));
-		/* no break */
+		/* fallthrough */
 	case 0:
 	case 3:
 		palette = 1;  //@ ignored
