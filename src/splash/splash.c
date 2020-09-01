@@ -11,7 +11,12 @@
 
 #define CGA_WIDTH     320
 #define CGA_HEIGHT    200
+#define CGA_BIT_DEPTH   2  // 4 colors = 2 bits per pixel
+#define CGA_PPB         4  // 8 bits per Byte / CGA_BIT_DEPTH = 4 pixels per Byte
+#define CGA_PADDING   192  // 192 bytes of padding between each CGA field
 
+// (320 cols * 100 rows / 4 pixels per byte) = 8000 bytes
+static const int CGA_FIELD = CGA_WIDTH * CGA_HEIGHT / 2 / CGA_PPB;
 static const int CGA_COLORS[4][3] = {
 	{0,     0,   0},  // Black
 	{ 85, 255, 255},  // Light Cyan
@@ -127,17 +132,37 @@ int main(int argc, char* argv[])
 	SDL_RenderPresent(renderer);
 	SDL_Delay(50);  // ditto
 
-	// Ready for the (X, Y, Color) loop
-	int x=160, y=100, c=2;
-	SDL_SetRenderDrawColor(
-		renderer,
-		CGA_COLORS[c][0],
-		CGA_COLORS[c][1],
-		CGA_COLORS[c][2],
-		SDL_ALPHA_OPAQUE
-	);
-	SDL_RenderDrawPoint(renderer, x, y);
+	// Decode the image into the renderer
+	// I'm sure this can be made much, much simpler. But it works and it's solid.
+	int rowsize = (CGA_WIDTH / CGA_PPB);  // 80 bytes per line
+	int field, offset, byte, b, y, x, p, c;
+	unsigned char d;
+	// Field loop: 2 blocks of even and odd lines
+	for (field = 0; field < 2; field++) {  // interleaf, even or odd rows
+		offset = field * (CGA_FIELD + CGA_PADDING);  // 0 or 8192
+		// Byte loop: every byte in each field of the data buffer read from file
+		for (byte = 0; byte < CGA_FIELD; byte++) {
+			b = (byte % rowsize) * CGA_PPB;  // preliminary x
+			y = 2 * (byte / rowsize) + field;
+			d = data[byte + offset];
+			// Pixel loop: 4 pixels in each byte
+			for (p = 0; p < CGA_PPB; p++) {
+				x = b + p;
+				// "unpack" the pixels: (d >> 6, 4, 2, 0) & 0b00000011;
+				c = (d >> ((CGA_PPB - p - 1) * CGA_BIT_DEPTH)) & 3;
 
+				// Draw
+				SDL_SetRenderDrawColor(
+					renderer,
+					CGA_COLORS[c][0],
+					CGA_COLORS[c][1],
+					CGA_COLORS[c][2],
+					SDL_ALPHA_OPAQUE
+				);
+				SDL_RenderDrawPoint(renderer, x, y);
+			}
+		}
+	}
 	SDL_RenderPresent(renderer);
 
 	// Loop until key or mouse press
