@@ -246,7 +246,7 @@ turn_see(bool turn_off)
 {
 	register THING *mp;
 	register bool can_see, add_new;
-	byte was_there;
+	byte was_there = inch();
 
 	add_new = FALSE;
 	for (mp = mlist; mp != NULL; mp = next(mp)) {

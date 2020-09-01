@@ -1972,10 +1972,10 @@ vbox(box, ul_r,ul_c,lr_r,lr_c)
 	cur_mvaddch(lr_r,ul_c,box[BX_LL]);
 	cur_mvaddch(lr_r,lr_c,box[BX_LR]);
 #else
-	cur_mvhline(ul_r, ul_c+1, box[BX_HT], i = (lr_c - ul_c - 1));
-	cur_mvhline(lr_r, ul_c+1, box[BX_HB], i);
-	cur_mvvline(ul_r+1, ul_c, box[BX_VW], i = (lr_r - ul_r - 1));
-	cur_mvvline(ul_r+1, lr_c, box[BX_VW], i);
+	i = (lr_c - ul_c - 1); cur_mvhline(ul_r, ul_c+1, box[BX_HT], i);
+	                       cur_mvhline(lr_r, ul_c+1, box[BX_HB], i);
+	i = (lr_r - ul_r - 1); cur_mvvline(ul_r+1, ul_c, box[BX_VW], i);
+	                       cur_mvvline(ul_r+1, lr_c, box[BX_VW], i);
 
 	//@ corners - do not go through cur_addch(), different mapping
 	cur_mvhline(ul_r,ul_c,box[BX_UL], 1);
