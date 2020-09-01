@@ -11,7 +11,7 @@
 #	speed.  Don't load in csav.o
 #
 TARGET:=rogue
-CFLAGS:=-Wall -Wextra -std=c99 -pedantic
+CFLAGS:=-Wall -Wextra -std=c11 -pedantic
 LDLIBS:=
 
 # Defines from original Rogue code turned on by default here:
@@ -21,7 +21,9 @@ CFLAGS+=-DMINROG
 ifdef ROGUE_RELEASE
 CFLAGS+=-s -O2
 else
-CFLAGS+=-D_FORTIFY_SOURCE=2 -O0 -g3
+# -Og is enough to enable _FORTIFY_SOURCE=2
+# To test it: gcc -E -Og -dM -x c /dev/null | grep FORTIFY
+CFLAGS+=-Og -g3
 endif
 ifdef ROGUE_DEBUG
 CFLAGS+=-DROGUE_DEBUG
@@ -37,11 +39,11 @@ UNICODE=3
 # See curses_common.h
 ROGUE_CHARSET:=$(UNICODE)
 ifeq ($(ROGUE_CHARSET),$(UNICODE))
-CFLAGS+=$(shell pkg-config ncursesw --cflags-only-I)
+CFLAGS+=$(shell pkg-config ncursesw --cflags)
 LDLIBS+=$(shell pkg-config ncursesw --libs)
 else
 CFLAGS+=-DROGUE_CHARSET=$(ROGUE_CHARSET)
-CFLAGS+=$(shell pkg-config ncurses --cflags-only-I)
+CFLAGS+=$(shell pkg-config ncurses --cflags)
 LDLIBS+=$(shell pkg-config ncurses --libs)
 endif
 
