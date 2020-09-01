@@ -5,9 +5,19 @@
 #include <stdlib.h>
 #include <string.h>
 
+#include <SDL.h>
 
 #define BSAVE_HEADER    7  // BSAVE header is 7 bytes in rogue.pic
 
+#define CGA_WIDTH     320
+#define CGA_HEIGHT    200
+
+static const int CGA_COLORS[4][3] = {
+	{0,     0,   0},  // Black
+	{ 85, 255, 255},  // Light Cyan
+	{255,  85, 255},  // Light Magenta
+	{255, 255, 255}   // White
+};
 
 static const char * const PICFILE = "../rogue.pic";
 static const char * PROGNAME = NULL;  // == argv[0], set by main()
@@ -49,6 +59,10 @@ int main(int argc, char* argv[])
 	 * Oh, the wonders of modern platforms and megabytes of stack space!
 	 */
 	unsigned char data[0x4000];
+
+	SDL_Window*   window   = NULL;
+	SDL_Renderer* renderer = NULL;
+	SDL_Event     event;
 
 	PROGNAME = argv[0];
 
@@ -95,4 +109,48 @@ int main(int argc, char* argv[])
 		fatal("error reading file: %s", path);  // no errno set for EOF :(
 	}
 	fclose(file);
+
+	if (
+			SDL_Init(SDL_INIT_VIDEO) < 0 ||
+			SDL_CreateWindowAndRenderer(0, 0,
+				SDL_WINDOW_FULLSCREEN_DESKTOP,
+				&window, &renderer) < 0
+	) {
+		SDL_Quit();
+		fatal("could not initialize SDL: %s", SDL_GetError());
+	}
+	SDL_SetHint(SDL_HINT_RENDER_SCALE_QUALITY, "linear");  // Default is "nearest"
+	SDL_RenderSetLogicalSize(renderer, CGA_WIDTH, CGA_HEIGHT);
+	SDL_SetRenderDrawColor(renderer, 255, 255, 0, SDL_ALPHA_OPAQUE);  // Yellow
+	SDL_RenderClear(renderer);  // Clear the screen
+	SDL_Delay(100);  // let it breath to avoid initial garbage screen
+	SDL_RenderPresent(renderer);
+	SDL_Delay(50);  // ditto
+
+	// Ready for the (X, Y, Color) loop
+	int x=160, y=100, c=2;
+	SDL_SetRenderDrawColor(
+		renderer,
+		CGA_COLORS[c][0],
+		CGA_COLORS[c][1],
+		CGA_COLORS[c][2],
+		SDL_ALPHA_OPAQUE
+	);
+	SDL_RenderDrawPoint(renderer, x, y);
+
+	SDL_RenderPresent(renderer);
+
+	// Loop until key or mouse press
+	while (1) {
+		if (SDL_PollEvent(&event) && (
+				event.type == SDL_QUIT ||
+				event.type == SDL_KEYUP ||
+				event.type == SDL_MOUSEBUTTONUP
+		))
+			break;
+		SDL_Delay(17);  // ~60FPS
+	}
+	SDL_DestroyRenderer(renderer);
+	SDL_DestroyWindow(window);
+	SDL_Quit();
 }
