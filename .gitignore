@@ -1,7 +1,8 @@
 .*
 !.gitignore
-src/*.o
+*.o
 src/rogue
+src/splash/splash
 *.sav
 *.opt
 *.scr

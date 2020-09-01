@@ -1,5 +1,5 @@
 TARGET:=splash
-CFLAGS:=-Wall -Wextra -std=c11 -pedantic
+CFLAGS:=-Wall -Wextra -std=c11 -pedantic -Og -g
 LDLIBS:=
 
 OBJS=splash.o
