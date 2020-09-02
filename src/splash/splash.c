@@ -17,6 +17,7 @@
 
 // (320 cols * 100 rows / 4 pixels per byte) = 8000 bytes
 static const int CGA_FIELD = CGA_WIDTH * CGA_HEIGHT / 2 / CGA_PPB;
+static const int CGA_BG_COLOR = 0;  // First color in CGA_COLORS is background
 static const int CGA_COLORS[4][3] = {
 	{0,     0,   0},  // Black
 	{ 85, 255, 255},  // Light Cyan
@@ -124,13 +125,19 @@ int main(int argc, char* argv[])
 		fatal("could not initialize SDL: %s", SDL_GetError());
 	}
 	SDL_RenderSetLogicalSize(renderer, CGA_WIDTH, CGA_HEIGHT);
-	SDL_SetRenderDrawColor(renderer, 0, 0, 0, SDL_ALPHA_OPAQUE);  // Black
+	SDL_SetRenderDrawColor(
+		renderer,
+		CGA_COLORS[CGA_BG_COLOR][0],
+		CGA_COLORS[CGA_BG_COLOR][1],
+		CGA_COLORS[CGA_BG_COLOR][2],
+		SDL_ALPHA_OPAQUE
+	);
 	SDL_RenderClear(renderer);  // Clear the screen
 
 	// Decode the image into the renderer
 	// I'm sure this can be made much, much simpler. But it works and it's solid.
 	int rowsize = (CGA_WIDTH / CGA_PPB);  // 80 bytes per line
-	int field, offset, byte, b, y, x, p, c;
+	int field, offset, byte, b, y, x, p, c, prevc = CGA_BG_COLOR;
 	unsigned char d;
 	// Field loop: 2 blocks of even and odd lines
 	for (field = 0; field < 2; field++) {  // interleaf, even or odd rows
@@ -147,13 +154,16 @@ int main(int argc, char* argv[])
 				c = (d >> ((CGA_PPB - p - 1) * CGA_BIT_DEPTH)) & 3;
 
 				// Draw
-				SDL_SetRenderDrawColor(
-					renderer,
-					CGA_COLORS[c][0],
-					CGA_COLORS[c][1],
-					CGA_COLORS[c][2],
-					SDL_ALPHA_OPAQUE
-				);
+				if (c != prevc) {
+					SDL_SetRenderDrawColor(
+						renderer,
+						CGA_COLORS[c][0],
+						CGA_COLORS[c][1],
+						CGA_COLORS[c][2],
+						SDL_ALPHA_OPAQUE
+					);
+					prevc = c;
+				}
 				SDL_RenderDrawPoint(renderer, x, y);
 			}
 		}
