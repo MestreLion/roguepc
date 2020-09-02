@@ -107,30 +107,25 @@ int main(int argc, char* argv[])
 		fatal("%s", path);  // rely on strerror(errno) built-in message
 
 	// Read the file data, discarding the header
-	if (!fread(data, BSAVE_HEADER, 1, file) ||
-	    !fread(data, sizeof(data), 1, file))
-	{
+	if (   !fread(data, BSAVE_HEADER, 1, file)
+	    || !fread(data, sizeof(data), 1, file)
+	) {
 		fclose(file);
 		fatal("error reading file: %s", path);  // no errno set for EOF :(
 	}
 	fclose(file);
 
-	if (
-			SDL_Init(SDL_INIT_VIDEO) < 0 ||
-			SDL_CreateWindowAndRenderer(0, 0,
-				SDL_WINDOW_FULLSCREEN_DESKTOP,
-				&window, &renderer) < 0
+	if (   SDL_Init(SDL_INIT_VIDEO) != 0
+	    || SDL_SetHint(SDL_HINT_RENDER_SCALE_QUALITY, "linear") != SDL_TRUE
+	    || SDL_CreateWindowAndRenderer(0, 0,
+			SDL_WINDOW_FULLSCREEN_DESKTOP, &window, &renderer) != 0
 	) {
 		SDL_Quit();
 		fatal("could not initialize SDL: %s", SDL_GetError());
 	}
-	SDL_SetHint(SDL_HINT_RENDER_SCALE_QUALITY, "linear");  // Default is "nearest"
 	SDL_RenderSetLogicalSize(renderer, CGA_WIDTH, CGA_HEIGHT);
-	SDL_SetRenderDrawColor(renderer, 255, 255, 0, SDL_ALPHA_OPAQUE);  // Yellow
+	SDL_SetRenderDrawColor(renderer, 0, 0, 0, SDL_ALPHA_OPAQUE);  // Black
 	SDL_RenderClear(renderer);  // Clear the screen
-	SDL_Delay(100);  // let it breath to avoid initial garbage screen
-	SDL_RenderPresent(renderer);
-	SDL_Delay(50);  // ditto
 
 	// Decode the image into the renderer
 	// I'm sure this can be made much, much simpler. But it works and it's solid.
@@ -165,15 +160,16 @@ int main(int argc, char* argv[])
 	}
 	SDL_RenderPresent(renderer);
 
-	// Loop until key or mouse press
-	while (1) {
-		if (SDL_PollEvent(&event) && (
-				event.type == SDL_QUIT ||
-				event.type == SDL_KEYUP ||
-				event.type == SDL_MOUSEBUTTONUP
-		))
+	// Wait for 5 minutes or until keyboard/mouse button press
+	while (SDL_GetTicks() < 1000 * 60 * 5) {
+		if (   SDL_PollEvent(&event)
+		    && (   event.type == SDL_QUIT
+		        || event.type == SDL_KEYUP
+		        || event.type == SDL_MOUSEBUTTONUP
+		       )
+		)
 			break;
-		SDL_Delay(17);  // ~60FPS
+		SDL_Delay(16);  // ~60FPS
 	}
 	SDL_DestroyRenderer(renderer);
 	SDL_DestroyWindow(window);
