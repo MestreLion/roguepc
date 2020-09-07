@@ -13,6 +13,7 @@ static const char * PROGNAME = NULL;  // == argv[0], set by main()
 
 int epyx_yeah(const char* path);
 
+
 void usage(FILE* stream)
 {
 	fprintf(stream, "Usage: %s [-h|--help] [PICFILE]\n", PROGNAME);
@@ -125,8 +126,15 @@ int epyx_yeah(const char* path)
 	const int CGA_NUM_COLORS = sizeof(CGA_COLORS) / sizeof(*CGA_COLORS);  // 4
 	const int CGA_BIT_DEPTH  = log2i(CGA_NUM_COLORS);  // 2 bits per color
 	const int CGA_PPB        = 8 / CGA_BIT_DEPTH;  // 4 pixels per Byte
-	const int CGA_SIZE       = CGA_WIDTH * CGA_HEIGHT / CGA_PPB  // 16386
-	                           + (CGA_FIELDS * CGA_PADDING);
+	const int CGA_DATA_SIZE  = CGA_WIDTH * CGA_HEIGHT / CGA_PPB; // 16000
+	const int CGA_SIZE       = CGA_DATA_SIZE + CGA_FIELDS * CGA_PADDING;  // 16386
+
+	// BSAVE format constants
+	// https://en.wikipedia.org/wiki/BSAVE#Typical_variations
+	const char* const PIC_SIG = "PCPaint V1.0";
+	const int SIG_OFFSET = CGA_DATA_SIZE / CGA_FIELDS;  //  8000
+	const int BSAVE_SIZE = BSAVE_HEADER + CGA_SIZE;     // 16391
+
 
 	// Oh, the wonders of modern platforms and megabytes of stack space!
 	// A modern GNU/Linux's 8 MB *stack* is almost as large as the *hard drive*
@@ -147,11 +155,24 @@ int epyx_yeah(const char* path)
 	if (   !fread(data, BSAVE_HEADER, 1, file)
 	    || !fread(data, sizeof(data), 1, file)
 	) {
+		if (feof(file))  // too small
+			printerr("invalid BSAVE PIC file, must have %d bytes: %s",
+					BSAVE_SIZE, path);
+		else
+			printerr("error reading file: %s", path);
 		fclose(file);
-		printerr("invalid BSAVE PIC file: %s", path);  // no errno set for EOF :(
 		return 0;
 	}
+	if (fgetc(file) != EOF)
+		printerr("warning: image is larger than %d bytes, "
+				"possibly not a valid PIC image in BSAVE format: %s",
+				BSAVE_SIZE, path);
 	fclose(file);
+
+	if (strncmp(PIC_SIG, (char *)&data[SIG_OFFSET], (int)strlen(PIC_SIG)) != 0)
+		printerr("warning: invalid PIC signature at position %d, "
+				"expected '%s' in image: %s",
+				BSAVE_HEADER + SIG_OFFSET, PIC_SIG, path);
 
 	if (   SDL_Init(SDL_INIT_VIDEO) != 0
 	    || SDL_SetHint(SDL_HINT_RENDER_SCALE_QUALITY, "linear") != SDL_TRUE
