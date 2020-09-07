@@ -31,6 +31,9 @@ static const char * const PICFILE = "../rogue.pic";
 static const char * PROGNAME = NULL;  // == argv[0], set by main()
 
 
+int epyx_yeah(const char* path);
+
+
 void usage(FILE* stream)
 {
 	fprintf(stream, "Usage: %s [-h|--help] [PICFILE]\n", PROGNAME);
@@ -61,16 +64,6 @@ int main(int argc, char* argv[])
 {
 	char* arg;
 	const char* path = NULL;
-	FILE* file = NULL;
-	/*
-	 * 0x4000 = 16384 bytes, the file size minus 7-byte header
-	 * Oh, the wonders of modern platforms and megabytes of stack space!
-	 */
-	unsigned char data[CGA_SIZE];
-
-	SDL_Window*   window   = NULL;
-	SDL_Renderer* renderer = NULL;
-	SDL_Event     event;
 
 	PROGNAME = argv[0];
 
@@ -105,6 +98,20 @@ int main(int argc, char* argv[])
 		fatal("too many arguments: %s", *(++argv));
 
 	assert(!argc && path);
+	if (!epyx_yeah(path))
+		exit(EXIT_FAILURE);
+}
+
+
+int epyx_yeah(const char* path)
+{
+	// Oh, the wonders of modern platforms and megabytes of stack space!
+	unsigned char data[CGA_SIZE];
+
+	FILE*         file     = NULL;
+	SDL_Window*   window   = NULL;
+	SDL_Renderer* renderer = NULL;
+	SDL_Event     event;
 
 	if ((file = fopen(path, "rb")) == NULL)
 		fatal("%s", path);  // rely on strerror(errno) built-in message
@@ -187,4 +194,6 @@ int main(int argc, char* argv[])
 	SDL_DestroyRenderer(renderer);
 	SDL_DestroyWindow(window);
 	SDL_Quit();
+
+	return 1;
 }
