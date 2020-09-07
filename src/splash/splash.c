@@ -7,32 +7,11 @@
 
 #include <SDL.h>
 
-// Independent constants
-#define BSAVE_HEADER     7  // BSAVE header is 7 bytes in rogue.pic
-#define CGA_WIDTH      320
-#define CGA_HEIGHT     200
-#define CGA_NUM_COLORS   4  // In a given palette, not in total
-#define CGA_BG_COLOR     0  // First color in a CGA_COLORS palette is the background
-#define CGA_FIELDS       2  // Interleaf: even and odd lines (rows)
-#define CGA_PADDING    192  // 192 bytes of padding after each CGA field
-
-// Derived constants
-static const int CGA_BIT_DEPTH = 2;  // log2(CGA_NUM_COLORS) = 2 bits per color
-static const int CGA_PPB = 4;        // 8 bits per Byte / CGA_BIT_DEPTH = 4 pixels per Byte
-static const int CGA_SIZE = 16384;   // CGA_WIDTH * CGA_HEIGHT / CGA_PPB + (CGA_FIELDS * CGA_PADDING)
-static const int CGA_COLORS[CGA_NUM_COLORS][3] = {  // Actually Palette 1i (intensified)
-	{  0,   0,   0},  // Black
-	{ 85, 255, 255},  // Light Cyan
-	{255,  85, 255},  // Light Magenta
-	{255, 255, 255}   // White
-};
-
 static const char * const PICFILE = "../rogue.pic";
 static const char * PROGNAME = NULL;  // == argv[0], set by main()
 
 
 int epyx_yeah(const char* path);
-
 
 void usage(FILE* stream)
 {
@@ -55,6 +34,7 @@ _Noreturn void fatal(const char *fmt, ...)
 		fprintf(stderr, "%s: %s: %s\n", PROGNAME, strerror(errno), msg);
 	else
 		fprintf(stderr, "%s: %s\n", PROGNAME, msg);
+
 	usage(stderr);
 	exit(EXIT_FAILURE);
 }
@@ -103,9 +83,41 @@ int main(int argc, char* argv[])
 }
 
 
+// A.K.A floor(log2(x)) or logb(x)
+int log2i(int x)
+{
+	int r = 0;
+	while (x >>= 1) r++;
+	return r;
+}
+
+
 int epyx_yeah(const char* path)
 {
+	// Independent constants
+	const int BSAVE_HEADER   =   7;  // BSAVE header is 7 bytes in rogue.pic
+	const int CGA_WIDTH      = 320;  // Columns in graphics mode 4
+	const int CGA_HEIGHT     = 200;  // Rows
+	const int CGA_BG_COLOR   =   0;  // First color in palette is the background
+	const int CGA_FIELDS     =   2;  // Interleaf: even and odd lines (rows)
+	const int CGA_PADDING    = 192;  // 192 bytes of padding after each field
+	const int CGA_COLORS[][3]= {     // Palette 1i (intensified), not all colors
+		{  0,   0,   0},  // Black
+		{ 85, 255, 255},  // Light Cyan
+		{255,  85, 255},  // Light Magenta
+		{255, 255, 255}   // White
+	};
+
+	// Derived constants
+	const int CGA_NUM_COLORS = sizeof(CGA_COLORS) / sizeof(*CGA_COLORS);  // 4
+	const int CGA_BIT_DEPTH  = log2i(CGA_NUM_COLORS);  // 2 bits per color
+	const int CGA_PPB        = 8 / CGA_BIT_DEPTH;  // 4 pixels per Byte
+	const int CGA_SIZE       = CGA_WIDTH * CGA_HEIGHT / CGA_PPB  // 16386
+	                           + (CGA_FIELDS * CGA_PADDING);
+
 	// Oh, the wonders of modern platforms and megabytes of stack space!
+	// A modern GNU/Linux's 8 MB *stack* is almost as large as the *hard drive*
+	// of an 1985 IBM XT, and more than 10 times its RAM. Food for thought...
 	unsigned char data[CGA_SIZE];
 
 	FILE*         file     = NULL;
@@ -134,7 +146,7 @@ int epyx_yeah(const char* path)
 		fatal("could not initialize SDL: %s", SDL_GetError());
 	}
 	SDL_RenderSetLogicalSize(renderer, CGA_WIDTH, CGA_HEIGHT);
-	assert(CGA_BG_COLOR >=0 && CGA_BG_COLOR < CGA_NUM_COLORS);
+	assert(CGA_BG_COLOR >= 0 && CGA_BG_COLOR < CGA_NUM_COLORS);
 	SDL_SetRenderDrawColor(
 		renderer,
 		CGA_COLORS[CGA_BG_COLOR][0],
@@ -158,7 +170,8 @@ int epyx_yeah(const char* path)
 				// Pixel loop. Each byte contains 4 pixels
 				for (p = 0; p < CGA_PPB; p++) {
 					// "unpack" the pixels: (d >> 6, 4, 2, 0) & 0b00000011;
-					c = (data[i] >> ((CGA_PPB - p - 1) * CGA_BIT_DEPTH)) & (CGA_NUM_COLORS-1);
+					c = (data[i] >> ((CGA_PPB - p - 1) * CGA_BIT_DEPTH))
+							& (CGA_NUM_COLORS-1);
 					assert(c < CGA_NUM_COLORS);
 					// Set color, if needed
 					if (c != prevc) {
