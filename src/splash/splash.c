@@ -92,6 +92,19 @@ int log2i(int x)
 }
 
 
+void printerr(const char *fmt, ...)
+{
+	char msg[1000];
+
+	va_list argp;
+	va_start(argp, fmt);
+	vsnprintf(msg, sizeof(msg), fmt, argp);
+	va_end(argp);
+
+	fprintf(stderr, "%s\n", msg);
+}
+
+
 int epyx_yeah(const char* path)
 {
 	// Independent constants
@@ -125,15 +138,18 @@ int epyx_yeah(const char* path)
 	SDL_Renderer* renderer = NULL;
 	SDL_Event     event;
 
-	if ((file = fopen(path, "rb")) == NULL)
-		fatal("%s", path);  // rely on strerror(errno) built-in message
+	if ((file = fopen(path, "rb")) == NULL) {
+		printerr("%s: %s", strerror(errno), path);
+		return 0;
+	}
 
 	// Read the file data, discarding the header
 	if (   !fread(data, BSAVE_HEADER, 1, file)
 	    || !fread(data, sizeof(data), 1, file)
 	) {
 		fclose(file);
-		fatal("error reading file: %s", path);  // no errno set for EOF :(
+		printerr("invalid BSAVE PIC file: %s", path);  // no errno set for EOF :(
+		return 0;
 	}
 	fclose(file);
 
@@ -143,7 +159,8 @@ int epyx_yeah(const char* path)
 			SDL_WINDOW_FULLSCREEN_DESKTOP, &window, &renderer) != 0
 	) {
 		SDL_Quit();
-		fatal("could not initialize SDL: %s", SDL_GetError());
+		printerr("could not initialize SDL: %s", SDL_GetError());
+		return 0;
 	}
 	SDL_RenderSetLogicalSize(renderer, CGA_WIDTH, CGA_HEIGHT);
 	assert(CGA_BG_COLOR >= 0 && CGA_BG_COLOR < CGA_NUM_COLORS);
