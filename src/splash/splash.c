@@ -7,19 +7,21 @@
 
 #include <SDL.h>
 
-#define BSAVE_HEADER    7  // BSAVE header is 7 bytes in rogue.pic
+// Independent constants
+#define BSAVE_HEADER     7  // BSAVE header is 7 bytes in rogue.pic
+#define CGA_WIDTH      320
+#define CGA_HEIGHT     200
+#define CGA_NUM_COLORS   4  // In a given palette, not in total
+#define CGA_BG_COLOR     0  // First color in a CGA_COLORS palette is the background
+#define CGA_FIELDS       2  // Interleaf: even and odd lines (rows)
+#define CGA_PADDING    192  // 192 bytes of padding after each CGA field
 
-#define CGA_WIDTH     320
-#define CGA_HEIGHT    200
-#define CGA_BIT_DEPTH   2  // 4 colors = 2 bits per pixel
-#define CGA_PPB         4  // 8 bits per Byte / CGA_BIT_DEPTH = 4 pixels per Byte
-#define CGA_PADDING   192  // 192 bytes of padding between each CGA field
-
-// (320 cols * 100 rows / 4 pixels per byte) = 8000 bytes
-static const int CGA_FIELD = CGA_WIDTH * CGA_HEIGHT / 2 / CGA_PPB;
-static const int CGA_BG_COLOR = 0;  // First color in CGA_COLORS is background
-static const int CGA_COLORS[4][3] = {
-	{0,     0,   0},  // Black
+// Derived constants
+static const int CGA_BIT_DEPTH = 2;  // log2(CGA_NUM_COLORS) = 2 bits per color
+static const int CGA_PPB = 4;        // 8 bits per Byte / CGA_BIT_DEPTH = 4 pixels per Byte
+static const int CGA_SIZE = 16384;   // CGA_WIDTH * CGA_HEIGHT / CGA_PPB + (CGA_FIELDS * CGA_PADDING)
+static const int CGA_COLORS[CGA_NUM_COLORS][3] = {  // Actually Palette 1i (intensified)
+	{  0,   0,   0},  // Black
 	{ 85, 255, 255},  // Light Cyan
 	{255,  85, 255},  // Light Magenta
 	{255, 255, 255}   // White
@@ -64,7 +66,7 @@ int main(int argc, char* argv[])
 	 * 0x4000 = 16384 bytes, the file size minus 7-byte header
 	 * Oh, the wonders of modern platforms and megabytes of stack space!
 	 */
-	unsigned char data[0x4000];
+	unsigned char data[CGA_SIZE];
 
 	SDL_Window*   window   = NULL;
 	SDL_Renderer* renderer = NULL;
@@ -125,6 +127,7 @@ int main(int argc, char* argv[])
 		fatal("could not initialize SDL: %s", SDL_GetError());
 	}
 	SDL_RenderSetLogicalSize(renderer, CGA_WIDTH, CGA_HEIGHT);
+	assert(CGA_BG_COLOR >=0 && CGA_BG_COLOR < CGA_NUM_COLORS);
 	SDL_SetRenderDrawColor(
 		renderer,
 		CGA_COLORS[CGA_BG_COLOR][0],
@@ -135,39 +138,39 @@ int main(int argc, char* argv[])
 	SDL_RenderClear(renderer);  // Clear the screen
 
 	// Decode the image into the renderer
-	// I'm sure this can be made much, much simpler. But it works and it's solid.
-	int rowsize = (CGA_WIDTH / CGA_PPB);  // 80 bytes per line
-	int field, offset, byte, b, y, x, p, c, prevc = CGA_BG_COLOR;
-	unsigned char d;
+	// Could be done in fewer nested loops, but this is much easier to follow.
+	int i = 0, field, y, x, p;
+	unsigned char c, prevc = CGA_BG_COLOR;
 	// Field loop: 2 blocks of even and odd lines
-	for (field = 0; field < 2; field++) {  // interleaf, even or odd rows
-		offset = field * (CGA_FIELD + CGA_PADDING);  // 0 or 8192
-		// Byte loop: every byte in each field of the data buffer read from file
-		for (byte = 0; byte < CGA_FIELD; byte++) {
-			b = (byte % rowsize) * CGA_PPB;  // preliminary x
-			y = 2 * (byte / rowsize) + field;
-			d = data[byte + offset];
-			// Pixel loop: 4 pixels in each byte
-			for (p = 0; p < CGA_PPB; p++) {
-				x = b + p;
-				// "unpack" the pixels: (d >> 6, 4, 2, 0) & 0b00000011;
-				c = (d >> ((CGA_PPB - p - 1) * CGA_BIT_DEPTH)) & 3;
-
-				// Draw
-				if (c != prevc) {
-					SDL_SetRenderDrawColor(
-						renderer,
-						CGA_COLORS[c][0],
-						CGA_COLORS[c][1],
-						CGA_COLORS[c][2],
-						SDL_ALPHA_OPAQUE
-					);
-					prevc = c;
+	for (field = 0; field < CGA_FIELDS; field++, i += CGA_PADDING) {
+		// Line (row) loop. Screen Y is (y + field)
+		for (y = 0; y < CGA_HEIGHT; y += CGA_FIELDS) {
+			// Byte (column) loop. Screen X is (x + p)
+			for (x = 0; x < CGA_WIDTH; x += CGA_PPB, i++) {
+				assert(i < CGA_SIZE);
+				// Pixel loop. Each byte contains 4 pixels
+				for (p = 0; p < CGA_PPB; p++) {
+					// "unpack" the pixels: (d >> 6, 4, 2, 0) & 0b00000011;
+					c = (data[i] >> ((CGA_PPB - p - 1) * CGA_BIT_DEPTH)) & (CGA_NUM_COLORS-1);
+					assert(c < CGA_NUM_COLORS);
+					// Set color, if needed
+					if (c != prevc) {
+						SDL_SetRenderDrawColor(
+							renderer,
+							CGA_COLORS[c][0],
+							CGA_COLORS[c][1],
+							CGA_COLORS[c][2],
+							SDL_ALPHA_OPAQUE
+						);
+						prevc = c;
+					}
+					// Draw!
+					SDL_RenderDrawPoint(renderer, x+p, y+field);
 				}
-				SDL_RenderDrawPoint(renderer, x, y);
 			}
 		}
 	}
+	assert(i == CGA_SIZE);
 	SDL_RenderPresent(renderer);
 
 	// Wait for 5 minutes or until keyboard/mouse button press
