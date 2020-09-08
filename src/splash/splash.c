@@ -102,14 +102,24 @@ void printerr(const char *fmt, ...)
 	vsnprintf(msg, sizeof(msg), fmt, argp);
 	va_end(argp);
 
-	fprintf(stderr, "%s\n", msg);
+	fprintf(stderr, "error: %s\n", msg);
+}
+
+
+void freaderror(FILE* file, const char* path, int size, const char* type)
+{
+	if (feof(file))  // too small
+		fprintf(stderr, "invalid BSAVE %s, PIC must have %d bytes: %s\n",
+				type, size, path);
+	else
+		fprintf(stderr, "error reading file: %s\n", path);
+	fclose(file);
 }
 
 
 int epyx_yeah(const char* path)
 {
 	// Independent constants
-	const int BSAVE_HEADER   =   7;  // BSAVE header is 7 bytes in rogue.pic
 	const int CGA_WIDTH      = 320;  // Columns in graphics mode 4
 	const int CGA_HEIGHT     = 200;  // Rows
 	const int CGA_BG_COLOR   =   0;  // First color in palette is the background
@@ -126,15 +136,20 @@ int epyx_yeah(const char* path)
 	const int CGA_NUM_COLORS = sizeof(CGA_COLORS) / sizeof(*CGA_COLORS);  // 4
 	const int CGA_BIT_DEPTH  = log2i(CGA_NUM_COLORS);  // 2 bits per color
 	const int CGA_PPB        = 8 / CGA_BIT_DEPTH;  // 4 pixels per Byte
-	const int CGA_DATA_SIZE  = CGA_WIDTH * CGA_HEIGHT / CGA_PPB; // 16000
-	const int CGA_SIZE       = CGA_DATA_SIZE + CGA_FIELDS * CGA_PADDING;  // 16386
+	const int CGA_DATA_SIZE  = CGA_WIDTH * CGA_HEIGHT / CGA_PPB;          // 16000
+	const int CGA_SIZE       = CGA_DATA_SIZE + CGA_FIELDS * CGA_PADDING;  // 16384
 
 	// BSAVE format constants
 	// https://en.wikipedia.org/wiki/BSAVE#Typical_variations
-	const char* const PIC_SIG = "PCPaint V1.0";
-	const int SIG_OFFSET = CGA_DATA_SIZE / CGA_FIELDS;  //  8000
-	const int BSAVE_SIZE = BSAVE_HEADER + CGA_SIZE;     // 16391
-
+	const unsigned char BSAVE_HEADER[] = {
+		'\xfd',          // ID Flag = file descriptor identifier bsaved file
+		'\x00', '\xb8',  // = 0xB800, CGA video RAM segment
+		'\x00', '\x00',  // = 0x0000, CGA video RAM offset
+		'\x00', '\x40'   // = 0x4000, CGA video RAM size, CGA_SIZE
+	};
+	const char* const PIC_SIG   = "PCPaint V1.0";
+	const int SIG_OFFSET        = CGA_DATA_SIZE / CGA_FIELDS;       //  8000
+	const int BSAVE_SIZE        = sizeof(BSAVE_HEADER) + CGA_SIZE;  // 16391
 
 	// Oh, the wonders of modern platforms and megabytes of stack space!
 	// A modern GNU/Linux's 8 MB *stack* is almost as large as the *hard drive*
@@ -151,28 +166,33 @@ int epyx_yeah(const char* path)
 		return 0;
 	}
 
-	// Read the file data, discarding the header
-	if (   !fread(data, BSAVE_HEADER, 1, file)
-	    || !fread(data, sizeof(data), 1, file)
-	) {
-		if (feof(file))  // too small
-			printerr("invalid BSAVE PIC file, must have %d bytes: %s",
-					BSAVE_SIZE, path);
-		else
-			printerr("error reading file: %s", path);
-		fclose(file);
+	// Read and check file header
+	if (!fread(data, sizeof(BSAVE_HEADER), 1, file)) {
+		freaderror(file, path, BSAVE_SIZE, "header");
 		return 0;
 	}
+	if (memcmp(data, BSAVE_HEADER, sizeof(BSAVE_HEADER))) {
+		printerr("warning: invalid header, possibly not a valid PIC "
+				"image in BSAVE format: %s", path);
+	}
+
+	// Read file data
+	if (!fread(data, sizeof(data), 1, file)) {
+		freaderror(file, path, BSAVE_SIZE, "data");
+		return 0;
+	}
+
+	// Check extra data
 	if (fgetc(file) != EOF)
-		printerr("warning: image is larger than %d bytes, "
+		printerr("warning: file is larger than %d bytes, "
 				"possibly not a valid PIC image in BSAVE format: %s",
 				BSAVE_SIZE, path);
 	fclose(file);
 
 	if (strncmp(PIC_SIG, (char *)&data[SIG_OFFSET], (int)strlen(PIC_SIG)) != 0)
-		printerr("warning: invalid PIC signature at position %d, "
-				"expected '%s' in image: %s",
-				BSAVE_HEADER + SIG_OFFSET, PIC_SIG, path);
+		printerr("warning: invalid PIC signature at offset 0x%X, "
+				"expected '%s' in: %s",
+				sizeof(BSAVE_HEADER) + SIG_OFFSET, PIC_SIG, path);
 
 	if (   SDL_Init(SDL_INIT_VIDEO) != 0
 	    || SDL_SetHint(SDL_HINT_RENDER_SCALE_QUALITY, "linear") != SDL_TRUE
