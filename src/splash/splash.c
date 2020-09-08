@@ -106,13 +106,26 @@ void printerr(const char *fmt, ...)
 }
 
 
+void printwarn(const char *fmt, ...)
+{
+	char msg[1000];
+
+	va_list argp;
+	va_start(argp, fmt);
+	vsnprintf(msg, sizeof(msg), fmt, argp);
+	va_end(argp);
+
+	fprintf(stderr, "warning: %s\n", msg);
+}
+
+
 void freaderror(FILE* file, const char* path, int size, const char* type)
 {
 	if (feof(file))  // too small
-		fprintf(stderr, "invalid BSAVE %s, PIC must have %d bytes: %s\n",
+		printerr("invalid BSAVE %s, PIC must have %d bytes: %s",
 				type, size, path);
 	else
-		fprintf(stderr, "error reading file: %s\n", path);
+		printerr("could not read file: %s\n", path);
 	fclose(file);
 }
 
@@ -172,8 +185,8 @@ int epyx_yeah(const char* path)
 		return 0;
 	}
 	if (memcmp(data, BSAVE_HEADER, sizeof(BSAVE_HEADER))) {
-		printerr("warning: invalid header, possibly not a valid PIC "
-				"image in BSAVE format: %s", path);
+		printwarn("invalid header, possibly not a valid PIC image in "
+				"BSAVE format: %s", path);
 	}
 
 	// Read file data
@@ -184,14 +197,12 @@ int epyx_yeah(const char* path)
 
 	// Check extra data
 	if (fgetc(file) != EOF)
-		printerr("warning: file is larger than %d bytes, "
-				"possibly not a valid PIC image in BSAVE format: %s",
-				BSAVE_SIZE, path);
+		printwarn("file is larger than %d bytes, possibly not a valid "
+				"PIC image in BSAVE format: %s", BSAVE_SIZE, path);
 	fclose(file);
 
 	if (strncmp(PIC_SIG, (char *)&data[SIG_OFFSET], (int)strlen(PIC_SIG)) != 0)
-		printerr("warning: invalid PIC signature at offset 0x%X, "
-				"expected '%s' in: %s",
+		printwarn("invalid PIC signature at offset 0x%X, expected '%s' in: %s",
 				sizeof(BSAVE_HEADER) + SIG_OFFSET, PIC_SIG, path);
 
 	if (   SDL_Init(SDL_INIT_VIDEO) != 0
