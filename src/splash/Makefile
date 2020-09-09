@@ -5,7 +5,7 @@ LDLIBS:=
 CFLAGS+=$(shell pkg-config sdl2 --cflags)
 LDLIBS+=$(shell pkg-config sdl2 --libs)
 
-OBJS=splash.o
+OBJS=splash.o load_sdl.o
 
 all: default
 
