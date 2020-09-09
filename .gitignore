@@ -2,6 +2,7 @@
 !.gitignore
 *.o
 src/rogue
+src/rogue-sdl
 src/splash/splash
 *.sav
 *.opt

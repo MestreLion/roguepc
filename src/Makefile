@@ -49,7 +49,7 @@ endif
 
 export CFLAGS
 
-OBJS=armor.o new_leve.o command.o mach_dep.o main.o rip.o save.o \
+OBJS=armor.o new_leve.o command.o mach_dep.o rip.o save.o \
 	chase.o curses.o daemon.o daemons.o env.o extern.o fakedos.o fight.o \
 	init.o io.o list.o maze.o misc.o monsters.o move.o pack.o passages.o \
 	potions.o rings.o rooms.o scrolls.o sticks.o strings.o things.o \
@@ -57,9 +57,11 @@ OBJS=armor.o new_leve.o command.o mach_dep.o main.o rip.o save.o \
 
 ASMS=zoom.o dos.o begin.o fio.o sbrk.o csav.o
 
-all: default
-
 default: $(TARGET)
+
+all: clean default sdl
+
+sdl: splash $(TARGET)-sdl
 
 splash: splash/splash
 
@@ -69,17 +71,21 @@ splash/splash:
 splash/load_sdl.o:
 	$(MAKE) -C splash load_sdl.o
 
-ifdef ROGUE_SPLASH
-OBJS+=splash/load_sdl.o
-CFLAGS+=-DROGUE_SPLASH
-LDLIBS+=$(shell pkg-config sdl2 --libs)
-endif
+main-sdl.o: CFLAGS+=-DROGUE_SPLASH
+main-sdl.o:
+	$(CC) $(CFLAGS) -c -o $@ main.c
 
-$(TARGET): $(OBJS)
+$(TARGET)-sdl: LDLIBS+=$(shell pkg-config sdl2 --libs)
+$(TARGET)-sdl: OBJS+=main-sdl.o splash/load_sdl.o
+$(TARGET)-sdl: $(OBJS) main-sdl.o splash/load_sdl.o
+	$(CC) $(OBJS) $(LDLIBS) -o $@
+
+$(TARGET): OBJS+=main.o
+$(TARGET): $(OBJS) main.o
 	$(CC) $(OBJS) $(LDLIBS) -o $@
 
 clean:
-	rm -f $(TARGET) *.o
+	rm -f $(TARGET) $(TARGET)-sdl *.o
 	$(MAKE) -C splash $@
 
-.PHONY: all default splash clean
+.PHONY: default all sdl splash clean
