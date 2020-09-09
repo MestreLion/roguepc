@@ -40,6 +40,7 @@ usage() {
 		"[-f|--full[-]screen]" \
 		"[-l|--line-chars]" \
 		"[-b|--border]" \
+		"[-r|--rogue PATH]" \
 		"[-fs|--font-size SIZE]" \
 		"[--] [roguepc args]"
 	exit
@@ -50,9 +51,11 @@ for arg in "$@"; do [[ "$arg" == "-h" || "$arg" == "--help" ]] && usage ; done
 
 while (( $# )); do
 	case "$1" in
-	-f |--full-screen|--fullscreen) fullscreen=1;;
-	-l |--line-chars ) linechars=1;;
-	-b |--border     ) border=1;;
+	-f|--full-screen|--fullscreen) fullscreen=1;;
+	-l|--line-chars ) linechars=1;;
+	-b|--border     ) border=1;;
+	-r|--rogue      ) shift; gamecmd=$1;;
+	   --rogue=*    )        gamecmd=${1#*=};;
 #	-c |--columns    ) shift ; columns="$1";;
 #	    --columns=*  )         columns="${1#*=}";;
 	-fs|--font-size  ) shift ; fontsize="$1";;
@@ -150,4 +153,5 @@ if !((border));     then xtargs+=(-b 0); fi
 xtargs+=(-fs "$fontsize")
 xtargs+=(-geometry "$columns"x25)
 
-xterm "${xtargs[@]}" -e "$gamecmd" "${rogueargs[@]}"
+cd -- "$(dirname "$(readlink -f "$gamecmd")")" &&
+xterm "${xtargs[@]}" -e ./"$(basename "$gamecmd")" "${rogueargs[@]}"

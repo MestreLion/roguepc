@@ -30,6 +30,14 @@ make
 ./rogue
 ```
 
+To enable the original splash screen in graphics mode (requires SDL2):
+```sh
+sudo apt install libncursesw5-dev libsdl2-dev
+cd src
+make all
+./rogue-sdl
+```
+
 For ASCII mode (like UNIX Rogue, but with colors):
 ```sh
 sudo apt install libncurses5-dev
@@ -39,9 +47,15 @@ make ROGUE_CHARSET=1
 ```
 
 Strongly suggested:
+
 - Install the custom `PerfectDOSVGA437Unicode.ttf` font. See [tools](tools/)
-- If `xterm` is available, run using [`roguepc-xterm`](roguepc-xterm)
+- Launch the game using [`./roguepc`](roguepc).
+  It will auto-select either `rogue-sdl` or `rogue`, and also choose
+  `roguepc-xterm`, `roguepc-gnome-terminal` or none depending on what is
+  available in your system.
+- If your desktop is 1920x1200 or larger, try `./roguepc --fullscreen -fs 36`
+  for the ultimate rogue experience!
 
 ![splash image](rogue.png)
 
-<sup>*(Sorry, the CGA splash image is not really used in-game. **Yet.**)*</sup>
+<sup>*(Yes, it will display the original splash if you compile with SDL2! \o/)*</sup>

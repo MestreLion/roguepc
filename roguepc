@@ -1,0 +1,79 @@
+#!/bin/bash
+#
+# roguepc - Launcher for Rogue PC
+#
+#    Copyright (C) 2015 Rodrigo Silva (MestreLion) <linux@rodrigosilva.com>
+#
+#    This program is free software: you can redistribute it and/or modify
+#    it under the terms of the GNU General Public License as published by
+#    the Free Software Foundation, either version 3 of the License, or
+#    (at your option) any later version.
+#
+#    This program is distributed in the hope that it will be useful,
+#    but WITHOUT ANY WARRANTY; without even the implied warranty of
+#    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#    GNU General Public License for more details.
+#
+#    You should have received a copy of the GNU General Public License
+#    along with this program. See <http://www.gnu.org/licenses/gpl.html>
+#
+# Chooses and finds rogue-sdl (for splash) or bare rogue and a suitable terminal
+
+nosdl=0
+cmd=
+rogueargs=()
+mydir=$(dirname "$(readlink -f "$0")")
+
+exists()  { type "$@" >/dev/null 2>&1; }
+
+findcmd() {
+	local exec=rogue${1:+-$1}
+	if [[ -r src/$exec ]]; then
+		cmd=src/$exec
+	elif exists $exec; then
+		cmd=$exec
+	else
+		return 1
+	fi
+}
+
+usage() {
+	echo "Launch Rogue PC"
+	echo "Usage: ${0##.*/} [-h|--help]" \
+		"[-f|--full[-]screen]" \
+		"[-S|--no-splash]" \
+		"[--] [roguepc args]"
+	exit
+}
+
+# Pre-parse for `help`
+for arg in "$@"; do [[ "$arg" == "-h" || "$arg" == "--help" ]] && usage ; done
+while (( $# )); do
+	case "$1" in
+	-S|--no--splash) nosdl=1;;
+	--) shift; break;;
+	*) rogueargs+=( "$1" );;
+	esac
+	shift
+done
+rogueargs+=("$@")
+
+
+if ((nosdl)) || ! findcmd "sdl" || ! exists ldconfig ||
+	! ldconfig -p | grep -q 'SDL2'
+then
+	findcmd
+fi
+
+if [[ -z "$cmd" ]]; then
+	echo "rogue not found. Run 'make' or 'make all' and try again" >&2
+	exit 1
+fi
+
+if   [[ "$DISPLAY" ]] && exists xterm; then
+	./roguepc-xterm          --rogue "$cmd" "${rogueargs[@]}"
+elif [[ "$DISPLAY" ]] && exists gnome-terminal; then
+	./roguepc-gnome-terminal --rogue "$cmd" "${rogueargs[@]}"
+else
+	"$cmd" "${rogueargs[@]}"
+fi
