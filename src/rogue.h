@@ -674,6 +674,11 @@ int	discard(THING *item);
 void	epyx_yuck(void);
 int	find_drive(void);
 
+#ifdef ROGUE_SPLASH
+//@ load_sdl.c - not in original
+int	epyx_yeah(const char* path);
+#endif //ROGUE_SPLASH
+
 //@ main.c
 void	endit(void);
 void	playit(char *sname);

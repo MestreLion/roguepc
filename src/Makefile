@@ -47,6 +47,7 @@ CFLAGS+=$(shell pkg-config ncurses --cflags)
 LDLIBS+=$(shell pkg-config ncurses --libs)
 endif
 
+export CFLAGS
 
 OBJS=armor.o new_leve.o command.o mach_dep.o main.o rip.o save.o \
 	chase.o curses.o daemon.o daemons.o env.o extern.o fakedos.o fight.o \
@@ -60,10 +61,25 @@ all: default
 
 default: $(TARGET)
 
+splash: splash/splash
+
+splash/splash:
+	$(MAKE) -C splash splash
+
+splash/load_sdl.o:
+	$(MAKE) -C splash load_sdl.o
+
+ifdef ROGUE_SPLASH
+OBJS+=splash/load_sdl.o
+CFLAGS+=-DROGUE_SPLASH
+LDLIBS+=$(shell pkg-config sdl2 --libs)
+endif
+
 $(TARGET): $(OBJS)
 	$(CC) $(OBJS) $(LDLIBS) -o $@
 
 clean:
 	rm -f $(TARGET) *.o
+	$(MAKE) -C splash $@
 
-.PHONY: all default clean
+.PHONY: all default splash clean

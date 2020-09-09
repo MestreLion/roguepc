@@ -1,5 +1,5 @@
 TARGET:=splash
-CFLAGS:=-Wall -Wextra -std=c11 -pedantic -Og -g
+CFLAGS?=-Wall -Wextra -std=c11 -pedantic -Og -g
 LDLIBS:=
 
 CFLAGS+=$(shell pkg-config sdl2 --cflags)

@@ -54,7 +54,11 @@ main(argc, argv)
 	dmaout(&junk,2,0,4);
 	clock_on();
 #endif
+#ifdef ROGUE_SPLASH
+	epyx_yeah("rogue.pic");
+#else
 	epyx_yuck();
+#endif //ROGUE_SPLASH
 	init_ds();
 
 	setenv_from_file(ENVFILE);
