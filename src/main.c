@@ -122,7 +122,11 @@ main(argc, argv)
 		seed = dnum;
 
 
+#ifdef ROGUE_CHEAT
+		init_player_cheat();			/* Set up initial cheats */
+#else
 		init_player();			/* Set up initial player stats */
+#endif //ROGUE_CHEAT
 		init_things();			/* Set up probabilities of things */
 		init_names();			/* Set up names of scrolls */
 		init_colors();			/* Set up colors of potions */

@@ -402,7 +402,11 @@ struct room passages[MAXPASS] =		/* One for each passage */
 #undef XX
 
 
+#ifdef ROGUE_CHEAT
+#define INIT_STATS { 22, 0, 1, 10, 30, "1d4", 30 }
+#else
 #define INIT_STATS { 16, 0, 1, 10, 12, "1d4", 12 }
+#endif //ROGUE_CHEAT
 
 struct stats max_stats = INIT_STATS;	/* The maximum for the player */
 

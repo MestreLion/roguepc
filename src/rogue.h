@@ -633,6 +633,9 @@ int	str_plus(str_t str);
 int	add_dam(str_t str);
 
 //@ init.c
+#ifdef ROGUE_CHEAT
+void	init_player_cheat(void);
+#endif //ROGUE_CHEAT
 void	init_player(void);
 void	init_things(void);
 void	init_colors(void);

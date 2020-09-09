@@ -86,6 +86,116 @@ init_player()
 	add_pack(obj, TRUE);
 }
 
+
+/*@
+ * Creates a specific thing just like new_thing() in things.c would.
+ * Not in original
+ */
+THING *
+new_thing_cheat(shint type, shint which)
+{
+
+	register THING *cur;
+
+	if ((cur = new_item()) == NULL)
+		return NULL;
+
+	cur->o_hplus = cur->o_dplus = 0;
+	cur->o_damage = cur->o_hurldmg = "0d0";
+	cur->o_ac = 11;  // weird default
+	cur->o_count = 1;
+	cur->o_group = 0;
+	cur->o_flags = 0;
+	cur->o_enemy = 0;
+
+	cur->o_type = type;
+	cur->o_which = which;
+
+	switch(type)
+	{
+	when WEAPON:
+		init_weapon(cur, cur->o_which);
+	when ARMOR:
+		cur->o_ac = a_class[cur->o_which];
+	when RING:
+		switch (cur->o_which)
+		{
+		when R_ADDSTR:
+		case R_PROTECT:
+		case R_ADDHIT:
+		case R_ADDDAM:
+			cur->o_ac = 2;  // by default the best possible
+			break;
+		}
+	when STICK:
+		fix_stick(cur);
+		break;
+	}
+	add_pack(cur, TRUE);
+	cur->o_flags |= ISKNOW;
+	return cur;
+}
+
+/*@
+ * new function, for... err... "testing" purposes ;-)
+ */
+void
+init_player_cheat()
+{
+	register THING *obj;
+	bcopy(pstats,max_stats);
+	food_left = STOMACHSIZE;
+	/*
+	 * initialize things
+	 */
+	setmem(_things,MAXITEMS*sizeof(THING),0);
+	setmem(_t_alloc,MAXITEMS*sizeof(int),0);
+	/*
+	 * Give the rogue his weaponry.  First a (+3, +3) 2-handed sword.
+	 */
+	obj = new_thing_cheat(WEAPON, TWOSWORD);
+	obj->o_hplus = 3;
+	obj->o_dplus = 3;
+	cur_weapon = obj;
+	/*
+	 * Now a (+3, +3) crossbow
+	 */
+	obj = new_thing_cheat(WEAPON, CROSSBOW);
+	obj->o_hplus = 3;
+	obj->o_dplus = 3;
+	/*
+	 * Now many crossbow bolts
+	 */
+	obj = new_thing_cheat(WEAPON, BOLT);
+	obj->o_count = 50;
+	/*
+	 * And his suit of armor, a leather armor as good as a +3 plated mail
+	 */
+	obj = new_thing_cheat(ARMOR, LEATHER);
+	obj->o_ac = a_class[PLATE_MAIL] - 3;
+	cur_armor = obj;
+	/*
+	 * Give him a lot of food too
+	 */
+	obj = new_thing_cheat(FOOD, 0);
+	obj->o_count = 5;
+
+	/*
+	 * ... and a few useful rings
+	 */
+	obj = new_thing_cheat(RING, R_DIGEST);
+	cur_ring[LEFT] = obj;
+
+	obj = new_thing_cheat(RING, R_SEARCH);
+	cur_ring[RIGHT] = obj;
+
+	obj = new_thing_cheat(RING, R_DIGEST);
+	obj = new_thing_cheat(RING, R_SEEINVIS);
+
+	obj = new_thing_cheat(POTION, P_RESTORE);
+	obj->o_count = 2;
+}
+
 /*
  * Contains definitions and functions for dealing with things like
  * potions and scrolls

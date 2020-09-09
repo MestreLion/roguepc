@@ -15,7 +15,7 @@ CFLAGS:=-Wall -Wextra -std=c11 -pedantic
 LDLIBS:=
 
 # Defines from original Rogue code turned on by default here:
-CFLAGS+=-DMINROG
+CFLAGS+=-DMINROG -DROGUE_CHEAT
 
 # New defines: ROGUE_*
 ifdef ROGUE_RELEASE
