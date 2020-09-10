@@ -28,9 +28,9 @@ exists()  { type "$@" >/dev/null 2>&1; }
 
 findcmd() {
 	local exec=rogue${1:+-$1}
-	if [[ -r src/$exec ]]; then
-		cmd=src/$exec
-	elif exists $exec; then
+	if [[ -r "$mydir"/src/"$exec" ]]; then
+		cmd=$mydir/src/$exec
+	elif exists "$exec"; then
 		cmd=$exec
 	else
 		return 1
@@ -71,9 +71,9 @@ if [[ -z "$cmd" ]]; then
 fi
 
 if   [[ "$DISPLAY" ]] && exists xterm; then
-	./roguepc-xterm          --rogue "$cmd" "${rogueargs[@]}"
+	"$mydir"/roguepc-xterm          --rogue "$cmd" "${rogueargs[@]}"
 elif [[ "$DISPLAY" ]] && exists gnome-terminal; then
-	./roguepc-gnome-terminal --rogue "$cmd" "${rogueargs[@]}"
+	"$mydir"/roguepc-gnome-terminal --rogue "$cmd" "${rogueargs[@]}"
 else
 	"$cmd" "${rogueargs[@]}"
 fi
