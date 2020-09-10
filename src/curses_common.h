@@ -7,12 +7,15 @@
  * kept together here for consistency and completeness.
  */
 
-// Available charsets
+//@ not in original, to make IDE happy about 'bool'
+#include "extern.h"
+
+//@ Available charsets, not in original
 #define ASCII	1
 #define CP437	2
 #define UNICODE	3
 
-// User-selected charset
+//@ User-selected charset, also not in original
 #if !(ROGUE_CHARSET == ASCII || ROGUE_CHARSET == CP437 || ROGUE_CHARSET == UNICODE)
 	// Factory default charset
 	#define ROGUE_CHARSET	UNICODE

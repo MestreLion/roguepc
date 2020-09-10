@@ -21,6 +21,9 @@
  * confusion with extern.c, which is the definition of global game vars
  */
 
+//@ header guard not in original, mainly for curses_common.h
+#ifndef EXTERN_H
+#define EXTERN_H
 /*@
  * Functions from libc and their "overrides"
  */
@@ -194,3 +197,5 @@ extern bool print_int_calls;
 extern int current_drive;
 extern int last_drive;
 #endif
+
+#endif //EXTERN_H
