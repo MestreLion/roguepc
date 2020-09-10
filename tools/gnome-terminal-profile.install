@@ -1,4 +1,4 @@
-#!/bin/bash -e
+#!/bin/bash -Eue
 #
 # Install the gnome-terminal custom profile and VGA font for Rogue
 #
@@ -18,22 +18,28 @@
 #    along with this program. See <http://www.gnu.org/licenses/gpl.html>
 #
 # Adapted from gnome-terminal.install at https://github.com/MestreLion/scripts
-
+#------------------------------------------------------------------------------
 # User input
-# None so far. See $name below
+force=0
 
+#------------------------------------------------------------------------------
 # Constants
-name=rogue  # must match profile name used by ../roguepc-gnome-terminal !
+
+# name must match profile name used by ../roguepc-gnome-terminal !
+# Also it must *NOT* contain single-quotes! Spaces and double-quotes are OK
+name=RoguePC
 gconfdata=gnome-terminal-profile.gconf.xml
 
+#------------------------------------------------------------------------------
 # Environment
+
 mydir=$(dirname "$(readlink -f "$0")")
-version=$(gnome-terminal --version | awk '{print $NF}')
+version=$(gnome-terminal --version | awk '{print $4}')
 
 usage() {
 	echo "Install the gnome-terminal custom profile and VGA font for Rogue"
 	echo "Optional, but makes Rogue look just like the PC-DOS version"
-	echo "Usage: ${0##.*/}"
+	echo "Usage: ${0##.*/} [-h|--help] [-f|--force]"
 	exit
 }
 
@@ -57,6 +63,8 @@ version_compare() {
 	fi
 }
 
+#------------------------------------------------------------------------------
+# For gnome-terminal < 3.8 (~2013): use gconf backend
 gt_gconf() {
 	local pname=$1
 	local pdata=$2
@@ -88,16 +96,71 @@ gt_gconf() {
 		"$("$gconftool" --get "$gclistkey" | sed "s/]/,$profile]/")"
 }
 
+#------------------------------------------------------------------------------
+# For gnome-terminal 3.8 onwards: use dconf / gsettings backend
+
+
+
+gt_dconf() {
+	local path='/org/gnome/terminal/legacy/profiles:/'
+	local profiles= profile= puid= pname= sep=
+
+	while IFS= read -r puid; do
+		pname=$(dconf read "${path}${puid}visible-name")
+		if [[ "'${name}'" != "$pname" ]]; then continue; fi
+		if ((force)); then profile=$puid; break; fi
+		echo >&2 "Profile '$name' already exists: ${puid:1:-1}"
+		echo >&2 "Delete or rename it, or run again with --force to overwrite"
+		exit 1
+	done < <(dconf list "$path" | awk '/^:/{print}')
+	if [[ "$profile" ]]; then
+		echo "Updating Gnome Terminal profile: $name (${profile:1:-1})"
+	else
+		profile=":$(uuidgen)/"
+		echo "Creating Gnome Terminal profile: $name (${profile:1:-1})"
+		profiles=$(dconf read "${path}list")
+		if [[ "${profiles: -2}" == "']" ]]; then sep=', '; fi
+		dconf write "${path}list" "${profiles::-1}${sep}'${profile:1:-1}']"
+	fi
+	# Created with: dconf dump "${path}${profile}" | sort
+	dconf load "${path}${profile}" <<-EOF
+		[/]
+		background-color='#000000'
+		cursor-blink-mode='on'
+		cursor-shape='underline'
+		default-size-columns=80
+		default-size-rows=25
+		font='Perfect DOS VGA 437 Unicode 24'
+		foreground-color='#AAAAAA'
+		palette=['#000000', '#AA0000', '#00AA00', '#AA5500', '#0000AA', '#AA00AA', '#00AAAA', '#AAAAAA', '#555555', '#FF5555', '#55FF55', '#FFFF55', '#5555FF', '#FF55FF', '#55FFFF', '#FFFFFF']
+		scrollbar-policy='never'
+		use-system-font=false
+		use-theme-colors=false
+		use-theme-transparency=false
+		use-transparent-background=false
+		visible-name='$name'
+	EOF
+}
+
+#------------------------------------------------------------------------------
+
 for arg in "$@"; do [[ "$arg" == "-h" || "$arg" == "--help" ]] && usage ; done
+while (($#)); do
+	case "$1" in
+	-f|--force) force=1;;
+	*) printf >&2 "invalid argument: $1\nTry '${0##.*/} --help' for usage\n"; exit 1;;
+	esac
+	shift || break
+done
 
 if ! version_compare "greater" "$version" 3.8; then
 	gt_gconf "$name" "$mydir"/"$gconfdata"
 else
-	echo "Your Gnome Terminal version ($version) is not yet supported."
-	exit 1
+	gt_dconf "$name"
 fi
 
-"$mydir"/perfect-dos-unicode-font.install
+echo "Installing custom font"
+#"$mydir"/perfect-dos-unicode-font.install
 
 echo "Done!"
-echo "Use gnome-terminal launcher for the ultimate Rogue experience!"
+echo "Use 'roguepc-gnome-terminal' launcher for the ultimate Rogue experience!"
