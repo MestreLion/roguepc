@@ -28,11 +28,14 @@ profile='RoguePC'
 #------------------------------------------------------------------------------
 
 rogueargs=()
-gamecmd=$(dirname "$(readlink -f "$0")")/src/rogue
+gamecmd=
+for cmd in "$(dirname "$(readlink -f "$0")")"/src/rogue{-sdl,-ascii,}; do
+	if [[ -f "$cmd" ]]; then gamecmd=$cmd; break; fi
+done
 
 usage() {
 	echo "Launch Rogue PC in a new Gnome Terminal window using the custom profile"
-	echo "Usage: ${0##.*/} [-h|--help] [-f|--full[-]screen] [--] [rogue args...]"
+	echo "Usage: ${0##.*/} [-h|--help] [-f|--full[-]screen] [-r|--rogue PATH] [--] [rogue args...]"
 	exit
 }
 
@@ -42,12 +45,18 @@ for arg in "$@"; do [[ "$arg" == "-h" || "$arg" == "--help" ]] && usage ; done
 while (( $# )); do
 	case "$1" in
 	-f|--full-screen|--fullscreen) fullscreen=1;;
+	-r|--rogue      ) shift; gamecmd=$1;;
+	   --rogue=*    )        gamecmd=${1#*=};;
 	--) shift; rogueargs+=( "$@" ); break;;
 	-*) echo "invalid option: $1" >&2; exit 1;;
 	*) rogueargs+=( "$1" );;
 	esac
 	shift
 done
+if [[ -z "$gamecmd" ]]; then
+	echo "No game found, use ${0##.*/} --rogue to set the executable" >&2
+	exit 1
+fi
 
 gtargs=(
 	--profile "$profile"
@@ -61,4 +70,5 @@ if ((fullscreen)); then
 	gtargs+=(--full-screen)
 fi
 
-gnome-terminal "${gtargs[@]}" -- "$gamecmd" "${rogueargs[@]}"
+cd -- "$(dirname "$(readlink -f "$gamecmd")")" &&
+gnome-terminal "${gtargs[@]}" -- ./"$(basename "$gamecmd")" "${rogueargs[@]}"

@@ -32,7 +32,10 @@ title='Rogue PC'
 fontname='Perfect DOS VGA 437 Unicode'
 
 rogueargs=()
-gamecmd=$(dirname "$(readlink -f "$0")")/src/rogue
+gamecmd=
+for cmd in "$(dirname "$(readlink -f "$0")")"/src/rogue{-sdl,-ascii,}; do
+	if [[ -f "$cmd" ]]; then gamecmd=$cmd; break; fi
+done
 
 usage() {
 	echo "Launch Rogue PC in a new, customized Xterm window"
@@ -67,6 +70,10 @@ while (( $# )); do
 	shift
 done
 rogueargs+=("$@")
+if [[ -z "$gamecmd" ]]; then
+	echo "No game found, use ${0##.*/} --rogue to set the executable" >&2
+	exit 1
+fi
 
 # XTerm options
 
