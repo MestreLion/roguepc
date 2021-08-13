@@ -13,7 +13,7 @@
 /*@
  * Pointer to X display, if running under X.  Used to query keyboard LED status.
  */
-Display *xdisplay;
+Display *xdisplay = NULL;
 #endif
 
 #ifdef ROGUE_DOS_CLOCK
@@ -849,7 +849,10 @@ unsetup()
 	set_ctrlb(ocb);
 #ifndef ROGUE_NO_X11
 	if (xdisplay)
+	{
 		XCloseDisplay(xdisplay);
+		xdisplay = NULL;
+	}
 #endif
 }
 
