@@ -48,6 +48,14 @@ CFLAGS+=$(shell pkg-config ncurses --cflags)
 LDLIBS+=$(shell pkg-config ncurses --libs)
 endif
 
+# X11 library is required to determine keyboard LED status in an X terminal.
+ifdef ROGUE_NO_X11
+CFLAGS+=-DROGUE_NO_X11
+else
+CFLAGS+=$(shell pkg-config x11 --cflags)
+LDLIBS+=$(shell pkg-config x11 --libs)
+endif
+
 export CFLAGS
 
 OBJS=armor.o new_leve.o command.o mach_dep.o rip.o save.o \

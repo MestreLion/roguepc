@@ -7,6 +7,15 @@
 #include	"rogue.h"
 #include	"curses.h"
 
+#ifndef ROGUE_NO_X11
+#include <X11/Xlib.h>
+
+/*@
+ * Pointer to X display, if running under X.  Used to query keyboard LED status.
+ */
+Display *xdisplay;
+#endif
+
 #ifdef ROGUE_DOS_CLOCK
 #define TICK_ADDR 0x70  //@ RTC Interrupt handler. See clock_on()
 static dosptr clk_vec[2];
@@ -63,31 +72,19 @@ int md_keyboard_leds(void)
 {
 	int state = 0;
 	int fd;
-	char *cmd, buf[BUFSIZE];
-	FILE *fp;
+#ifndef ROGUE_NO_X11
+	XKeyboardState kbstate;
 
-	if (getenv("DISPLAY"))
+	if (xdisplay)
 	{
 		//@ terminal emulator under X, such as xterm / gnome-terminal
-		cmd = "xset -q | grep 'LED mask' | cut -d: -f4 2>/dev/null";
-		if ((fp = popen(cmd, "r")) != NULL)
-		{
-			while (fgets(buf, sizeof(buf), fp) != NULL)
-			{
-				//@ swap num and scr lock
-				state = swap_bits(atoi(buf), 0, 2, 1);
-				break;
-			}
-			if(pclose(fp))
-			{
-				//@ command not found or exited with status != 0
-				state = 0;
-			}
-		}
+		XGetKeyboardControl(xdisplay, &kbstate);
+		state = swap_bits(kbstate.led_mask, 0, 2, 1);
 	}
 	else
-	{
+#endif
 #ifdef __linux__
+	{
 		//@ TTY such as getty / linux console
 		if ((fd = open("/dev/tty", O_RDONLY | O_NOCTTY)) == -1 ||
 				ioctl(fd, KDGKBLED, &state) == -1)
@@ -95,8 +92,8 @@ int md_keyboard_leds(void)
 			state = 0;
 		}
 		close(fd);
-#endif
 	}
+#endif
 	return state << 4;
 }
 
@@ -339,6 +336,10 @@ setup()
 	 */
 	COFF();
 	ocb = set_ctrlb(0);
+#ifndef ROGUE_NO_X11
+	if (getenv("DISPLAY"))
+		xdisplay = XOpenDisplay(NULL);
+#endif
 }
 
 
@@ -846,6 +847,10 @@ void
 unsetup()
 {
 	set_ctrlb(ocb);
+#ifndef ROGUE_NO_X11
+	if (xdisplay)
+		XCloseDisplay(xdisplay);
+#endif
 }
 
 
