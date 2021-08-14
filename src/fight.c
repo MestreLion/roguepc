@@ -292,7 +292,7 @@ check_level(void)
 		max_hp += add;
 		if ((pstats.s_hpt += add) > max_hp)
 			pstats.s_hpt = max_hp;
-			msg("and achieve the rank of \"%s\"", he_man[i-1]);
+		msg("and achieve the rank of \"%s\"", he_man[i-1]);
 	}
 }
 
