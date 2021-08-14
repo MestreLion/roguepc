@@ -22,9 +22,9 @@ ROGUEPC
 ![Game over screen](screenshots/rip.png)
 <sup>*(Better get used to, you'll see this... a **lot**)*</sup>
 
-For Debian / Ubuntu systems:
+For latest Debian / Ubuntu systems:
 ```sh
-sudo apt install libncursesw5-dev
+sudo apt install make pkg-config libncurses-dev
 cd src
 make
 ./rogue
@@ -32,7 +32,7 @@ make
 
 To enable the original splash screen in graphics mode (requires SDL2):
 ```sh
-sudo apt install libncursesw5-dev libsdl2-dev
+sudo apt install libsdl2-dev  # plus above requirements (make, ncurses, etc)
 cd src
 make all
 ./rogue-sdl
@@ -40,11 +40,14 @@ make all
 
 For ASCII mode (like UNIX Rogue, but with colors):
 ```sh
-sudo apt install libncurses5-dev
 cd src
 make ROGUE_CHARSET=1
 ./rogue
 ```
+
+For Ubuntu 18.04, use `libncursesw5-dev` instead of `libncurses-dev`, or
+`libncurses5-dev` for ASCII mode.
+
 
 Strongly suggested:
 

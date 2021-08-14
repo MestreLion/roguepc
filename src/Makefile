@@ -34,10 +34,11 @@ endif
 UNICODE=3
 # Valid values for ROGUE_CHARSET:
 # 1 - ASCII, requires ncurses. Looks like Rogue UNIX, but with color
-# 2 - CP437, requires ncurses, configured terminal and CP437 font. Good luck.
-# 3 - Unicode (as defined above), requires ncursesw and Unicode font. Default
+# 2 - CP437, requires ncurses, configured terminal and CP437 font. Good luck!
+# 3 - Unicode (as defined above), requires ncursesw and Unicode font. The default.
 # See curses_common.h
 ROGUE_CHARSET:=$(UNICODE)
+# Debian and others can use 'ncurses{,w}{5,6}-config' instead of 'pkg-config ncurses{,w}'
 ifeq ($(ROGUE_CHARSET),$(UNICODE))
 CFLAGS+=$(shell pkg-config ncursesw --cflags)
 LDLIBS+=$(shell pkg-config ncursesw --libs)
