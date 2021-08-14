@@ -160,50 +160,50 @@ pr_scores(int newrank, struct sc_ent *top10)
 			else
 				yellow();
 		}
-	if (top10->sc_gold <=0 )
-		break;
-	curl = 4 + ((COLS==40)?(i * 2):i);
-	move (curl,0);
-	printw("%d ",top10->sc_gold);
-	move (curl,6);
-	if (newrank - 1 != i)
-		red();
-	printw("%s",top10->sc_name);
-	if ((newrank) - 1 != i)
-		brown();
-	if (top10->sc_level >= 26)  //@ There is AMULETLEVEL, you know?
-		altmsg = " Honored by the Guild";
+		if (top10->sc_gold <=0 )
+			break;
+		curl = 4 + ((COLS==40)?(i * 2):i);
+		move (curl,0);
+		printw("%d ",top10->sc_gold);
+		move (curl,6);
+		if (newrank - 1 != i)
+			red();
+		printw("%s",top10->sc_name);
+		if ((newrank) - 1 != i)
+			brown();
+		if (top10->sc_level >= 26)  //@ There is AMULETLEVEL, you know?
+			altmsg = " Honored by the Guild";
 
-	if (is_alpha(top10->sc_fate))
-	{
-		sprintf(dthstr," killed by %s",
-				killname((0xff & top10->sc_fate), TRUE));
-		if (COLS == 40 && strlen(dthstr) > 23)
-			strcpy(dthstr," killed");
-	}
-	else
-	{
-		switch(top10->sc_fate)
+		if (is_alpha(top10->sc_fate))
 		{
-			case 2:
-				altmsg = " A total winner!";
-				break;
-			case 1:
-				strcpy(dthstr," quit");
-				break;
-			default:
-				strcpy(dthstr," wierded out");
-				break;
+			sprintf(dthstr," killed by %s",
+				killname((0xff & top10->sc_fate), TRUE));
+			if (COLS == 40 && strlen(dthstr) > 23)
+				strcpy(dthstr," killed");
 		}
-	}
-	if ((signed)(strlen(top10->sc_name) + 10 +
-		strlen(he_man[top10->sc_rank-1])) < COLS)
-	{
-		if (top10->sc_rank > 1 && (strlen(top10->sc_name)))
-			printw(" \"%s\"",he_man[top10->sc_rank - 1]);
-	}
-	if (COLS == 40)
-		move(curl+1,6);
+		else
+		{
+			switch(top10->sc_fate)
+			{
+				case 2:
+					altmsg = " A total winner!";
+					break;
+				case 1:
+					strcpy(dthstr," quit");
+					break;
+				default:
+					strcpy(dthstr," wierded out");
+					break;
+			}
+		}
+		if ((signed)(strlen(top10->sc_name) + 10 +
+			strlen(he_man[top10->sc_rank-1])) < COLS)
+		{
+			if (top10->sc_rank > 1 && (strlen(top10->sc_name)))
+				printw(" \"%s\"",he_man[top10->sc_rank - 1]);
+		}
+		if (COLS == 40)
+			move(curl+1,6);
 		if (altmsg == NULL)
 			printw("%s on level %d",dthstr,top10->sc_level);
 		else
