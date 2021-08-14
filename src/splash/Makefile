@@ -2,8 +2,9 @@ TARGET:=splash
 CFLAGS?=-Wall -Wextra -std=c11 -pedantic -Og -g
 LDLIBS:=
 
-CFLAGS+=$(shell pkg-config sdl2 --cflags)
-LDLIBS+=$(shell pkg-config sdl2 --libs)
+# --silence-errors only needed for 'make clean' from parent dir
+CFLAGS+=$(shell pkg-config --silence-errors sdl2 --cflags)
+LDLIBS+=$(shell pkg-config --silence-errors sdl2 --libs)
 
 OBJS=splash.o load_sdl.o
 
