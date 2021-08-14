@@ -578,7 +578,7 @@ nothing(byte type)
 		when SCROLL: tystr = "scroll";
 		when RING: tystr = "ring";
 		when STICK: tystr = "stick";
-		break;
+		otherwise: tystr = NULL; //@ silence maybe-uninitialized warning
 	}
 	sprintf(sp, " about any %ss", tystr);
 	return prbuf;
