@@ -40,7 +40,9 @@
  * https://man7.org/linux/man-pages/man7/feature_test_macros.7.html
  * https://www.gnu.org/software/libc/manual/html_node/Feature-Test-Macros.html
  */
+#ifndef _XOPEN_SOURCE
 #define _XOPEN_SOURCE 700
+#endif
 
 
 //@ uintptr_t, uint16_t
