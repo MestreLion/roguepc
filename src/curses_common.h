@@ -17,14 +17,19 @@
 
 //@ User-selected charset, also not in original
 #if !(ROGUE_CHARSET == ASCII || ROGUE_CHARSET == CP437 || ROGUE_CHARSET == UNICODE)
-	// Factory default charset
+	//@ Factory default charset
 	#define ROGUE_CHARSET	UNICODE
 #endif
-// UNICODE is subject to curses wide char availability
+//@ UNICODE is subject to curses wide char availability
 #if ROGUE_CHARSET == UNICODE && !defined (_XOPEN_CURSES)
 	#undef  ROGUE_CHARSET
 	#define ROGUE_CHARSET	ASCII
 #endif
+//@ Only enable wide chars if actually needed
+#if ROGUE_CHARSET == UNICODE
+	#define ROGUE_WIDECHAR
+#endif
+
 
 //@ Columns mode - should (but currently isn't) be selected at run-time
 #ifndef ROGUE_COLUMNS

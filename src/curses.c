@@ -17,7 +17,7 @@
  */
 #undef _XOPEN_CURSES
 #include	<curses.h>
-#endif  // ROGUE_DOS_CURSES
+#endif  // not ROGUE_DOS_CURSES
 
 #include	"curses_common.h"
 #include	"curses_dos.h"
@@ -96,12 +96,12 @@ static int c_row, c_col;   /*  Save cursor positions so we don't ask dos */
 static int scr_row[25];
 static int no_check = FALSE;  //@ do not wait for video retrace. Former extern
 #else
-#ifndef _XOPEN_CURSES
-static chtype	curtain[MAXLINES][MAXCOLS + 1];  // temp buffer for curtain animations
+#ifdef ROGUE_WIDECHAR
+static cchar_t  curtain[MAXLINES][MAXCOLS + 1];
+static cchar_t  cctemp;
 #else
-static cchar_t	curtain[MAXLINES][MAXCOLS + 1];
-static cchar_t	cctemp;
-#endif // _XOPEN_CURSES
+static chtype   curtain[MAXLINES][MAXCOLS + 1];  // temp buffer for curtain animations
+#endif // ROGUE_WIDECHAR
 static int	KEY_MASK;
 static wchar_t	ccunicode[2] = L" ";  // temp buffer
 static CCODE	ccode = {'\0', ccunicode, '\0'};  // temp charcode
@@ -115,7 +115,7 @@ static bool	colors_changed = FALSE;  // if colors palette was redefined
  */
 #if   defined (ROGUE_DOS_CURSES)
 char savewin[2048 * sizeof(chtype)];  //@ originally 4096 bytes
-#elif defined (_XOPEN_CURSES)
+#elif defined (ROGUE_WIDECHAR)
 cchar_t	savewin[MAXLINES][MAXCOLS + 1];  // temp buffer to hold screen contents
 #else
 chtype	savewin[MAXLINES][MAXCOLS + 1];  // temp buffer to hold screen contents
@@ -454,7 +454,7 @@ cur_getch_timeout(int msdelay)
 	wtimeout(stdscr, msdelay);
 
 
-#ifdef _XOPEN_CURSES
+#ifdef ROGUE_WIDECHAR
 	wint_t wchi;
 	int ret;
 	if ((ret = wget_wch(stdscr, &wchi)) == ERR || (ret == OK && !isascii(wchi)))
@@ -469,7 +469,7 @@ cur_getch_timeout(int msdelay)
 	}
 #else
 	ch = wgetch(stdscr);
-#endif  // _XOPEN_CURSES
+#endif  // ROGUE_WIDECHAR
 	// mask-map custom keys
 	if (ch != ERR)
 	{
@@ -667,7 +667,7 @@ cur_inch(void)
 	CCODE *ccp;
 	wchar_t wch;  // character on screen
 	wchar_t wcr;  // reference character on ctab mapping
-#ifdef _XOPEN_CURSES
+#ifdef ROGUE_WIDECHAR
 	cchar_t cch;
 	wchar_t wcha[CCHARW_MAX + 1];
 	attr_t dummya;
@@ -679,7 +679,7 @@ cur_inch(void)
 #else
 
 	wch = (wchar_t)(A_CHARTEXT & winch(stdscr));
-#endif  // _XOPEN_CURSES
+#endif  // ROGUE_WIDECHAR
 	// if not on mapping list, will report as itself
 	chd = (byte)wch;
 
@@ -1002,11 +1002,11 @@ cur_addch(byte chr)
 	case CP437:
 		waddch(stdscr, chr | attr_from_dos(ch_attr));
 		break;
-#ifdef _XOPEN_CURSES
+#ifdef ROGUE_WIDECHAR
 	case UNICODE:
 		wadd_wch(stdscr, unicode_from_dos(chr, ch_attr, ctab));
 		break;
-#endif
+#endif  // ROGUE_WIDECHAR
 	}
 #endif  // ROGUE_DOS_CURSES
 	ch_attr = old_attr;
@@ -1032,7 +1032,7 @@ cur_addstr(s)
 }
 
 #ifndef ROGUE_DOS_CURSES
-#ifdef _XOPEN_CURSES
+#ifdef ROGUE_WIDECHAR
 cchar_t *
 unicode_from_dos(byte chd, byte dos_attr, CCODE *mapping)
 {
@@ -1049,7 +1049,7 @@ unicode_from_dos(byte chd, byte dos_attr, CCODE *mapping)
 			NULL);
 	return &cctemp;
 }
-#endif  // _XOPEN_CURSES
+#endif  // ROGUE_WIDECHAR
 
 
 void
@@ -1074,7 +1074,7 @@ define_keys(void)
 			define_key(ptr->def, ((i++) << shift) | ptr->dest);
 		}
 	}
-#endif
+#endif  // NCURSES_VERSION
 }
 
 
@@ -1201,7 +1201,7 @@ attr_from_dos(byte dos_attr)
 		bg = fg;
 		fg = tmp;
 	}
-#endif
+#endif  // NCURSES_VERSION
 
 	/*
 	 * BIG problem here: if colors == 0, we should not use color pairs at
@@ -1215,7 +1215,7 @@ attr_from_dos(byte dos_attr)
 }
 
 
-#ifdef _XOPEN_CURSES
+#ifdef ROGUE_WIDECHAR
 void
 attrw_from_dos(byte dos_attr, attr_t *attrs, short *color_pair)
 {
@@ -1264,12 +1264,12 @@ attrw_from_dos(byte dos_attr, attr_t *attrs, short *color_pair)
 		bg = fg;
 		fg = tmp;
 	}
-#endif
+#endif  // NCURSES_VERSION
 
 	if (colors > 0)
 		*color_pair = PAIR_INDEX(fg, bg);
 }
-#endif  // _XOPEN_CURSES
+#endif  // ROGUE_WIDECHAR
 
 
 void
@@ -1408,7 +1408,7 @@ init_curses_colors(void)
 	}
 #else
 	use_terminal_fgbg = FALSE;
-#endif
+#endif  // NCURSES_VERSION
 
 	for (bg = 0; bg < colors; bg++)
 	{
@@ -1453,7 +1453,7 @@ init_curses_colors(void)
 				(int)(255 * CGA_BLUE(i+8))
 		);
 	}
-#endif
+#endif  // ROGUE_DEBUG
 }
 
 
@@ -1473,7 +1473,7 @@ resize_screen()
 		}
 	}
 }
-#endif  // ROGUE_DOS_CURSES
+#endif  // not ROGUE_DOS_CURSES
 
 
 void
@@ -1890,9 +1890,9 @@ int
 cur_line(byte chd, int length, bool orientation)
 {
 	chtype ch;
-#ifdef _XOPEN_CURSES
+#ifdef ROGUE_WIDECHAR
 	cchar_t *cch;
-#endif
+#endif  // ROGUE_WIDECHAR
 
 	switch (charset)
 	{
@@ -1910,7 +1910,7 @@ cur_line(byte chd, int length, bool orientation)
 		else
 			whline(stdscr, ch, length);
 		break;
-#ifdef _XOPEN_CURSES
+#ifdef ROGUE_WIDECHAR
 	case UNICODE:
 		cch = unicode_from_dos(chd, ch_attr, btab);
 		if (cch->chars[0] == L'\0')
@@ -1920,7 +1920,7 @@ cur_line(byte chd, int length, bool orientation)
 		else
 			whline_set(stdscr, cch, length);
 		break;
-#endif
+#endif  // ROGUE_WIDECHAR
 	}
 	return OK;
 }

@@ -28,7 +28,7 @@
 #ifdef ROGUE_DOS_CURSES
 //@ in ncurses, as unsigned long. see wsetmem()
 typedef uint16_t	chtype;  // character with attributes
-#endif
+#endif  // ROGUE_DOS_CURSES
 
 
 /*@
@@ -52,7 +52,7 @@ void	putchr(byte ch);
 
 //@ originally in dos.asm
 void	wsetmem(void *buffer, int count, chtype attrchar);
-#endif
+#endif  // ROGUE_DOS_CURSES
 
 /*@
  * New stuff from now on
@@ -125,13 +125,13 @@ void	wsetmem(void *buffer, int count, chtype attrchar);
 #define cur_mvhline(y,x,c,n)	(cur_move(y,x) == ERR ? ERR : cur_hline(c, n))
 #define cur_mvvline(y,x,c,n)	(cur_move(y,x) == ERR ? ERR : cur_vline(c, n))
 
-#ifdef _XOPEN_CURSES
+#ifdef ROGUE_WIDECHAR
 #define cur_mvaddchnstr	mvadd_wchnstr
 #define cur_mvinchnstr	mvin_wchnstr
 #else
 #define cur_mvaddchnstr	mvaddchnstr
 #define cur_mvinchnstr	mvinchnstr
-#endif  // _XOPEN_CURSES
+#endif  // ROGUE_WIDECHAR
 
 #define TTY_ESC "\033"
 #define TTY_CSI TTY_ESC "["
@@ -150,10 +150,10 @@ struct charcode {
 };
 typedef struct charcode CCODE;
 
-#ifdef _XOPEN_CURSES
+#ifdef ROGUE_WIDECHAR
 cchar_t *unicode_from_dos(byte chd, byte dos_attr, CCODE *mapping);
 void	attrw_from_dos(byte dos_attr, attr_t *attrs, short *color_pair);
-#endif
+#endif  // ROGUE_WIDECHAR
 void	define_keys(void);
 byte	ascii_from_dos(byte chd, CCODE *mapping);
 CCODE	*charcode_from_dos(byte chd, CCODE *mapping);
@@ -162,4 +162,4 @@ chtype	attr_from_dos(byte dos_attr);
 void	init_curses_colors(void);
 void	resize_screen();
 int	cur_line(byte chd, int length, bool orientation);
-#endif  // ROGUE_DOS_CURSES
+#endif  // not ROGUE_DOS_CURSES
