@@ -11,7 +11,7 @@
 #	speed.  Don't load in csav.o
 #
 TARGET:=rogue
-CFLAGS:=-Wall -Wextra -std=c11 -pedantic
+CFLAGS:=-Wall -Wextra -std=c17 -pedantic
 LDLIBS:=
 
 # Defines from original Rogue code turned on by default here:

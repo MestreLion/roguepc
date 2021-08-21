@@ -15,7 +15,7 @@ ROGUEPC
       piracy copy protection, splash image, assembly routines, builtin `curses`, etc.
     - Great care taken to preserve as much as possible from original. More than 85% still intact!
 - Strictly adheres to C standards to be fully portable to any modern platform.
-    - [ISO/IEC C17/C18](https://en.wikipedia.org/wiki/C17_%28C_standard_revision%29), latest ISO C.
+    - [ISO/IEC 9899:2018 (C17/C18)](https://en.wikipedia.org/wiki/C17_%28C_standard_revision%29), latest ISO C.
     - [POSIX.1-2017](https://pubs.opengroup.org/onlinepubs/9699919799/), latest revision of POSIX 2008.
     - [X/Open Curses, Issue 7](https://publications.opengroup.org/c094), latest Curses specification.
     - [Single UNIX Specification, Version 4 (SUSv4)](https://unix.org/version4/), includes POSIX and Curses.
