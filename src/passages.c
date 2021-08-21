@@ -15,9 +15,9 @@ void
 conn(r1, r2)
 	int r1, r2;
 {
-	struct room *rpf, *rpt;
+	struct room *rpf, *rpt = NULL;
 	register int rmt, rm;
-	int distance, turn_spot, turn_distance;
+	int distance = 0, turn_spot, turn_distance;
 	int direc;
 	coord del, curr, turn_delta, spos, epos;
 
@@ -107,7 +107,7 @@ conn(r1, r2)
 		door(rpf, &spos);
 	else
 		psplat(spos.y, spos.x);
-	if (!(rpt->r_flags & ISGONE))
+	if (rpt && !(rpt->r_flags & ISGONE))
 		door(rpt, &epos);
 	else
 		psplat(epos.y, epos.x);
