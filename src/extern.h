@@ -24,12 +24,24 @@
 //@ header guard not in original, mainly for curses_common.h
 #ifndef EXTERN_H
 #define EXTERN_H
+
 /*@
  * Functions from libc and their "overrides"
  */
 
-//@ make setenv() and getenv() available, remove toascii() and isascii()
-#define _POSIX_C_SOURCE 200809L
+/*@
+ * Set SUSv4 compatibility (POSIX.1-2008 base and XSI extensions)
+ *
+ * Enable setenv() and getenv(), remove toascii() and isascii()
+ * Enable wide-character support ("complex renditions") in curses, if available
+ * Implicitely set _POSIX_C_SOURCE 200809L
+ *
+ * https://pubs.opengroup.org/onlinepubs/9699919799/functions/V2_chap02.html
+ * https://man7.org/linux/man-pages/man7/feature_test_macros.7.html
+ * https://www.gnu.org/software/libc/manual/html_node/Feature-Test-Macros.html
+ */
+#define _XOPEN_SOURCE 700
+
 
 //@ uintptr_t, uint16_t
 #include <stdint.h>

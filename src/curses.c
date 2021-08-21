@@ -5,18 +5,16 @@
 #include	"extern.h"
 
 #ifndef ROGUE_DOS_CURSES
-/*@
- * Enables wide-character support ("complex renditions") in curses
- * In theory _XOPEN_SOURCE 500 would suffice, but it does not seem to work with
- * ncursesw even when including <features.h>. Also, most sources on the 'net
- * recommend including <ncursesw/curses.h> directly, but I feel this is a task
- * for the Makefile/build system, not source code.
- */
-#ifndef _XOPEN_SOURCE_EXTENDED
-#define _XOPEN_SOURCE_EXTENDED
-#endif
 
-//@ <curses.h> will set _XOPEN_CURSES if wide chars are available
+
+/*@
+ * Many references on the 'net suggest including <ncursesw/curses.h> directly,
+ * but this is a task for the Makefile/build system, not source code.
+ *
+ * <curses.h> will set _XOPEN_CURSES if wide chars are available
+ * https://pubs.opengroup.org/onlinepubs/7908799/xcurses/curses.h.html
+ * https://publications.opengroup.org/c094
+ */
 #undef _XOPEN_CURSES
 #include	<curses.h>
 #endif  // ROGUE_DOS_CURSES
