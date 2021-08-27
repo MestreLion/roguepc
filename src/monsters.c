@@ -13,6 +13,20 @@ static int	exp_add(THING *tp);
  * List of monsters in rough order of vorpalness
  */
 
+/*@
+ * Note:  vorp_mons was not present in the original v1.48 code.  It is used to
+ * select a target for the Vorpalize Weapon scroll.
+ * Previously, lvl_mons was used, which contains spaces.  When a space
+ * character was selected, identifying the player's weapon then indexed the
+ * monsters array out-of-bounds, causing a segfault.
+ *
+ * From disassembling earlier Rogue PC versions, we can deduce that lvl_mons
+ * originally had no spaces when the Vorpalize scroll was introduced, so
+ * re-introducing this string with no spaces is believed to reproduce the
+ * intended behavior.
+ */
+
+static char *vorp_mons = "KEBHISORZLCAQNYTWFPUGMXVJD";
 static char *lvl_mons =  "K BHISOR LCA NYTWFP GMXVJD";
 static char *wand_mons = "KEBHISORZ CAQ YTW PUGM VJ ";
 
@@ -231,15 +245,18 @@ give_pack(tp)
 /*
  * pick_mons:
  *	Choose a sort of monster for the enemy of a vorpally enchanted weapon
+ *
+ *	@ Fixed:  lvl_mons renamed to vorp_mons, to prevent this function from
+ *	  returning space characters.  See comment for vorp_mons above.
  */
 char
 pick_mons(void)
 {
-	register char *cp = lvl_mons + strlen(lvl_mons);
+	register char *cp = vorp_mons + strlen(vorp_mons);
 
-	while (--cp >= lvl_mons && rnd(10))
+	while (--cp >= vorp_mons && rnd(10))
 		;
-	if (cp < lvl_mons)
+	if (cp < vorp_mons)
 		return 'M';
 	return *cp;
 }
