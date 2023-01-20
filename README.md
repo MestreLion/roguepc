@@ -1,4 +1,4 @@
-ROGUEPC
+RoguePC
 ===============================================================================
 
 ## Original DOS Epyx Rogue (1985) ported to modern PCs!
@@ -67,6 +67,7 @@ Strongly suggested:
 
 <sup>*(Yes, it will display the original splash if you compile with SDL2! \o/)*</sup>
 
+---
 
 ### Command-line and enviroment variables
 
@@ -140,9 +141,10 @@ Files: all preserved from the original! By default all read from and created at 
 Command-line options, all preserved from the original:
 - `-s`: Only show the high-scores and exit. Fully working!
 - `-r`: Restore a previously-saved game state. Currently a no-op.
+- `-l`, `-k`: Only enabled if original `LOGFILE` compile option is set. Unknown effect, if any.
 
 Note: options are all case-_insensitive_, and can use either `-` or `/`, as the original.
-So `-s`, `-S`, `/s` and `/S` are all equivalent.
+So `-r`, `-R`, `/r` and `/R` are all equivalent.
 
 
 Enviroment variables:
