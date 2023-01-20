@@ -3,6 +3,7 @@
 #include <stdio.h>   // *printf, stderr, stdout
 #include <stdlib.h>  // EXIT_FAILURE, getenv
 #include <string.h>  // strcmp
+#include <stdbool.h> // bool, true, false
 
 #include "load_sdl.h"
 
@@ -13,7 +14,7 @@ static const char * PROGNAME = NULL;  // == argv[0], set by main()
 
 void usage(FILE* stream)
 {
-	fprintf(stream, "Usage: %s [-h|--help] [PICFILE]\n", PROGNAME);
+	fprintf(stream, "Usage: %s [-h|--help] [-d|--debug] [PIC_PATH]\n", PROGNAME);
 }
 
 
@@ -38,6 +39,7 @@ int main(int argc, char* argv[])
 {
 	char* arg;
 	const char* path = NULL;
+	bool debug = false;
 
 	PROGNAME = argv[0];
 
@@ -49,6 +51,10 @@ int main(int argc, char* argv[])
 			printf("Uses CGA colors, palette `1i` (Black / Cyan / Magenta / White)\n");
 			printf("Default image path, overridden by ROGUE_PIC env var: %s\n", PIC_PATH);
 			return 0;
+		}
+		if (!strcmp("-d", arg) || !strcmp("--debug", arg)) {
+			debug = true;
+			continue;
 		}
 		if (!strcmp("--", arg)) {
 			argc--;
@@ -74,6 +80,9 @@ int main(int argc, char* argv[])
 		fatal("too many arguments: %s", *(++argv));
 
 	assert(!argc && path);
+
+	if (debug)
+		fprintf(stderr, "%s\n", path);
 
 	if (!epyx_yeah(path))
 		exit(EXIT_FAILURE);
