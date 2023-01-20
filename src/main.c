@@ -55,7 +55,7 @@ main(argc, argv)
 	clock_on();
 #endif
 #ifdef ROGUE_SPLASH
-	epyx_yeah("rogue.pic");
+	epyx_yeah(getenv("ROGUE_PIC"));
 #else
 	epyx_yuck();
 #endif //ROGUE_SPLASH

@@ -53,6 +53,9 @@ void freaderror(FILE* file, const char* path, int size, const char* type)
 }
 
 
+// path: Path to rogue PIC splash image. Fallback to "./rogue.pic" if NULL.
+//       rogue's main() calls this using ROGUE_PIC environment variable,
+//       which is NULL if not set.
 int epyx_yeah(const char* path)
 {
 	// Independent constants
@@ -92,10 +95,16 @@ int epyx_yeah(const char* path)
 	// of an 1985 IBM XT, and more than 10 times its RAM. Food for thought...
 	unsigned char data[CGA_SIZE];
 
+	// Fallback path to rogue splash image: "rogue.pic" in current directory
+	const char* const PIC_PATH  = "./rogue.pic";
+
 	FILE*         file     = NULL;
 	SDL_Window*   window   = NULL;
 	SDL_Renderer* renderer = NULL;
 	SDL_Event     event;
+
+	if (!path)
+		path = PIC_PATH;
 
 	if ((file = fopen(path, "rb")) == NULL) {
 		printerr("%s: %s", strerror(errno), path);

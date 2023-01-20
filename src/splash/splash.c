@@ -1,13 +1,13 @@
 #include <assert.h>  // assert
 #include <stdarg.h>  // variable arguments: va_*, ...
 #include <stdio.h>   // *printf, stderr, stdout
-#include <stdlib.h>  // EXIT_FAILURE
+#include <stdlib.h>  // EXIT_FAILURE, getenv
 #include <string.h>  // strcmp
 
 #include "load_sdl.h"
 
 
-static const char * const PICFILE = "../rogue.pic";
+static const char * const PIC_PATH = "../rogue.pic";
 static const char * PROGNAME = NULL;  // == argv[0], set by main()
 
 
@@ -44,10 +44,10 @@ int main(int argc, char* argv[])
 	while (--argc) {
 		arg = *(++argv);
 		if (!strcmp("-h", arg) || !strcmp("--help", arg)) {
-			printf("Display a 320x200 PIC image in BSAVE format using SDL\n");
-			printf("With CGA colors, palette 1i (Black / Cyan / Magenta / White)\n");
-			printf("Default image path: %s\n", PICFILE);
 			usage(stdout);
+			printf("Display a 320x200 PIC image in BSAVE format using SDL\n");
+			printf("Uses CGA colors, palette `1i` (Black / Cyan / Magenta / White)\n");
+			printf("Default image path, overridden by ROGUE_PIC env var: %s\n", PIC_PATH);
 			return 0;
 		}
 		if (!strcmp("--", arg)) {
@@ -56,6 +56,7 @@ int main(int argc, char* argv[])
 		}
 		if (arg[0] == '-')
 			fatal("invalid option: %s", arg);
+
 		if (path)
 			fatal("too many arguments: %s", arg);
 		path = arg;
@@ -66,7 +67,8 @@ int main(int argc, char* argv[])
 			argc--;
 		}
 		else
-			path = PICFILE;
+			if (!(path = getenv("ROGUE_PIC")))
+				path = PIC_PATH;
 	}
 	if (argc)
 		fatal("too many arguments: %s", *(++argv));
