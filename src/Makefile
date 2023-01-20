@@ -11,6 +11,7 @@
 #	speed.  Don't load in csav.o
 #
 TARGET:=rogue
+# ISO C17/18 requires GCC8 or greater: CC=gcc-8 make ...
 CFLAGS:=-Wall -Wextra -std=c17 -pedantic
 LDLIBS:=
 
@@ -35,7 +36,7 @@ UNICODE=3
 # Valid values for ROGUE_CHARSET:
 # 1 - ASCII, requires ncurses. Looks like Rogue UNIX, but with color
 # 2 - CP437, requires ncurses, configured terminal and CP437 font. Good luck!
-# 3 - Unicode (as defined above), requires ncursesw and Unicode font. The default.
+# 3 - Unicode, requires ncursesw and Unicode font. The default, as set below.
 # See curses_common.h
 ROGUE_CHARSET:=$(UNICODE)
 # Debian and others can use 'ncurses{,w}{5,6}-config' instead of 'pkg-config ncurses{,w}'
