@@ -19,19 +19,20 @@
 #
 # Chooses and finds rogue-sdl (for splash) or bare rogue and a suitable terminal
 
-nosdl=0
+sdl=1
 cmd=
 rogueargs=()
-mydir=$(dirname "$(readlink -f "$0")")
+here=$(dirname "$(readlink -f "$0")")
 
 exists()  { type "$@" >/dev/null 2>&1; }
 
 findcmd() {
-	local exec=rogue${1:+-$1}
-	if [[ -r "$mydir"/src/"$exec" ]]; then
-		cmd=$mydir/src/$exec
-	elif exists "$exec"; then
-		cmd=$exec
+	local bin=rogue${1:+-$1}
+	if [[ "$cmd" ]]; then return; fi
+	if [[ -x "$here"/src/"$bin" ]]; then
+		cmd=$here/src/$bin
+	elif exists "$bin"; then
+		cmd=$bin
 	else
 		return 1
 	fi
@@ -39,9 +40,10 @@ findcmd() {
 
 usage() {
 	echo "Launch Rogue PC"
-	echo "Usage: ${0##.*/} [-h|--help]" \
+	echo "Usage: ${0##*/} [-h|--help]" \
 		"[-f|--full[-]screen]" \
 		"[-S|--no-splash]" \
+		"[-r|--rogue CMD|PATH]" \
 		"[--] [roguepc args]"
 	exit
 }
@@ -50,7 +52,9 @@ usage() {
 for arg in "$@"; do [[ "$arg" == "-h" || "$arg" == "--help" ]] && usage ; done
 while (( $# )); do
 	case "$1" in
-	-S|--no--splash) nosdl=1;;
+	-S|--no--splash) sdl=0;;
+	-r|--rogue) shift; cmd=$1;;
+	   --rogue=*) cmd=${1#*=};;
 	--) shift; break;;
 	*) rogueargs+=( "$1" );;
 	esac
@@ -59,21 +63,32 @@ done
 rogueargs+=("$@")
 
 
-if ((nosdl)) || ! findcmd "sdl" || ! exists ldconfig ||
-	! ldconfig -p | grep -q 'SDL2'
-then
+if ((sdl)); then
+	if findcmd "sdl"; then
+		export ROGUE_PIC=${ROGUE_PIC:-"$here"/src/rogue.pic}
+		if ! exists ldconfig || ! ldconfig -p | grep -q 'SDL2'; then
+			echo "SDL2 library not found, disabling splash screen." \
+				"Install SDL2 to enable it. In Debian/Ubuntu:" \
+				"sudo apt install libsdl2-dev" >&2
+		fi
+	else
+		echo "rogue-sdl not found, disabling splash screen." \
+			"Run 'make sdl' in ./src to enable" >&2
+	fi
+else
 	findcmd
 fi
 
-if [[ -z "$cmd" ]]; then
-	echo "rogue not found. Run 'make' or 'make all' and try again" >&2
+
+if [[ -z "$cmd" ]] && ! findcmd; then
+	echo "rogue not found. Run 'make' or 'make all' in ./src and try again" >&2
 	exit 1
 fi
 
 if   [[ "$DISPLAY" ]] && exists xterm; then
-	"$mydir"/roguepc-xterm          --rogue "$cmd" "${rogueargs[@]}"
+	"$here"/roguepc-xterm          --rogue "$cmd" "${rogueargs[@]}"
 elif [[ "$DISPLAY" ]] && exists gnome-terminal; then
-	"$mydir"/roguepc-gnome-terminal --rogue "$cmd" "${rogueargs[@]}"
+	"$here"/roguepc-gnome-terminal --rogue "$cmd" "${rogueargs[@]}"
 else
 	"$cmd" "${rogueargs[@]}"
 fi

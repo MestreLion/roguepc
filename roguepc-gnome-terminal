@@ -30,12 +30,12 @@ profile='RoguePC'
 rogueargs=()
 gamecmd=
 for cmd in "$(dirname "$(readlink -f "$0")")"/src/rogue{-sdl,-ascii,}; do
-	if [[ -f "$cmd" ]]; then gamecmd=$cmd; break; fi
+	if [[ -x "$cmd" ]]; then gamecmd=$cmd; break; fi
 done
 
 usage() {
 	echo "Launch Rogue PC in a new Gnome Terminal window using the custom profile"
-	echo "Usage: ${0##.*/} [-h|--help] [-f|--full[-]screen] [-r|--rogue PATH] [--] [rogue args...]"
+	echo "Usage: ${0##*/} [-h|--help] [-f|--full[-]screen] [-r|--rogue CMD|PATH] [--] [rogue args...]"
 	exit
 }
 

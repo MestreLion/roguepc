@@ -31,10 +31,11 @@ term=xterm-256color
 title='Rogue PC'
 fontname='Perfect DOS VGA 437 Unicode'
 
+here=$(dirname "$(readlink -f "$0")")
 rogueargs=()
 gamecmd=
-for cmd in "$(dirname "$(readlink -f "$0")")"/src/rogue{-sdl,-ascii,}; do
-	if [[ -f "$cmd" ]]; then gamecmd=$cmd; break; fi
+for cmd in "$here"/src/rogue{-sdl,-ascii,}; do
+	if [[ -x "$cmd" ]]; then gamecmd=$cmd; break; fi
 done
 
 usage() {
@@ -43,7 +44,7 @@ usage() {
 		"[-f|--full[-]screen]" \
 		"[-l|--line-chars]" \
 		"[-b|--border]" \
-		"[-r|--rogue PATH]" \
+		"[-r|--rogue CMD|PATH]" \
 		"[-fs|--font-size SIZE]" \
 		"[--] [roguepc args]"
 	exit
@@ -161,4 +162,4 @@ xtargs+=(-fs "$fontsize")
 xtargs+=(-geometry "$columns"x25)
 
 cd -- "$(dirname "$(readlink -f "$gamecmd")")" &&
-xterm "${xtargs[@]}" -e ./"$(basename "$gamecmd")" "${rogueargs[@]}"
+xterm "${xtargs[@]}" -e "$gamecmd" "${rogueargs[@]}"
