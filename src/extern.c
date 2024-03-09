@@ -435,11 +435,11 @@ struct monster monsters[26] =
 	{ "ice monster", 0,	ISMEAN,	{ XX,  15,   1,   9, ___, "1d2", ___ } },
 	{ "jabberwock",  70,	0,	{ XX,4000, 15,   6, ___, "2d12/2d4", ___ } },
 	{ "kestral",	 0,	ISMEAN|ISFLY, { XX,  1,   1,   7, ___, "1d4", ___ } },
-	{ "leprechaun",	 ISGREED,	0,	{ XX, 10,   3,   8, ___, "1d2", ___ } },
+	{ "leprechaun",	 0,	ISGREED,	{ XX, 10,   3,   8, ___, "1d2", ___ } },
 	{ "medusa",	 40,	ISMEAN,	{ XX,200,   8,   2, ___, "3d4/3d4/2d5", ___ } },
 	{ "nymph",	 100,	0,	{ XX, 37,   3,   9, ___, "0d0", ___ } },
 	{ "orc",	 15,	ISGREED,{ XX,  5,   1,   6, ___, "1d8", ___ } },
-	{ "phantom",	 0,ISINVIS,{ XX,120,   8,   3, ___, "4d4", ___ } },
+	{ "phantom",	 0,	ISINVIS,{ XX,120,   8,   3, ___, "4d4", ___ } },
 	{ "quagga",	 30,	ISMEAN,	{ XX, 32,   3,   2, ___, "1d2/1d2/1d4", ___ } },
 	{ "rattlesnake", 0,	ISMEAN,	{ XX,  9,   2,   3, ___, "1d6", ___ } },
 	{ "slime",	 	 0,	ISMEAN,	{ XX,  1,   2,   8, ___, "1d3", ___ } },
@@ -447,7 +447,7 @@ struct monster monsters[26] =
 	{ "ur-vile",	 0,	ISMEAN,	{ XX,190,   7,  -2, ___, "1d3/1d3/1d3/4d6", ___ } },
 	{ "vampire",	 20,	ISREGEN|ISMEAN,{ XX,350,   8,   1, ___, "1d10", ___ } },
 	{ "wraith",	 0,	0,	{ XX, 55,   5,   4, ___, "1d6", ___ } },
-	{ "xeroc",30,	0,	{ XX,100,   7,   7, ___, "3d4", ___ } },
+	{ "xeroc",	30,	0,	{ XX,100,   7,   7, ___, "3d4", ___ } },
 	{ "yeti",	 30,	0,	{ XX, 50,   4,   6, ___, "1d6/1d6", ___ } },
 	{ "zombie",	 0,	ISMEAN,	{ XX,  6,   2,   8, ___, "1d8", ___ } }
 };
