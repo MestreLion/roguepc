@@ -71,7 +71,7 @@ Strongly suggested:
 
 ### Command-line and enviroment variables
 
-#### Compile/Build time
+#### Compile/Build time:
 
 **All** original compile-time environment vars and `-D`efines used as `#ifdef`s in code are preserved!
 However, some of them were aready non-functional and only partially implemented in the original code.
@@ -129,7 +129,7 @@ Only in code, most for internal use and to control the emulated hardware reporte
     As this heavily relies on DOS interrupts, assembly code and other direct hardware access
     only available in 1985, this will result in the game acting as if it was illegally copied.
 
-#### Run-time settings
+#### Run-time settings:
 
 Files: all preserved from the original! By default all read from and created at the current currectory.
 - `rogue.opt`: Game options, such as the default player and fruit name, current drive letter, etc.
