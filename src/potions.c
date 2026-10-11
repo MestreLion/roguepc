@@ -46,8 +46,12 @@ quaff(void)
 	{
 	when P_CONFUSE:
 		p_know[P_CONFUSE] = TRUE;
+#ifdef ROGUE_BUGFIX
+		/* Repeated doses extend the active confusion fuse. */
+#else
 		if (!on(player, ISHUH))
-			{
+#endif
+		{
 			if (on(player, ISHUH))
 				lengthen(unconfuse, rnd(8)+HUHDURATION);
 			else
