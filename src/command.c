@@ -14,6 +14,9 @@ void
 command()
 {
 	register int ntimes;
+#ifdef ROGUE_BUGFIX
+	register int hand;
+#endif
 
 	if (on(player, ISHASTE))
 		ntimes = rnd(2) + 2;
@@ -35,11 +38,20 @@ command()
 			execcom();
 		do_fuses();
 		do_daemons();
+#ifdef ROGUE_BUGFIX
+		for (hand = LEFT; hand <= RIGHT; hand++)
+#else
 		for (ntimes = LEFT; ntimes <= RIGHT; ntimes++)
+#endif
 		{
-			if (cur_ring[ntimes])
+#ifdef ROGUE_BUGFIX
+			int ring_hand = hand;
+#else
+			int ring_hand = ntimes;
+#endif
+			if (cur_ring[ring_hand])
 			{
-				switch (cur_ring[ntimes]->o_which)
+				switch (cur_ring[ring_hand]->o_which)
 				{
 				when R_SEARCH:
 					search();
