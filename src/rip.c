@@ -91,10 +91,8 @@ reread:
 		}
 	}
 	pr_scores(rank, top_ten);
-#ifndef ROGUE_DOS_CURSES
 	wait_msg("exit");
 	printw("\n");
-#endif
 #endif //WIZARD
 #endif //DEMO
 }
@@ -137,9 +135,6 @@ pr_scores(int newrank, struct sc_ent *top10)
 	char dthstr[30];
 	char *altmsg;
 
-#ifdef ROGUE_DOS_CURSES
-	switch_page(old_page_no);
-#endif
 	clear();
 	high();
 	if (scr_type == 7)
@@ -252,10 +247,6 @@ death(char monst)
 
 	purse -= purse / 10;
 
-#ifdef ROGUE_DOS_CURSES
-	switch_page(old_page_no);
-	clear();
-#endif
 	drop_curtain();
 	if (is_color)
 		brown();
@@ -294,13 +285,7 @@ death(char monst)
 	sprintf(buf, "%u Au", purse);
 	center(18, buf);
 
-#ifdef ROGUE_DOS_CLOCK
-	regs->ax = 0x2a << 8;
-	swint(SW_DOS,regs);
-	year = regs->cx;
-#else
 	year = md_localtime()->year;
-#endif
 	sprintf(buf, "%u", year);
 	center(19, buf);
 	raise_curtain();
@@ -319,10 +304,8 @@ death(char monst)
 	else
 		center(6, buf);
 	move(LINES-2,0);
-#ifndef ROGUE_DOS_CURSES
 	wait_msg("exit");
 	printw("\n");
-#endif
 #endif //DEMO
 	md_exit(EXIT_SUCCESS);
 }
@@ -340,9 +323,6 @@ total_winner(void)
 	register byte c;
 	register int oldpurse;
 
-#ifdef ROGUE_DOS_CURSES
-	switch_page(old_page_no);
-#endif
 	clear();
 #ifdef MINROG
 	if (!terse)
@@ -516,9 +496,6 @@ demo(int endtype)
 {
 	char demobuf[81];
 
-#ifdef ROGUE_DOS_CURSES
-	switch_page(old_page_no);
-#endif
 	clear();
 	if (is_color)
 		brown();
@@ -573,10 +550,8 @@ demo(int endtype)
 	if (endtype == 0)
 		return;
 	move(LINES-2,0);
-#ifndef ROGUE_DOS_CURSES
 	wait_msg("exit");
 	printw("\n");
-#endif
 	md_exit(EXIT_SUCCESS);
 }
 #endif //DEMO

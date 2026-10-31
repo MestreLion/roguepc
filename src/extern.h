@@ -104,14 +104,12 @@
 #include "swint.h"
 
 //@ created for fakedos(), but could also be used in save.c and load.c
-#ifndef ROGUE_DOS_DRIVE
 #ifndef ROGUE_CURRENT_DRIVE
 #define ROGUE_CURRENT_DRIVE	('C' - 'A')
 #endif
 #ifndef ROGUE_LAST_DRIVE
 #define ROGUE_LAST_DRIVE	('F' - 'A')
 #endif
-#endif  // ROGUE_DOS_DRIVE
 
 //@ moved from curses.h so it's close to 'bool' definition
 #ifndef TRUE
@@ -161,10 +159,6 @@ void	setup(), flush_type(), credits(), one_tick();
 char	*newmem();
 byte	readchar();
 bool	set_ctrlb();
-#ifdef ROGUE_DOS_CLOCK
-void	clock_on(void);
-void	no_clock(void);
-#endif
 
 //@ new functions
 byte	swap_bits(byte data, unsigned i, unsigned j, unsigned width);
@@ -195,20 +189,12 @@ void	md_exit(int status);
 /*@
  * Global vars
  */
-#ifdef ROGUE_DOS_CLOCK
-extern unsigned int tick;  //@ from dos.asm
-#endif
-#ifdef ROGUE_DOS_CURSES
-extern char do_force;
-#endif
 extern int bwflag;  //@ from main.c, originally declared in rogue.h
 extern struct sw_regs *regs; //@ from main.c, originally declared in swint.h
 #ifdef ROGUE_DEBUG
 extern bool print_int_calls;
 #endif
-#ifndef ROGUE_DOS_DRIVE
 extern int current_drive;
 extern int last_drive;
-#endif
 
 #endif //EXTERN_H

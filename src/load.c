@@ -236,11 +236,7 @@ bload(unsigned int segment)
 int
 find_drive(void)
 {
-#ifdef ROGUE_DOS_DRIVE
-	int drive = bdos(0x19);  //@ Get Current Default Drive (0=A, 1=B, etc)
-#else
 	int drive = current_drive;
-#endif
 	char spec = s_drive[0];
 
 	if (is_alpha(spec))

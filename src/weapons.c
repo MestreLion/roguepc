@@ -329,11 +329,7 @@ tick_pause(void)
 
 	otick = tick;
 	while (otick == tick)
-#ifdef ROGUE_DOS_CLOCK
-		;
-#else
 		md_clock();
-#endif
 */
 	cur_refresh();
 	msleep(55);

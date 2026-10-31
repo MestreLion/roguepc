@@ -22,9 +22,6 @@
 
 //@ both derived from `screen` in env file and used in curses.c
 int bwflag = FALSE;
-#ifdef ROGUE_DOS_CURSES
-char do_force = FALSE;
-#endif
 #ifdef LOGFILE
 int log_read, log_write;
 #endif
@@ -43,17 +40,6 @@ main(argc, argv)
 	//@ Allow non-ASCII output in <curses.h>
 	setlocale(LC_ALL, "");
 
-#ifdef ROGUE_DOS_CLOCK
-	long junk = 0L;
-	/*@
-	 * I suspect this seemingly innocent dmaout(&junk) is neither innocent
-	 * nor junk, but part of the self-integrity, anti-debugger measures.
-	 * clock() had some checks on zeroed values on low DS offsets, which I
-	 * guess were set by this call.
-	 */
-	dmaout(&junk,2,0,4);
-	clock_on();
-#endif
 #ifdef ROGUE_SPLASH
 	epyx_yeah(getenv("ROGUE_PIC"));
 #else
@@ -71,12 +57,6 @@ main(argc, argv)
 	 */
 	if (strncmp(s_screen, "bw", 2) == 0)
 		bwflag = TRUE;
-#ifdef ROGUE_DOS_CURSES
-	int sl;
-	if ((sl = strlen(s_screen)) >= 4
-	  && strncmp(&s_screen[sl - 4], "fast", 4) == 0)
-		do_force = TRUE;
-#endif
 	dnum = 0;
 #ifdef PROTECTED
 	while (--argc && goodchk == 0xD0D) {
@@ -214,9 +194,6 @@ playit(sname)
 	if (sname) {
 		restore(sname);
 		setup();
-#ifdef ROGUE_DOS_CURSES
-		iscuron = TRUE;  //@ force the following cursor() call to turn it off
-#endif
 		cursor(FALSE);
 	} else {
 		oldpos.x = hero.x;

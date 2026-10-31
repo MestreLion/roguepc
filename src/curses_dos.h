@@ -25,10 +25,6 @@
 #define max(a,b)	((a) > (b) ? (a) : (b))
 #define min(a,b)	((a) < (b) ? (a) : (b))
 
-#ifdef ROGUE_DOS_CURSES
-//@ in ncurses, as unsigned long. see wsetmem()
-typedef uint16_t	chtype;  // character with attributes
-#endif  // ROGUE_DOS_CURSES
 
 
 /*@
@@ -38,21 +34,6 @@ typedef uint16_t	chtype;  // character with attributes
 char	*sav_win(void);
 void	res_win(void);
 void	vbox(byte box[BX_SIZE], int ul_r, int ul_c, int lr_r, int lr_c);
-#ifdef ROGUE_DOS_CURSES
-void	real_rc(int pn, int *rp, int *cp);
-void	error(int mline, char *msg, int a1, int a2, int a3, int a4, int a5);
-void	set_cursor(void);
-void	scroll_up(int start_row, int end_row, int nlines);
-void	scroll_dn(int start_row, int end_row, int nlines);
-void	scroll(void);
-void	fixup(void);
-
-//@ originally in zoom.asm
-void	putchr(byte ch);
-
-//@ originally in dos.asm
-void	wsetmem(void *buffer, int count, chtype attrchar);
-#endif  // ROGUE_DOS_CURSES
 
 /*@
  * New stuff from now on
@@ -94,7 +75,6 @@ void	wsetmem(void *buffer, int count, chtype attrchar);
 #define A_DOS_BW_ULINE    1 | A_DOS_BG(1)
 #define A_DOS_BW_STANDOUT A_DOS_STANDOUT | A_DOS_BRIGHT
 
-#ifndef ROGUE_DOS_CURSES
 #define PAIR_INDEX(fg, bg)	(bg * colors + fg + 1)
 #define COLOR_PAIR_N(fg, bg)	COLOR_PAIR(PAIR_INDEX(fg, bg))
 
@@ -162,4 +142,3 @@ chtype	attr_from_dos(byte dos_attr);
 void	init_curses_colors(void);
 void	resize_screen();
 int	cur_line(byte chd, int length, bool orientation);
-#endif  // not ROGUE_DOS_CURSES

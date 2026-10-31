@@ -16,16 +16,6 @@
 Display *xdisplay = NULL;
 #endif
 
-#ifdef ROGUE_DOS_CLOCK
-#define TICK_ADDR 0x70  //@ RTC Interrupt handler. See clock_on()
-static dosptr clk_vec[2];
-/*@
- * Global tick counter
- * Automatically incremented by clock() 18.2 times per second
- * Originally set by dos.asm
- */
-unsigned int tick = 0;
-#endif
 static int ocb;
 
 /*
@@ -45,7 +35,6 @@ struct sw_regs *regs = &_treg;
 bool print_int_calls = TRUE;
 #endif
 
-#ifndef ROGUE_DOS_DRIVE
 /*@
  * These were created for fakedos() to replace DOS INT 19h and 0Eh calls, and
  * are independent from env file s_drive[], just like the original. Created as
@@ -53,7 +42,6 @@ bool print_int_calls = TRUE;
  */
 int current_drive = ROGUE_CURRENT_DRIVE;  //@ current fake drive (A=0, B=1, ...)
 int last_drive = ROGUE_LAST_DRIVE;  //@ last available drive
-#endif
 
 
 byte swap_bits(
@@ -231,18 +219,6 @@ in(port)
  * writer that happens to be most often used to write to video memory address.
  * Asm works by setting the arguments and calling REP MOVSW
  */
-#if defined(ROGUE_DOS_CURSES) && defined(ROGUE_DEBUG)
-void
-dmaout(data, wordlength, segment, offset)
-	void * data;
-	unsigned int wordlength;
-	unsigned int segment;
-	unsigned int offset;
-{
-	printf("dmaout(%p, %d, %04x:%04x)\n",
-			data, wordlength, segment, offset);
-}
-#else
 void
 dmaout(data, wordlength, segment, offset)
 	void UNUSED(*data);
@@ -252,7 +228,6 @@ dmaout(data, wordlength, segment, offset)
 {
 		; // blazing fast!
 }
-#endif
 
 
 /*@
@@ -343,83 +318,6 @@ setup()
 }
 
 
-#ifdef ROGUE_DOS_CLOCK
-/*@
- * No-op function, probably a stub for cls_ until it gets set to no_clock()
- * moved from croot.c
- */
-void
-noper()
-{
-	return;
-}
-
-void (*cls_)() = noper;
-
-
-/*@
- * Hook clock() as the Interrupt Service Routine (ISR) for INT 70h,
- * saving the current handler in clk_vec.
- *
- * I honestly don't understand what is going on here: INT 70h is triggered by
- * RTC via IRQ8 only on IBM-AT/XT-286 onwards. The original IBM-PC and IBM-XT
- * had no RTC, so INT 70h was not regularly triggered. And clock(), originally
- * in dos.asm, incremented tick C var on every call, which was used all over.
- * Does this mean Rogue does not work on IBM-XT?
- *
- * But epyx_yuck() and SIG2() strongly suggests tick is incremented ~18 times
- * per, consistent with XT's original timer. The IBM-AT BIOS by default sets
- * the RTC rate to 1024 times per second, not 18.2.
- *
- * I could not find any clock rate reprogramming in Rogue, so I'm quite puzzled
- * on how tick works, and what its actual and expected rates are.
- *
- * In any case, if clock() was still being used for timing, this function
- * should provide a portable way of hooking it to a timer that does not rely on
- * ancient real mode ISR/IVT model.
- */
-void
-clock_on()
-{
-	/*@
-	 * CS register value. Originally an extern set by begin.asm
-	 * Set to dummy value of a "Hello World!" program as reported by gdb
-	 */
-	dosptr _csval = 0x33;
-
-	/*@
-	 * Craft the 4-byte CS:offset function pointer for clock()
-	 * Array indexes are swapped (CS=1, offset=0) as it writes directly to IVT
-	 *
-	 * Using the actual clock() protected mode address and "casting" it to a
-	 * DOS real mode 16-bit offset makes the compiler happy and produce a legit
-	 * dmaout() call. But obviously the values in new_vec are completely bogus.
-	 */
-	dosptr new_vec[2];  //@ type must match clk_vec
-
-	new_vec[0] = (dosptr)(intptr)clock;
-	new_vec[1] = _csval;
-
-	/*@
-	 * I wonder why using IVT directly instead of the safer DOS INT 21h/25h,35h
-	 * calls like the well behaved COFF() does?
-	 */
-	dmain(clk_vec, 2, 0, TICK_ADDR);
-	dmaout(new_vec, 2, 0, TICK_ADDR);
-	cls_ = no_clock;
-}
-
-
-/*@
- * Restore INT 70h ISR to its original value, as saved by clock_on()
- * clock() would no longer be called, and thus tick will not be updated.
- */
-void
-no_clock()
-{
-	dmaout(clk_vec, 2, 0, TICK_ADDR);
-}
-#endif  // ROGUE_DOS_CLOCK
 
 
 /*@
@@ -445,10 +343,6 @@ no_clock()
 void
 md_clock()
 {
-#ifdef ROGUE_DOS_CLOCK
-	//@ tick the old clock
-	tick++;
-#endif
 
 	//@ anti debugging: halt after 20 ticks if no_step is set
 	if (no_step && ++no_step > 20)
@@ -536,12 +430,7 @@ md_srand()
 	/*
 	 * Get Time
 	 */
-#ifdef ROGUE_DOS_CLOCK
-	bdos(0x2C);
-	return(regs->cx + regs->dx);
-#else
 	return (int)md_time();
-#endif  // ROGUE_DOS_CLOCK
 #endif  // DEMO
 }
 
@@ -627,15 +516,11 @@ credits()
 	if (*tname && *tname != ESCAPE)
 		strcpy(whoami, tname);
 	is_saved = FALSE;  //@ re-enable status line updates
-#ifdef ROGUE_DOS_CURSES
-	blot_out(23,0,24,COLS-1);
-#else
 	move(23, 0);
 	//@ a single clrtobol(), if available, could replace the next 3 lines
 	clrtoeol();
 	move(24, 0);
 	clrtoeol();
-#endif
 	if (is_color)
 		brown();
 	mvaddch(22,0,LLWALL);
@@ -783,35 +668,9 @@ swint(intno, rp)
  */
 int
 sysint(intno, inregs, outregs)
-#if defined(ROGUE_DOS_CURSES) && defined(ROGUE_DEBUG)
-	int intno;
-#else
 	int UNUSED(intno);
-#endif
 	struct sw_regs *inregs, *outregs;
 {
-#if defined(ROGUE_DOS_CURSES) && defined(ROGUE_DEBUG)
-	if(print_int_calls)
-		printf("INT %x,%2X\t"
-				"al=%2X\t"
-				"bx=%4X\t"
-				"cx=%4X\t"
-				"dx=%4X\t"
-				"si=%4X\t"
-				"di=%4X\t"
-				"ds=%4X\t"
-				"es=%4X\n",
-				intno,
-				HI(inregs->ax),
-				LOW(inregs->ax),
-				inregs->bx,
-				inregs->cx,
-				inregs->dx,
-				inregs->si,
-				inregs->di,
-				inregs->ds,
-				inregs->es);
-#endif
 	outregs->ax = 0;
 	outregs->bx = 0;
 	outregs->cx = 0;
@@ -934,10 +793,6 @@ fatal(const char *msg, ...)
  */
 void md_exit(int status)
 {
-#ifdef ROGUE_DOS_CLOCK
-	//@ restore the clock, it if was ever set
-	(*cls_)();
-#endif
 	cur_endwin();
 	unsetup();
 	free_ds();

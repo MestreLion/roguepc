@@ -26,18 +26,10 @@ fakedos(void)
 	clear();
 	move (0,0);
 	cursor(TRUE);
-#ifdef ROGUE_DOS_DRIVE
-	*savedir = bdos(0x19,0) + 'A';
-#else
 	*savedir = current_drive + 'A';  //@ save current drive
-#endif
 	do {
 		setmem(comline, sizeof(comline), 0);
-#ifdef ROGUE_DOS_DRIVE
-		printw("\n%c>",bdos(0x19,0)+'A');
-#else
 		printw("\n%c>",current_drive+'A');
-#endif
 		getinfo(comline,130);
 		comhead = stpblk(comline);
 		endblk(comhead);
@@ -88,13 +80,9 @@ static
 int
 select_drive(int drv)
 {
-#ifdef ROGUE_DOS_DRIVE
-	return bdos(0x0e, drv);
-#else
 	if (drv >= 0 && drv <= last_drive)
 	{
 		current_drive = drv;
 	}
 	return last_drive;
-#endif
 }

@@ -559,17 +559,8 @@ SIG2(void)
 #ifdef DEMO
 	static int tot_time = 0;
 #endif //DEMO
-#ifdef ROGUE_DOS_CLOCK
-	static unsigned int ntick = 0;
-
-	//@ only update every 6 ticks, ~3 times per second
-	if (tick < ntick)
-		return;
-	ntick = tick + 6;
-#else
 	static long cur_time = 0;
 	long new_time = md_time();
-#endif
 
 	/*@
 	 * Do not update between wdump()/wrestor() operations
@@ -588,36 +579,6 @@ SIG2(void)
 	new_capsl = new_numl & 0x40;
 	new_fmode = new_numl & 0x10;  //@ scroll lock
 	new_numl &= 0x20;
-#ifdef ROGUE_DOS_CLOCK
-	/*
-	 * set up the clock the first time here
-	 */
-	/*@
-	 * using DOS INT 21h/AH=2Ch - Get System Time
-	 * CH = hour (0-23)
-	 * CL = minutes (0-59)
-	 */
-	if (key_init) {
-		regs->ax = 0x2c << 8;
-		swint(SW_DOS, regs);
-		bighand = (regs->cx >> 8) % 12;  //@ force 12-hour display format
-		littlehand = regs->cx & 0xFF;
-		showtime = TRUE;
-	}
-	//@ 1092 ticks = 1 minute @ 18.2 ticks per second rate
-	if (tick > 1092) {
-		/*
-		 * time os call kills jr and others we keep track of it
-		 * ourselves
-		 */
-		littlehand = (littlehand + 1) % 60;
-		if (littlehand == 0)
-			bighand = (bighand + 1) % 12;
-		tick = tick - 1092;
-		ntick = tick + 6;
-		showtime = TRUE;
-	}
-#else
 	if (new_time - cur_time >= 60)
 	{
 		TM *local = md_localtime();
@@ -626,7 +587,6 @@ SIG2(void)
 		cur_time = new_time - local->second;
 		showtime = TRUE;
 	}
-#endif
 
 	/*
 	 * this is built for speed so set up once first time this
