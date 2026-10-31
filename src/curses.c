@@ -26,7 +26,7 @@
  *  Globals for curses
  *  (extern'ed in curses.h)
  */
-int is_saved = FALSE;  //@ in practice, TRUE disables status updates in SIG2()
+int is_saved = FALSE;  //@ TRUE while a non-game screen is shown (wdump()/wrestor())
 int scr_type = -1;
 // current terminal size as reported by curses. Will change on window resize
 extern int LINES, COLS;
@@ -335,7 +335,6 @@ static struct xlate {
 	{KEY_F(7),	'i'},
 	{KEY_F(8),	'^'},
 	{KEY_F(9),	CTRL('F')},
-	{KEY_F(10),	'!'},
 	{KEY_F(57),	'F'}  //@ ALT+F9
 };
 
@@ -1628,7 +1627,7 @@ getinfo(str,size)
 	wason = cursor(TRUE);
 	while(ret == 1)
 	{
-		//@ Blocking getch() is fine, as SIG2() is not called anyway
+		//@ Blocking getch() is fine here
 		while ((ch = wgetch(stdscr)) == ERR);
 		if (ch > KEY_MIN)
 		{

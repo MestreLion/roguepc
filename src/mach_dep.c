@@ -7,24 +7,6 @@
 #include	"rogue.h"
 #include	"curses.h"
 
-#ifndef ROGUE_NO_X11
-#include <X11/Xlib.h>
-
-/*@
- * Pointer to X display, if running under X.  Used to query keyboard LED status.
- */
-Display *xdisplay = NULL;
-#endif
-
-/*@
- * These were created for fakedos() to replace DOS INT 19h and 0Eh calls, and
- * are independent from env file s_drive[], just like the original. Created as
- * externs to allow future integration with env file and run-time selection.
- */
-int current_drive = ROGUE_CURRENT_DRIVE;  //@ current fake drive (A=0, B=1, ...)
-int last_drive = ROGUE_LAST_DRIVE;  //@ last available drive
-
-
 byte swap_bits(
 	byte data,
 	unsigned i,      // positions of bit sequences to swap
@@ -34,36 +16,6 @@ byte swap_bits(
 {
 	byte x = ((data >> i) ^ (data >> j)) & ((1U << length) - 1);
 	return data ^ ((x << i) | (x << j));
-}
-
-
-int md_keyboard_leds(void)
-{
-	int state = 0;
-#ifndef ROGUE_NO_X11
-	XKeyboardState kbstate;
-
-	if (xdisplay)
-	{
-		//@ terminal emulator under X, such as xterm / gnome-terminal
-		XGetKeyboardControl(xdisplay, &kbstate);
-		state = swap_bits(kbstate.led_mask, 0, 2, 1);
-	}
-	else
-#endif
-#ifdef __linux__
-	{
-		//@ TTY such as getty / linux console
-		int fd;
-		if ((fd = open("/dev/tty", O_RDONLY | O_NOCTTY)) == -1 ||
-				ioctl(fd, KDGKBLED, &state) == -1)
-		{
-			state = 0;
-		}
-		close(fd);
-	}
-#endif
-	return state << 4;
 }
 
 
@@ -81,10 +33,6 @@ setup()
 		terse = TRUE;
 	}
 	expert = terse;
-#ifndef ROGUE_NO_X11
-	if (getenv("DISPLAY"))
-		xdisplay = XOpenDisplay(NULL);
-#endif
 }
 
 
@@ -159,7 +107,7 @@ md_srand()
 	 * Get Time
 	 */
 	return (int)md_time();
-#endif  // DEMO
+#endif  // DEBUG
 }
 
 
@@ -263,7 +211,6 @@ readchar()
 	byte ch;
 
 	if (*typebuf) {
-		SIG2();
 		cur_refresh();  //@ macros
 		return(*typebuf++);
 	}
@@ -273,7 +220,6 @@ readchar()
 	 */
 	do
 	{
-		SIG2();  /* Rogue spends a lot of time here @ you bet! */
 		cur_refresh();  //@ command input
 	}
 	while ((xch = getch_timeout(250)) == NOCHAR);
@@ -304,13 +250,6 @@ newmem(nbytes)
 void
 unsetup()
 {
-#ifndef ROGUE_NO_X11
-	if (xdisplay)
-	{
-		XCloseDisplay(xdisplay);
-		xdisplay = NULL;
-	}
-#endif
 }
 
 

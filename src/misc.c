@@ -866,13 +866,6 @@ do_macro(buf,sz)
 	flush_type();
 }
 
-#ifdef ME
-bool
-me()
-{
-	return is_me;
-}
-#endif //ME
 
 
 #ifdef TEST

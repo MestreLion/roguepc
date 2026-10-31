@@ -61,7 +61,6 @@ static int	save_ds(char *savename);
 void
 save_game()
 {
-#ifndef DEMO
 	int retcode;
 	char savename[20];
 
@@ -104,9 +103,7 @@ save_game()
 		else if (retcode > 0)
 			fatal("\nGame saved as %s.", savename);
 	}
-#endif
 }
-#ifndef DEMO
 /*
  *  Save:
  * 		Determine the entire data area that needs to be saved,
@@ -168,7 +165,6 @@ wr_err:
 			return 1;
 	}
 }
-#endif //DEMO
 
 /*
  *	Restore:
@@ -192,7 +188,6 @@ restore(char *savefile)
  *  was successful and simply move on! In this case, many key initializations
  *  will be missing. This can't be good...
  */
-#ifndef DEMO
 	int oldrev, oldver; //@, old_check;
 	register int oldcols;
 	register FILE *file;
@@ -282,5 +277,4 @@ rok:
 	ifterse1("%s, Welcome back!","Hello %s, Welcome back to the Dungeons of Doom!",whoami);
 	dnum = srand();     /* make it a little tougher on cheaters */
 	remove(save_name);
-#endif //DEMO
 }

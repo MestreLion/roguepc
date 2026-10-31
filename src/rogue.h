@@ -16,20 +16,6 @@
  * might as well recompile everything
  */
 #define HELP
-#ifdef ROGUE_DEMO
-#define DEMO
-#else
-#undef DEMO
-#endif
-#define DEMOTIME 10
-/*
- * DEMO
- *      recompile:
- *          save.c
- *	    rip.c
- *          io.c
- *          main.c
- */
 #define REV 1
 #define VER 48
 
@@ -447,9 +433,7 @@ struct monster {
  */
 extern int maxitems;
 extern int maxrow;
-extern int reinit;
 extern int revno, verno;
-extern int is_me;
 extern int iguess;
 extern bool bailout;
 
@@ -588,9 +572,6 @@ void	stomach(void);
 //@ env.h
 bool	setenv_from_file(char *envfile);
 
-//@ fakedos.c
-void	fakedos(void);
-
 //@ fight.c
 bool	fight(coord *mp, char mn, THING *weap, bool thrown);
 bool	swing(int at_lvl, int op_arm, int wplus);
@@ -636,7 +617,6 @@ void	status(void);
 void	wait_for(byte ch);
 void	show_win(char *message);
 void	str_attr(char *str);
-void	SIG2(void);
 char	*io_unctrl(byte ch);
 char	*noterse(char *str);
 
@@ -698,9 +678,6 @@ byte	winat(int y, int x);
 int	spread(int nm);
 int	DISTANCE(int y1, int x1, int y2, int x2);
 int	INDEX(int y, int x);
-#ifdef ME
-bool	me(void);
-#endif
 #ifdef TEST
 bool	istest(void);
 #endif
@@ -760,9 +737,6 @@ void	score(int amount, int flags, char monst);
 void	death(char monst);
 void	total_winner(void);
 char	*killname(byte monst, bool doart);
-#ifdef DEMO
-void	demo(int endtype);
-#endif //DEMO
 
 //@ rooms.c
 void	do_rooms(void);
@@ -797,8 +771,6 @@ bool	is_digit(char ch);
 bool	is_space(char ch);
 bool	is_print(char ch);
 char	*stccpy(char *s1, char *s2, int count);
-char	*stpblk(char *str);
-char	*endblk(char *str);
 void	lcase(char *str);
 
 //@ things.c

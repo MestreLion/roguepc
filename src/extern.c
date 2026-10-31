@@ -94,11 +94,7 @@ struct magic_item p_magic[MAXPOTIONS] = {
 	{ "gain strength",		15, 150 },
 	{ "see invisible",		 2, 100 },
 	{ "healing",		15, 130 },
-#ifdef DEMO
-	{ "advertisement",           6, 130 },
-#else
 	{ "monster detection",	 6, 130 },
-#endif //DEMO
 	{ "magic detection",	 6, 105 },
 	{ "raise level",		 2, 250 },
 	{ "extra healing",		 5, 200 },
@@ -168,7 +164,6 @@ struct h_list helpcoms[] = {
 	H_STR("F8     <dir> identify trap type"),
 	H_STR("F9     The Any Key (definable)"),
 	H_STR("Alt F9 defines the Any Key"),
-	H_STR("F10    Supervisor Key (fake dos)"),
 	H_STR("Space  Clear -More- message"),
 	H_STR("\x11\xd9     the Enter Key"),
 	H_STR("\x1b      left"),
@@ -220,7 +215,6 @@ struct h_list helpcoms[] = {
 	H_STR("c      rename something"),
 	H_STR("i      inventory"),
 	H_STR("v      version number"),
-	H_STR("!      Supervisor Key (fake DOS)"),
 	H_STR("D      list what has been discovered"),
 	H_END
 };
@@ -286,7 +280,6 @@ char *he_man[] = {
  * Lattice C compiler funnies
  */
 int maxitems = 0;
-int reinit = FALSE;
 
 bool after;				/* True if we want after daemons */
 bool noscore;				/* Was a wizard sometime */
@@ -311,9 +304,6 @@ bool save_msg = TRUE;			/* Remember last msg */
 /* bool slow_invent = FALSE; */		/* Inventory one line at a time */
 bool terse = FALSE;
 bool expert = FALSE;
-#ifdef ME
-int is_me;
-#endif
 /*@
  * `was_trapped` was originally a bool, which in original code was typedef'd as
  * unsigned char. As it is used in ++ increment and > test, I've reverted it

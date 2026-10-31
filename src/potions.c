@@ -79,7 +79,6 @@ quaff(void)
 		chg_str(1);
 		msg("you feel stronger. What bulging muscles!");
 	when P_MFIND:
-#ifndef DEMO
 		fuse(turn_see_off, HUHDURATION);
 		if (mlist == NULL)
 			msg("you have a strange feeling%s.",
@@ -92,15 +91,6 @@ quaff(void)
 			}
 			msg("");
 		}
-#else
-		msg("you can't move");
-		msg(" and are forced to watch this advertisement");
-		msg("rogue: The ULTIMATE Adventure Game");
-		msg("the most popular game on UNIX ever!");
-		msg("now runs on YOUR IBM PC");
-		msg("UNIX is a trademark of Bell Labs");
-		p_know[P_MFIND] = TRUE;
-#endif
 	  when P_TFIND:
 		/*
 		 * Potion of magic detection.  Find everything interesting on

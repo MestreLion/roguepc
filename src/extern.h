@@ -84,15 +84,6 @@
 //@ bool type, originally typedef unsigned char
 #include <stdbool.h>
 
-#ifdef __linux__
-//@ open()
-#include <fcntl.h>
-//@ ioctl()
-#include <sys/ioctl.h>
-//@ KDGKBLED
-#include <linux/kd.h>
-#endif
-
 //@ setlocale()
 #include <locale.h>
 
@@ -100,14 +91,6 @@
 /*@
  * Project includes, defines and typedefs
  */
-//@ created for fakedos()
-#ifndef ROGUE_CURRENT_DRIVE
-#define ROGUE_CURRENT_DRIVE	('C' - 'A')
-#endif
-#ifndef ROGUE_LAST_DRIVE
-#define ROGUE_LAST_DRIVE	('F' - 'A')
-#endif
-
 //@ moved from curses.h so it's close to 'bool' definition
 #ifndef TRUE
 #define TRUE 	1
@@ -157,7 +140,6 @@ byte	readchar();
 
 //@ new functions
 byte	swap_bits(byte data, unsigned i, unsigned j, unsigned width);
-int 	md_keyboard_leds(void);
 long	md_time(void);
 TM  	*md_localtime(void);
 void	md_nanosleep(long nanoseconds);
@@ -173,7 +155,5 @@ void	md_exit(int status);
  * Global vars
  */
 extern int bwflag;  //@ from main.c, originally declared in rogue.h
-extern int current_drive;
-extern int last_drive;
 
 #endif //EXTERN_H

@@ -193,9 +193,6 @@ playit(sname)
 		oldpos.y = hero.y;
 		oldrp = roomin(&hero);
 	}
-#ifdef ME
-	is_me = (strcmp(ME, whoami) == 0 || strcmp("Mr. Mctesq", whoami) == 0);
-#endif
 	while (playing)
 		command();			/* Command execution */
 	endit();
@@ -230,9 +227,6 @@ quit()
 	look(FALSE);
 	answer = readchar();
 	if (answer == 'y' || answer == 'Y') {
-#ifdef DEMO
-		demo(1);
-#else
 		clear();
 		move(0,0);
 		printw("You quit with %u gold pieces\n", purse);
@@ -245,7 +239,6 @@ quit()
 		move(oy, ox);
 		mpos = 0;
 		count = 0;
-#endif //DEMO
 	}
 	qstate = FALSE;
 }

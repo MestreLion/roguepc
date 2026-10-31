@@ -60,35 +60,6 @@ stccpy(s1,s2,count)
 
 
 /*
- * redo Lattice token parsing routines
- */
-
-//@ strip leading blanks
-char *
-stpblk(str)
-	char *str;
-{
-	while (is_space(*str))
-		str++;
-	return(str);
-}
-
-/*
- * remove trailing whitespace from the end of a line
- */
-char *
-endblk(str)
-	char *str;
-{
-	register char *backup;
-
-	backup = str + strlen(str);
-	while (backup != str && is_space(*(--backup)))
-		*backup = 0;
-	return(str);
-}
-
-/*
  * lcase: convert a string to lower case
  */
 void

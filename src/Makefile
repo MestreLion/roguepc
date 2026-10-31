@@ -23,9 +23,6 @@ endif
 ifdef ROGUE_DEBUG
 CFLAGS+=-DROGUE_DEBUG
 endif
-ifdef ROGUE_DEMO
-CFLAGS+=-DROGUE_DEMO
-endif
 UNICODE=3
 # Valid values for ROGUE_CHARSET:
 # 1 - ASCII, requires ncurses. Looks like Rogue UNIX, but with color
@@ -43,18 +40,10 @@ CFLAGS+=$(shell pkg-config ncurses --cflags)
 LDLIBS+=$(shell pkg-config ncurses --libs)
 endif
 
-# X11 library is required to determine keyboard LED status in an X terminal.
-ifdef ROGUE_NO_X11
-CFLAGS+=-DROGUE_NO_X11
-else
-CFLAGS+=$(shell pkg-config x11 --cflags)
-LDLIBS+=$(shell pkg-config x11 --libs)
-endif
-
 export CFLAGS
 
 OBJS=armor.o new_leve.o command.o mach_dep.o rip.o save.o \
-	chase.o curses.o daemon.o daemons.o env.o extern.o fakedos.o fight.o \
+	chase.o curses.o daemon.o daemons.o env.o extern.o fight.o \
 	init.o io.o list.o maze.o misc.o monsters.o move.o pack.o passages.o \
 	potions.o rings.o rooms.o scrolls.o sticks.o strings.o things.o \
 	weapons.o wizard.o slime.o

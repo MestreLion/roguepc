@@ -214,7 +214,6 @@ execcom()
 		when '<': after = FALSE; u_level();
 		when '/': after = FALSE; help(helpobjs);
 		when '?': after = FALSE; help(helpcoms);
-		when '!': after = FALSE; fakedos();
 		when 's': search();
 		when 'z':
 			if (get_dir())
