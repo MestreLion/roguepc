@@ -73,8 +73,7 @@ dodos(com)
 }
 
 /*
- * Fake DOS INT 0Eh call. Could be in mach_dep.c, but it's only used here.
- * Original called bdos() directly in dodos()
+ * Fake DOS "select disk" call. Original called bdos() directly in dodos()
  */
 static
 int
@@ -85,4 +84,45 @@ select_drive(int drv)
 		current_drive = drv;
 	}
 	return last_drive;
+}
+
+
+/*@
+ * Find the drive where game files are located, only used for copy protection.
+ *
+ * Return an int corresponding to the current drive or the "drive" value
+ * from the fake environment (rogue.opt), where 0=A, 1=B, etc
+ *
+ * Also contained a no-op code which checked the existence of a file named
+ * "jatgnas.8ys" in the root of such drive, but ignored the check result.
+ */
+int
+find_drive(void)
+{
+	int drive = current_drive;
+	char spec = s_drive[0];
+
+	if (is_alpha(spec))
+	{
+		/*@
+		 * It looks like this block could be replaced with:
+		 * drive = tolower(spec) - 'a';
+		 */
+		if (is_upper(spec))
+			drive = spec - 'A';
+		else
+			drive = spec - 'a';
+	}
+	/*@
+	 * The following nonsense strongly indicates this is either a partial,
+	 * work in progress function, or a leftover, or an already cracked version.
+	 * access() is a useless call as its return code is not being checked.
+	 * It is now disabled.
+	char filename[30];
+	strcpy(filename,"a:jatgnas.8ys");
+	filename[0] += (char)drive;
+	access(filename);
+	 */
+
+	return drive;
 }

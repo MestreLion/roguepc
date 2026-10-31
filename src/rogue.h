@@ -670,8 +670,7 @@ void	list_attach(THING **list, THING *item);
 void	list_free(THING **ptr);
 int	discard(THING *item);
 
-//@ load.c
-void	epyx_yuck(void);
+//@ fakedos.c
 int	find_drive(void);
 
 #ifdef ROGUE_SPLASH
@@ -777,11 +776,7 @@ void	th_effect(THING *obj, THING *tp);
 bool	turn_see(bool turn_off);
 
 //@ protect.c
-#ifndef ROGUE_NOGOOD
 void	protect(int UNUSED(drive));
-#else
-void	protect(int drive);
-#endif
 
 //@ rings.c
 void	ring_on(void);

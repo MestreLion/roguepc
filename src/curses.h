@@ -5,7 +5,7 @@
 /*@
  * Contains only the curses-related declarations needed for the game files.
  *
- * Headers used only by curses.c were moved to curses_dos.h
+ * Headers used only by curses.c were moved to curses_private.h
  * Headers used by both curses.c and game files were moved to curses_common.h
  * Headers not related to curses or provided externally were moved elsewhere.
  * Unused headers were removed.

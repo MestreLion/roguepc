@@ -175,8 +175,6 @@ void	repchr(byte chr, int cnt);
 void	implode(void);
 void	drop_curtain(void);
 void	raise_curtain(void);
-byte	get_mode(void);
-byte	video_mode(int type);
 
 //@ originally in dos.asm
 void	cur_beep(void);

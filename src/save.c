@@ -198,11 +198,9 @@ restore(char *savefile)
 	register FILE *file;
 	char errbuf[11], save_name[MAXSTR];
 	char *read_error = "Read Error";
-	struct sw_regs *oregs;
 	unsigned nbytes;
 	char idbuf[MIDSIZE];
 
-	oregs = regs;
 	winit();
 	//@ old_check = no_check;  //@ no_check is now inside winit()
 	strcpy(errbuf,read_error);
@@ -241,7 +239,6 @@ restore(char *savefile)
 	md_exit(EXIT_FAILURE);
 
 rok:
-	regs = oregs;
 	if (revno != oldrev || verno != oldver)
 	{
 		fclose(file);

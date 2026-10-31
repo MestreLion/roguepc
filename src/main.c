@@ -42,8 +42,6 @@ main(argc, argv)
 
 #ifdef ROGUE_SPLASH
 	epyx_yeah(getenv("ROGUE_PIC"));
-#else
-	epyx_yuck();
 #endif //ROGUE_SPLASH
 	init_ds();
 

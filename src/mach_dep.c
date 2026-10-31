@@ -16,25 +16,6 @@
 Display *xdisplay = NULL;
 #endif
 
-static int ocb;
-
-/*
- * Permanent stack data
- * @ originally defined in main.c
- */
-static struct sw_regs _treg;
-struct sw_regs *regs = &_treg;
-
-#ifdef ROGUE_DEBUG
-/*
- * Used to suppress printing BIOS INT calls. Used by some curses calls to
- * prevent flooding output with INT 10h/2 (move cursor) and INT 10h/9h (write
- * character) debug messages when printing strings.
- *
- */
-bool print_int_calls = TRUE;
-#endif
-
 /*@
  * These were created for fakedos() to replace DOS INT 19h and 0Eh calls, and
  * are independent from env file s_drive[], just like the original. Created as
@@ -59,7 +40,6 @@ byte swap_bits(
 int md_keyboard_leds(void)
 {
 	int state = 0;
-	int fd;
 #ifndef ROGUE_NO_X11
 	XKeyboardState kbstate;
 
@@ -74,6 +54,7 @@ int md_keyboard_leds(void)
 #ifdef __linux__
 	{
 		//@ TTY such as getty / linux console
+		int fd;
 		if ((fd = open("/dev/tty", O_RDONLY | O_NOCTTY)) == -1 ||
 				ioctl(fd, KDGKBLED, &state) == -1)
 		{
@@ -130,127 +111,6 @@ csum()
 
 
 /*@
- * Write a byte to a segment:offset memory address
- *
- * Dummy no-op, obviously. It's 2015... protected mode and flat memory model
- * would make true poking either impossible or very dangerous.
- *
- * But hey, it's 2015... we can easily create a 1MB array of bytes and let
- * Rogue play all around in its own VM. Nah... this a port, not a DOSBox remake.
- * Still, this idea might be useful for debugging.
- *
- * Originally in dos.asm.
- *
- * value is typed as byte to make clear that the high byte is ignored.
- */
-void
-pokeb(offset, segment, value)
-	int UNUSED(offset);
-	int UNUSED(segment);
-	byte UNUSED(value);
-{
-	;  // it was written, I promise!
-}
-
-
-/*@
- * Read a byte from a segment:offset memory address
- *
- * Dummy, always return 0
- *
- * Originally in dos.asm. It zeroed AH so return is explicitly typed as byte.
- *
- * Only used in load.c to read CGA (0xB800) and BIOS (0x40) data
- */
-byte
-peekb(offset, segment)
-	int UNUSED(offset);
-	int UNUSED(segment);
-{
-	return 0;  // we just rebooted, so...
-}
-
-
-/*@
- * Write a byte to an I/O port
- *
- * Dummy no-op
- *
- * Originally in dos.asm
- *
- * Asm equivalent function is as a wrapper to OUT x86 CPU instruction.
- * Only AL was sent, hence byte as argument type. Port must be 16-bit as it is
- * written to DX, so a type uint16_t could be used enforce this.
- */
-void
-out(port, value)
-	int UNUSED(port);
-	byte UNUSED(value);
-{
-	;  // and it's out! :)
-}
-
-
-/*@
- * Read from an I/O port
- *
- * A dummy wrapper to the x86 IN instruction. Return 0
- */
-byte
-in(port)
-	int UNUSED(port);
-{
-	return 0;  // maybe it's not connected :P
-}
-
-
-/*@
- * Write data to memory starting at segment:offset address
- *
- * Length of data is measured in words (16-bit), the size of int in DOS
- *
- * Dummy no-op, see pokeb().
- *
- * Originally in dos.asm.
- *
- * While original is technically "direct memory access", the name is misleading
- * as it has nothing to do with DMA channels. And despite documentation on
- * dos.asm, it has no particular ties to video: it is a general use memory
- * writer that happens to be most often used to write to video memory address.
- * Asm works by setting the arguments and calling REP MOVSW
- */
-void
-dmaout(data, wordlength, segment, offset)
-	void UNUSED(*data);
-	unsigned int UNUSED(wordlength);
-	unsigned int UNUSED(segment);
-	unsigned int UNUSED(offset);
-{
-		; // blazing fast!
-}
-
-
-/*@
- * Read memory starting at segment:offset address and store contents in buffer
- *
- * Length of buffer is measured in words (16-bit), the size of int in DOS
- *
- * Dummy no-op, leave buffer unchanged.
- *
- * Originally in dos.asm. See notes on dmaout()
- */
-void
-dmain(buffer, wordlength, segment, offset)
-	void UNUSED(*buffer);
-	unsigned int UNUSED(wordlength);
-	unsigned int UNUSED(segment);
-	unsigned int UNUSED(offset);
-{
-	;
-}
-
-
-/*@
  * Immediately halt execution and hang the computer
  *
  * Originally in dos.asm
@@ -264,31 +124,6 @@ _halt()
 	cur_endwin();
 	printf("HALT!\n");
 	pause();
-}
-
-
-/*@
- * Hook quit() as the ISR for CTRL-BREAK interrupts
- *
- * Originally in dos.asm
- *
- * Hook is performed using DOS INT 21h/AH=25h - Set Interrupt Vector
- * AL = interrupt number to hook - 23h for CTRL-BREAK
- * DS = handler function segment
- * DX = handler function offset
- *
- * Actually it did not hook quit() directly, instead it hooked an asm wrapper
- * that called quit(). For simplicity, it now "hooks" quit(), as this is bogus
- * code anyway. See notes on clock().
- */
-void
-COFF()
-{
-	struct sw_regs reg;
-	reg.ax = 0x2523;  //@ hooking to INT 23h
-	reg.ds = 0x33;  //@ dummy value for dos.asm's CS register
-	reg.dx = (dosptr)(intptr)quit;  //@ see clock_on() for note on casting
-	swint(SW_DOS, &reg);
 }
 
 
@@ -306,11 +141,6 @@ setup()
 		terse = TRUE;
 	}
 	expert = terse;
-	/*
-	 * Vector CTRL-BREAK to call quit()
-	 */
-	COFF();
-	ocb = set_ctrlb(0);
 #ifndef ROGUE_NO_X11
 	if (getenv("DISPLAY"))
 		xdisplay = XOpenDisplay(NULL);
@@ -328,7 +158,7 @@ setup()
  * on clock() being periodically (and automatically) called via some triggering
  * mechanism such as an IRQ timer or signal, as made by clock_on(). If tick was
  * not incremented some Bad Things would happen: Rogue could _halt() on first
- * one_tick() call, or enter infinite loop on tick_pause() and epyx_yuck().
+ * one_tick() call, or enter infinite loop on tick_pause().
  *
  * Originally in dos.asm, renamed from clock() to avoid conflict in <time.h>
  *
@@ -442,11 +272,6 @@ md_srand()
 void
 flush_type()
 {
-#ifdef CRASH_MACHINE
-	regs->ax = 0xc06;		/* clear keyboard input */
-	regs->dx = 0xff;		/* set input flag */
-	swint(SW_DOS, regs);
-#endif //CRASH_MACHINE
 	typebuf = "";
 }
 
@@ -529,37 +354,6 @@ credits()
 }
 
 
-/*@
- * Non-blocking function that return TRUE if no key was pressed.
- *
- * Similar to ! kbhit() from DOS <conio.h>. POSIX has no (easy) replacement,
- * but this function will no longer be needed when ncurses getch() is set non-
- * blocking mode via nodelay() or timeout()
- *
- * Originally in dos.asm, calling a BIOS INT, which is reproduced here.
- *
- * But as sysint() is just a stub that returns ax = 0, this function will
- * always return FALSE, indicating a key was pressed.
- *
- * No longer used, as readchar() now uses non-blocking input internally.
- *
- * BIOS INT 16h/AH=1, Get Keyboard Status
- * Return:
- * ZF = 0 if a key pressed (even Ctrl-Break). Not tested, COFF() handles that.
- * AH = scan code. 0 if no key was pressed
- * AL = ASCII character. 0 if special function key or no key pressed
- * So AX = 0 for no key pressed
-
-bool
-no_char()
-{
-	struct sw_regs reg;
-	reg.ax = HIGH(1);
-	return !(swint(SW_KEY, &reg) == 0);
-}
- */
-
-
 /*
  * readchar:
  *	Return the next input character, from the macro or from the keyboard.
@@ -592,43 +386,6 @@ readchar()
 }
 
 
-int
-bdos(fnum, dxval)
-	int fnum, dxval;
-{
-	register struct sw_regs *saveptr;
-
-	regs->ax = fnum << 8;
-	regs->bx = regs->cx = 0;
-	regs->dx = dxval;
-	saveptr = regs;
-	swint(SW_DOS,regs);
-	regs = saveptr;
-	return(0xff & regs->ax);
-}
-
-/*
- *  newmem - memory allocater
- *         - motto: allocate or die trying
- */
-/*@ Deprecated, see the new newmem() below
-char *
-newmem(nbytes,clrflag)
-	unsigned int nbytes;
-	int clrflag;
-{
-	register char *newaddr;
-
-	newaddr = sbrk(nbytes);
-	if (newaddr == (void *)-1)
-		fatal("No Memory");
-	end_mem = newaddr + nbytes;
-	if ((intptr)end_mem & 1)  //@ guarantee word (16-bit) alignment?
-		end_mem = sbrk(1);
-	return(newaddr);
-}
-*/
-
 /*@
  * newmem - memory allocater
  *        - motto: use malloc() like any sane software or die in 1985
@@ -646,66 +403,9 @@ newmem(nbytes)
 }
 
 
-int
-swint(intno, rp)
-	int intno;
-	struct sw_regs *rp;
-{
-	//@ DS register value. Originally an extern set by begin.asm, now a dummy
-	int _dsval = 0x00;
-
-	rp->ds = rp->es = _dsval;
-	sysint(intno, rp, rp);
-	return rp->ax;
-}
-
-/*@
- * sysint() - System Interrupt Call
- * This was available as a C library function in old DOS compilers
- * Created here as a stub: output general registers are zeroed,
- * index and segment register values are copied from input.
- * Return FLAGS register, or rather a dummy with reasonable values
- */
-int
-sysint(intno, inregs, outregs)
-	int UNUSED(intno);
-	struct sw_regs *inregs, *outregs;
-{
-	outregs->ax = 0;
-	outregs->bx = 0;
-	outregs->cx = 0;
-	outregs->dx = 0;
-	outregs->si = inregs->si;
-	outregs->di = inregs->di;
-	outregs->ds = inregs->ds;
-	outregs->es = inregs->es;
-
-	// reserved flags and IF set, all others unset
-	return 0xF22A;
-}
-
-bool
-set_ctrlb(state)
-	bool state;
-{
-	struct sw_regs rg;
-	int retcode;
-
-	rg.ax = 0x3300;
-	swint(SW_DOS,&rg);
-	retcode = rg.dx &0xFF;
-
-	rg.ax = 0x3300;  //@ shouldn't this be 0x3301? As it is it just reads again
-	rg.dx = state;
-	swint(SW_DOS,&rg);
-
-	return retcode;
-}
-
 void
 unsetup()
 {
-	set_ctrlb(ocb);
 #ifndef ROGUE_NO_X11
 	if (xdisplay)
 	{

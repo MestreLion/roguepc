@@ -101,9 +101,7 @@
 /*@
  * Project includes, defines and typedefs
  */
-#include "swint.h"
-
-//@ created for fakedos(), but could also be used in save.c and load.c
+//@ created for fakedos()
 #ifndef ROGUE_CURRENT_DRIVE
 #define ROGUE_CURRENT_DRIVE	('C' - 'A')
 #endif
@@ -142,7 +140,6 @@ struct md_tm {
 typedef struct md_tm TM;
 
 typedef uintptr_t	intptr;  //@ size of a real pointer
-typedef uint16_t	dosptr;  //@ size of a pointer in DOS, as Rogue relies on
 /*
  *  MANX C compiler funnies
  *  @ moved from rogue.h
@@ -154,11 +151,10 @@ typedef unsigned char byte;
  * Function types
  */
 //@ mach_dep.c originals
-int 	md_srand(), bdos(), swint(), sysint();
+int 	md_srand();
 void	setup(), flush_type(), credits(), one_tick();
 char	*newmem();
 byte	readchar();
-bool	set_ctrlb();
 
 //@ new functions
 byte	swap_bits(byte data, unsigned i, unsigned j, unsigned width);
@@ -169,15 +165,8 @@ void	md_nanosleep(long nanoseconds);
 
 //@ dos.asm
 int 	csum();
-byte 	peekb();
-void	pokeb();
-void	out();
-byte	in();
-void	dmaout();
-void	dmain();
 void	_halt();
 void	md_clock();
-void	COFF();
 
 //@ moved from main.c
 void	fatal(const char *msg, ...);
@@ -190,10 +179,6 @@ void	md_exit(int status);
  * Global vars
  */
 extern int bwflag;  //@ from main.c, originally declared in rogue.h
-extern struct sw_regs *regs; //@ from main.c, originally declared in swint.h
-#ifdef ROGUE_DEBUG
-extern bool print_int_calls;
-#endif
 extern int current_drive;
 extern int last_drive;
 

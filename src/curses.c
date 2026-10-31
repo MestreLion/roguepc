@@ -18,7 +18,7 @@
 #include	<curses.h>
 
 #include	"curses_common.h"
-#include	"curses_dos.h"
+#include	"curses_private.h"
 #include	"keypad.h"
 
 
@@ -447,14 +447,6 @@ xlate_ch(int ch)
  * As per original code, also updates C global variables c_col_ and c_row,
  * used as "cache" by curses. See getrc(). Actual cursor movement is only
  * performed if iscuron is set. See cursor().
- *
- * Used BIOS INT 10h/AH=02h to set the cursor on C variable page_no.
- * The BIOS call is now performed via swint()
- *
- * INT 10h/AH=02h - Set Cursor Position
- * BH = page number
- * DH = row
- * DL = col
  */
 int
 cur_move(row, col)
@@ -735,14 +727,8 @@ void
 cur_addstr(s)
 	char *s;
 {
-#ifdef ROGUE_DEBUG
-	print_int_calls = FALSE;
-#endif
 	while(*s)
 		cur_addch(*s++);
-#ifdef ROGUE_DEBUG
-	print_int_calls = TRUE;
-#endif
 }
 
 #ifdef ROGUE_WIDECHAR
@@ -1600,48 +1586,6 @@ raise_curtain(void)
 }
 
 
-
-
-byte
-get_mode(void)
-/*@
- * Get current video mode using software interrupt 10h, AH=0Fh
- *
- * Response is:
- * AL = Video Mode, AH = number of character columns, BH = active page
- * https://en.wikipedia.org/wiki/INT_10H
- * http://www.ctyme.com/intr/rb-0108.htm
- *
- * Return only AL, the low A byte representing Video Mode, as a 16-bit int
- * For EGA text, AL is 03h for color or 07h for monochrome
- */
-{
-	struct sw_regs regs;
-
-	regs.ax = 0xF00;  //@ AH = 0Fh
-	swint(SW_SCR,&regs);
-	return 0xff & regs.ax;
-}
-
-/*@
- * Set current video mode using software interrupt 10h, AH=00h
- *
- * Response is:
- * AL = Video Mode or CRT controller
- * http://www.ctyme.com/intr/rb-0069.htm
- *
- * Return AL
- */
-byte
-video_mode(type)
-	int type;
-{
-	struct sw_regs regs;
-
-	regs.ax = type;
-	swint(SW_SCR,&regs);
-	return regs.ax;
-}
 
 
 /*

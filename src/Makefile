@@ -4,12 +4,6 @@
 # Michael Toy, AI Design, May 1984
 # :bk=0
 #
-# NOTE: If new files are added or old files removed from these
-#	object lists, you must modify the file objs as well.
-#
-#	To disbale stack overflow checking (thus getting a smidge more
-#	speed.  Don't load in csav.o
-#
 TARGET:=rogue
 # ISO C17/18 requires GCC8 or greater: CC=gcc-8 make ...
 CFLAGS:=-Wall -Wextra -std=c17 -pedantic
@@ -63,9 +57,7 @@ OBJS=armor.o new_leve.o command.o mach_dep.o rip.o save.o \
 	chase.o curses.o daemon.o daemons.o env.o extern.o fakedos.o fight.o \
 	init.o io.o list.o maze.o misc.o monsters.o move.o pack.o passages.o \
 	potions.o rings.o rooms.o scrolls.o sticks.o strings.o things.o \
-	weapons.o wizard.o slime.o load.o protect.o
-
-ASMS=zoom.o dos.o begin.o fio.o sbrk.o csav.o
+	weapons.o wizard.o slime.o protect.o
 
 default: $(TARGET)
 
