@@ -67,66 +67,6 @@ int md_keyboard_leds(void)
 }
 
 
-/*@
- * Checksum of the game executable
- *
- * Originally in dos.asm
-
- * Return a dummy value matching the expected CSUM value defined in rogue.h
- * to avoid triggering self-integrity checks.
- *
- * The probable workflow was this:
- *
- * - After executable was compiled it was test run using "The Grand Beeking" as
- *   the player name.
- *
- * - The "v" command (Version), when used with that player name, also prints
- *   the checksum computed by this function. See command()
- *
- * - The developer changed the #define CSUM value to match the one printed.
- *
- * - Code was compiled again, and only extern.c required rebuilding. It's not
- *   clear why the new value does not affect the computed checksum. Maybe it
- *   was based only on code segment.
- *
- * - On every new level except the first, checksum was computed again and
- *   checked against CSUM. If they didn't match, the PC was immediately halted.
- *   See new_level() and _halt()
- *
- * - This effectively prevents game from being played past level 1 with a
- *   tampered (most likely cracked) executable. Being checked on every new
- *   level also inhibits the use of debuggers to crack the game on-the-fly.
- *
- * - This check only happened if PROTECTED was #define'd, which also triggered
- *   several other copy protection and anti-tampering measures. See clock()
- *
- * To simulate original behavior in case of a tampered executable without
- * changing the source code, just compile with a different CSUM #defined
- */
-int
-csum()
-{
-	return -1632;
-}
-
-
-/*@
- * Immediately halt execution and hang the computer
- *
- * Originally in dos.asm
- *
- * Asm version triggered the nasty combination of CLI and HLT, effectively
- * hanging the PC. Now it uses a harmless pause()
- */
-void
-_halt()
-{
-	cur_endwin();
-	printf("HALT!\n");
-	pause();
-}
-
-
 /*
  * setup:
  *	Get starting setup for all games
@@ -149,48 +89,6 @@ setup()
 
 
 
-
-/*@
- * Increment the global tick
- *
- * This was supposed to be called 18.2 times per second, to maintain the tick
- * rate found in DOS system timer expected by Rogue. The game originally relied
- * on clock() being periodically (and automatically) called via some triggering
- * mechanism such as an IRQ timer or signal, as made by clock_on(). If tick was
- * not incremented some Bad Things would happen: Rogue could _halt() on first
- * one_tick() call, or enter infinite loop on tick_pause().
- *
- * Originally in dos.asm, renamed from clock() to avoid conflict in <time.h>
- *
- * It also performed some anti-debugger checks and copy protection measures.
- * The copy-protection is fully reproduced to the extent of my knowledge.
- * The anti-debugger tests, if failed, lead to _halt(), and are only partially
- * reproduced here. See protect.c for details.
- *
- * With md_time(), tick is no longer used and this function now only serves to
- * unlock the copy protection on one_tick().
- */
-void
-md_clock()
-{
-
-	//@ anti debugging: halt after 20 ticks if no_step is set
-	if (no_step && ++no_step > 20)
-		_halt();
-
-	/*@
-	 * Unlock copy protection if floppy check succeeded: set tombstone strings
-	 * (name, killed by) to actual player name and death reason, and restore
-	 * hit multiplier. Only a single tick is required to unlock.
-	 * See death()
-	 */
-	if (hit_mul != 1 && goodchk == 0xD0D)
-	{
-		kild_by = prbuf;
-		your_na = whoami;
-		hit_mul = 1;
-	}
-}
 
 /*@
  * Return Epoch time as an integer, with second resolution
@@ -413,53 +311,6 @@ unsetup()
 		xdisplay = NULL;
 	}
 #endif
-}
-
-
-/*@
- * Busy loop for 1 clock tick or _halt() if clock doesn't tick after a while
- *
- *      ... at least this seems to be the idea, judging by the usage in Rogue.
- *
- * But as it is, this function is a no-op: while loop condition starts at 0,
- * so it immediately breaks out without ever entering the loop. tick increment
- * is never checked, halt() is never executed. I'm not sure if this behavior
- * was intentional or not.
- *
- * Anyway, checking clock ticks with a busy loop is risky: the index is an int,
- * 16-bit in DOS, so it overflows to 0 after "only" 65536 iterations. Assuming
- * both i and j indexes start with 1, halt condition would happen after the
- * first outer loop cycle. And I think even in 1985 a PC could be fast enough
- * to execute such a simple inner loop 65536 times before the clock tick once.
- * 55ms is a long time, even for an 8MHz AT-286.
- *
- * So this could have been be deemed unsuitable as a check for enabled clocks,
- * dangerous as it could lead to a halt, and so it was intentionally disabled.
- *
- *       ... or it could be a bug.
- *
- * Now it pauses for half a tick (27ms), the average wait if intended behavior
- * was working, and tick the clock once only to unlock copy protection, as
- * tick is no longer used or extern'ed.
- */
-void
-one_tick()
-{
-/*@
-	int otick = tick;
-	int i=0,j=0;
-
-	while(i++)
-	{
-		while (j++)
-			if (otick != tick)
-				return;
-			else if (i > 2)
-				_halt();
-	}
-*/
-	msleep(27);
-	md_clock();
 }
 
 

@@ -403,11 +403,6 @@ roll_em(THING *thatt, THING *thdef, THING *weap, bool hurl)
 				  * make it easier on level one
 				  */
 						damage = (damage+1) / 2;
-				/*
-				 * copy protection goodies
-				 */
-				if (thdef == &player)
-					damage *= hit_mul;
 			def->s_hpt -= max(0, damage);
 			did_hit = TRUE;
 		}

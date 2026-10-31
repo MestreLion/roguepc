@@ -77,7 +77,6 @@
 
 //@ time(), nanosleep()
 #include <time.h>
-#define clock	md_clock
 
 //@ vsprintf()
 #include <stdarg.h>
@@ -152,7 +151,7 @@ typedef unsigned char byte;
  */
 //@ mach_dep.c originals
 int 	md_srand();
-void	setup(), flush_type(), credits(), one_tick();
+void	setup(), flush_type(), credits();
 char	*newmem();
 byte	readchar();
 
@@ -162,11 +161,6 @@ int 	md_keyboard_leds(void);
 long	md_time(void);
 TM  	*md_localtime(void);
 void	md_nanosleep(long nanoseconds);
-
-//@ dos.asm
-int 	csum();
-void	_halt();
-void	md_clock();
 
 //@ moved from main.c
 void	fatal(const char *msg, ...);

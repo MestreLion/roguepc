@@ -9,11 +9,10 @@ RoguePC
 
 - Uses original source code from 1985, adapted to compile in modern PCs.
     - All comments from original authors preserved.
-    - All changes needed for portability from 16-bit DOS fully marked and explained.
-    - Extensive documentation on original code inner mechanics:
-      hardware access, BIOS and DOS INT calls, clock and timers, CGA/EGA graphics usage,
-      piracy copy protection, splash image, assembly routines, builtin `curses`, etc.
-    - Great care taken to preserve as much as possible from original. More than 85% still intact!
+    - Legacy 16-bit DOS code paths (hardware access, BIOS and DOS INT calls, assembly routines,
+      builtin `curses`, clock interrupts, copy protection) were removed to leave a clean
+      base for new features. Game behavior is unchanged.
+    - Technical documentation on the original mechanics is kept in [`refdoc`](refdoc/) and in git history.
 - Strictly adheres to C standards to be fully portable to any modern platform.
     - [ISO/IEC 9899:2018 (C17/C18)](https://en.wikipedia.org/wiki/C17_%28C_standard_revision%29), latest ISO C.
     - [POSIX.1-2017](https://pubs.opengroup.org/onlinepubs/9699919799/), latest revision of POSIX 2008.
@@ -103,31 +102,19 @@ In the `Makefile`, in rough order or importance:
     It disrupts the `curses` display, so the game become somewhat unplayable.
 - `ROGUE_DEMO`: Sets `DEMO` for the original Demo mode.
 
-Only in code, most for internal use and to control the emulated hardware reported to the game:
-- `ROGUE_DOS_CURSES`: Use the original `curses` implementation instead of the system `ncurses`.
-    As the 1985 `curses` rely heavily on DOS interrupts, this is unplayable and only for historical / testing purposes.
+Only in code, most for internal use and to control the terminal and screen reported to the game:
 - `ROGUE_WIDECHAR`: Set if using Unicode charset to invoke the wide char functions in `ncursesw`.
 - `ROGUE_SCR_TYPE`: The screen type, or more accurately the mode of the graphics adapter.
     `3` by default, meaning _Text, 80x25, color_. Untested with any other value, but the game
     did adjuste itself for monochrome and other modes.
-- `ROGUE_DOS_SCREEN`: If set, uses a DOS interrupt at run-time to determine the above,
-    as done by the original in 1985. As DOS interrupts were stubbed, will result in an untested value.
 - `ROGUE_COLUMNS`: Columns of the video adapter. Should be tied with the above `ROGUE_SCR_TYPE`.
     Defaults to `80` and untested with any other value, but the original game did have some
     special handling and adjustments for 40-columns TVs.
-- `ROGUE_DOS_CLOCK`: Use DOS interrupts to access the RTC clock and other time-related events,
-    as the original game did. By default uses ISO C functions to for time.
-- `ROGUE_DOS_DRIVE`: If set, uses a DOS interrupt to find out the current drive letter.
-    As all DOS interrupts are dummy stubs in this modern port, it will result in drive `A:`.
-    Mostly used for cosmetic purposes, in the _"Fake DOS"_ in-game feature launched with `F10`.
-    Does not affect actual paths such as the score file, which always uses the current directory.
-- `ROGUE_CURRENT_DRIVE`: The current drive used if the above is unset.
+- `ROGUE_CURRENT_DRIVE`: The current drive shown in the _"Fake DOS"_ in-game feature launched with `F10`.
+    Purely cosmetic, does not affect actual paths such as the score file, which always uses the current directory.
     `0` for `A:`, `1` for `B:`, etc. Defaults to `3` (`C:`).
 - `ROGUE_LAST_DRIVE`: The last drive available in the system, `6` by default (`F:`).
     Also purely cosmetic.
-- `ROGUE_NOGOOD`: If set, do not circumvent the original anti-piracy, copy-protection routines.
-    As this heavily relies on DOS interrupts, assembly code and other direct hardware access
-    only available in 1985, this will result in the game acting as if it was illegally copied.
 
 #### Run-time settings:
 

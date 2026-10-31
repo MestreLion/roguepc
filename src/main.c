@@ -46,7 +46,6 @@ main(argc, argv)
 	init_ds();
 
 	setenv_from_file(ENVFILE);
-	protect(find_drive());
 	/*
 	 * Parse the screen environment variable.  if the string starts with
 	 * "bw", then we force black and white mode.  If it ends with "fast"
@@ -56,11 +55,7 @@ main(argc, argv)
 	if (strncmp(s_screen, "bw", 2) == 0)
 		bwflag = TRUE;
 	dnum = 0;
-#ifdef PROTECTED
-	while (--argc && goodchk == 0xD0D) {
-#else
 	while (--argc) {
-#endif
 		curarg = *(++argv);
 		if (*curarg == '-' || *curarg == '/')
 		{

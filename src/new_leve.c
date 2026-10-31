@@ -31,11 +31,6 @@ new_level(void)
 	 */
 	if (level > max_level)
 		max_level = level;
-#ifdef PROTECTED
-	one_tick();  //@ make sure the clock is ticking?
-	if (level > 1 && csum() != cksum)
-		_halt();
-#endif
 	/*
 	 * Clean things off from last level
 	 */

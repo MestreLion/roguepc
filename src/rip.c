@@ -264,23 +264,18 @@ death(char monst)
 
 	if (scr_type == 7)
 		uline();
-	center(14, your_na);
+	center(14, whoami);
 	standend();
 
 	/*@
-	 * This looks like a no-op, but it's not: it makes sure prbuf, used
-	 * internally in killname(), contains the actual death reason.
-	 * kild_by, the string used here, is re-assigned by clock() to point to
-	 * prbuf if copy protection checks are successful. Otherwise, it contains
-	 * the default "pirated" message. The same method is used with your_na
-	 * above.
+	 * killname() leaves the actual death reason in prbuf, used below
 	 */
 	killname(monst, TRUE);
 
 	strcpy(buf,"killed by");
 
 	center(15,buf);
-	center(16, kild_by);
+	center(16, prbuf);
 
 	sprintf(buf, "%u Au", purse);
 	center(18, buf);

@@ -323,14 +323,6 @@ fallpos(THING *obj, coord *newpos)
 void
 tick_pause(void)
 {
-/*@ no more busy loops! :)
-
-	register int otick;
-
-	otick = tick;
-	while (otick == tick)
-		md_clock();
-*/
 	cur_refresh();
 	msleep(55);
 }

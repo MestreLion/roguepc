@@ -12,17 +12,6 @@
  */
 
 /*
- * copy protection
- */
-#define PROTECTED
-#define CSUM	-1632
-#ifdef PROTECTED
-#define P_DAMAGE 6
-#else
-#define P_DAMAGE 1
-#endif //PROTECTED
-
-/*
  * if DEBUG or WIZARD is changed
  * might as well recompile everything
  */
@@ -44,9 +33,6 @@
 #define REV 1
 #define VER 48
 
-/*
- * If CODECSUM is changed recompile extern.c
- */
 #define SCOREFILE "rogue.scr"
 #define SAVEFILE  "rogue.sav"
 #define ENVFILE	  "rogue.opt"
@@ -457,7 +443,7 @@ struct monster {
 
 /*
  * External variables
- * @ all in extern.c unless noted (init.c, env.c, croot.c, main.c, protect.c)
+ * @ all in extern.c unless noted (init.c, env.c, main.c)
  */
 extern int maxitems;
 extern int maxrow;
@@ -497,12 +483,7 @@ extern int	a_chances[], a_class[], count, dnum, food_left,
 
 extern long seed;
 
-//@ related to copy protection
-extern int hit_mul;
-extern char *your_na, *kild_by;
-extern int goodchk;
 extern char *_whoami;  //@ defined (no value set) but seems unused
-extern int cksum;
 
 extern THING *cur_armor, *cur_ring[], *cur_weapon,
 		*lvl_obj, *mlist, player;
@@ -556,10 +537,6 @@ extern char *ring_buf;
  * Deprecated:
  * extern char *end_mem;
  */
-
-
-//@ protect.c
-extern int no_step;  //@ used in clock(), originally set by dos.asm
 
 
 /*
@@ -670,9 +647,6 @@ void	list_attach(THING **list, THING *item);
 void	list_free(THING **ptr);
 int	discard(THING *item);
 
-//@ fakedos.c
-int	find_drive(void);
-
 #ifdef ROGUE_SPLASH
 //@ load_sdl.c - not in original
 int	epyx_yeah(const char* path);
@@ -774,9 +748,6 @@ void	quaff(void);
 void	invis_on(void);
 void	th_effect(THING *obj, THING *tp);
 bool	turn_see(bool turn_off);
-
-//@ protect.c
-void	protect(int UNUSED(drive));
 
 //@ rings.c
 void	ring_on(void);

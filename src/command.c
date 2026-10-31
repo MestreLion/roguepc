@@ -232,8 +232,6 @@ execcom()
 		when CTRL('R'): after = FALSE; msg(huh);
 		when 'v':
 			after = FALSE;
-			if (strcmp(whoami,"The Grand Beeking") == 0)
-				addmsg("(%d)",csum());
 			msg("Rogue version %d.%d (Mr. Mctesq was here)", revno, verno);
 		when 'S': after = FALSE; save_game();
 		when '.': doctor();

@@ -57,7 +57,7 @@ OBJS=armor.o new_leve.o command.o mach_dep.o rip.o save.o \
 	chase.o curses.o daemon.o daemons.o env.o extern.o fakedos.o fight.o \
 	init.o io.o list.o maze.o misc.o monsters.o move.o pack.o passages.o \
 	potions.o rings.o rooms.o scrolls.o sticks.o strings.o things.o \
-	weapons.o wizard.o slime.o protect.o
+	weapons.o wizard.o slime.o
 
 default: $(TARGET)
 
