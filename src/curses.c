@@ -335,6 +335,7 @@ static struct xlate {
 	{KEY_F(7),	'i'},
 	{KEY_F(8),	'^'},
 	{KEY_F(9),	CTRL('F')},
+	{KEY_F(10),	CMD_FAST_PLAY},  //@ Scroll Lock is not available in curses
 	{KEY_F(57),	'F'}  //@ ALT+F9
 };
 

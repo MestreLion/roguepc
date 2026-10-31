@@ -164,6 +164,7 @@ struct h_list helpcoms[] = {
 	H_STR("F8     <dir> identify trap type"),
 	H_STR("F9     The Any Key (definable)"),
 	H_STR("Alt F9 defines the Any Key"),
+	H_STR("F10    Fast Play on/off (also ^X)"),
 	H_STR("Space  Clear -More- message"),
 	H_STR("\x11\xd9     the Enter Key"),
 	H_STR("\x1b      left"),

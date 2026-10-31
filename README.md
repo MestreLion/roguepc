@@ -68,6 +68,14 @@ Strongly suggested:
 
 ---
 
+### Fast Play
+
+In the original, **Scroll Lock** toggled _Fast Play_ (it was read from the BIOS keyboard flags),
+and that remains the official key. Terminals cannot deliver it: `ncurses` has no Scroll Lock
+key code and terminal emulators swallow the key, so this `curses` build uses **`F10`** or **`Ctrl-X`** instead.
+A future input backend that can see Scroll Lock (SDL, libtcod, ...) should map it to `CMD_FAST_PLAY`
+(see `src/curses_common.h`).
+
 ### Command-line and enviroment variables
 
 #### Compile/Build time:

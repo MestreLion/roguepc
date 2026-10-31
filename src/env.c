@@ -191,33 +191,6 @@ peekc(void)
 	return(ch);
 }
 
-#ifdef LUXURY
-/*
- * Getenv: UNIX compatable call
- *
- *	  label - label of thing in environment
- *
- *	  STATUS - returns the string associated with the label
- *			   or NULL (0) if it is not present
- *
- * @ used only by the unused is_set(), so safe to remove. renamed from getenv()
- * @ to avoid conflict with <stdlib.h>, and also made static
- */
-static
-char *
-getenv_struct(label)
-	char *label;
-{
-	register int i;
-
-	for (i=0 ; i<MAXEP ; i++ )
-	{
-		if ( strcmp(label,element[i].e_label) == MATCH )
-			return(element[i].e_string);
-	}
-	return(NULL);
-}
-#endif
 
 //@ renamed from putenv() to avoid collision with <stdlib.h>
 /*
@@ -242,13 +215,3 @@ putenv_struct(label,string)
 	}
 }
 
-#ifdef LUXURY
-//@ unused, safe to remove, made static
-static
-bool
-is_set(label,string)
-	char *label,*string;
-{
-	return(!strcmp(string,getenv(label)));
-}
-#endif

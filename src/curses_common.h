@@ -61,6 +61,24 @@
 #define CTRL(ch)	((ch) & 037)
 #endif
 
+/*@
+ * Fast Play toggle: logical command, independent of the input backend.
+ *
+ * In the original DOS game Fast Play followed the state of the Scroll Lock
+ * key, read from the BIOS keyboard flags. Scroll Lock is the OFFICIAL key.
+ *
+ * curses (and terminals in general) cannot deliver it: ncurses has no
+ * Scroll Lock key code, terminal emulators and the Linux console consume the
+ * key without sending anything, and the LED state cannot be queried. So the
+ * curses backend binds the command to Ctrl-X and F10 instead (see xtab in
+ * curses.c).
+ *
+ * A backend that can see the key (SDL / libtcod: SDL_SCANCODE_SCROLLLOCK,
+ * or a terminal library with an enhanced keyboard protocol) should translate
+ * it to CMD_FAST_PLAY in its key translation, restoring the original key.
+ */
+#define CMD_FAST_PLAY	CTRL('X')
+
 #define cur_standend() set_attr( 0)  //@ normal white (light gray) on black
 #define green()        set_attr( 1)
 #define cyan()         set_attr( 2)

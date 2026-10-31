@@ -549,6 +549,7 @@ coord	*find_dest(THING *tp);
 //@ command.c
 void	command(void);
 void	show_count(void);
+void	toggle_fast_play(void);
 void	execcom(void);
 
 //@ daemon.c

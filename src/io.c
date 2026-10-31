@@ -481,54 +481,6 @@ void
 str_attr(str)
 	char *str;
 {
-#ifdef LUXURY
-	register int is_attr_on = FALSE, was_touched = FALSE;
-
-	while(*str)
-	{
-		if (was_touched == TRUE)
-		{
-			standend();
-			is_attr_on = FALSE;
-			was_touched = FALSE;
-		}
-	if (*str == '%')
-	{
-		str++;
-		switch(*str)
-		{
-		case 'u':
-					was_touched = TRUE;
-				case 'U':
-			uline();
-					is_attr_on = TRUE;
-					str++;
-					break;
-				case 'i':
-					was_touched = TRUE;
-				case 'I':
-					standout();
-					is_attr_on = TRUE;
-					str++;
-					break;
-				case '$':
-					if (is_attr_on)
-						was_touched = TRUE;
-					str++;
-					continue;
-			 }
-		}
-		if ((*str == '\n') || (*str == '\r'))
-		{
-			str++;
-			printw("\n");
-		}
-		else if (*str != 0)
-			addch(*str++);
-	}
-	if (is_attr_on)
-		standend();
-#else
 	while (*str)
 	{
 		if (*str == '%') {
@@ -538,7 +490,6 @@ str_attr(str)
 		addch(*str++);
 		standend();
 	}
-#endif //LUXURY
 }
 
 char *

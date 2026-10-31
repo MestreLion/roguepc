@@ -168,6 +168,36 @@ get_prefix()
 	return retch;
 }
 
+/*@
+ * Toggle Fast Play mode (see CMD_FAST_PLAY in curses_common.h)
+ *
+ * Originally done by SIG2() whenever the Scroll Lock state changed: reset the
+ * repeat count, stop running, and show / clear the indicator on the last line.
+ */
+void
+toggle_fast_play(void)
+{
+	int y, x;
+
+	faststate = !faststate;
+	count = 0;
+	show_count();
+	running = FALSE;
+	getxy(&y, &x);
+	move(LINES-1, 0);
+	if (faststate)
+	{
+		bold();
+		addstr("Fast Play");
+		standend();
+	}
+	else
+	{
+		addstr("         ");
+	}
+	move(y, x);
+}
+
 void
 show_count()
 {
@@ -248,6 +278,7 @@ execcom()
 						tr_name(flat(lookat.y, lookat.x) & F_TMASK));
 			}
 		when 'o': after = FALSE; msg("i don't have any options, oh my!");
+		when CMD_FAST_PLAY: after = FALSE; toggle_fast_play();
 		when CTRL('L'):
 			after = FALSE;
 			msg("the screen looks fine to me (jll was here)");
