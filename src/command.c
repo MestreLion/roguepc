@@ -35,6 +35,20 @@ command()
 			execcom();
 		do_fuses();
 		do_daemons();
+		/*@
+		 * ntimes is reused as the ring index, so it is always RIGHT+1 (2)
+		 * after this loop and the while above never ends: once entered,
+		 * command() never returns. This happens to be harmless:
+		 * - Each iteration is a full turn (status, command, fuses, daemons
+		 *   including monster movement, rings), so looping here is the same
+		 *   as returning and being called again by playit(). This is also
+		 *   why the extra iterations for haste are not actually extra moves.
+		 * - playing is never set to FALSE. The game ends by exiting from
+		 *   death, quit or win, so playit() never needs control back.
+		 * The only observable difference: the haste roll above never runs
+		 * (the player is not hasted on the first call), while a separate
+		 * ring index would consume extra random numbers while hasted.
+		 */
 		for (ntimes = LEFT; ntimes <= RIGHT; ntimes++)
 		{
 			if (cur_ring[ntimes])
