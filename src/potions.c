@@ -48,9 +48,20 @@ quaff(void)
 		p_know[P_CONFUSE] = TRUE;
 		if (!on(player, ISHUH))
 			{
+#ifndef ROGUE_BUGFIX
+			/*@
+			 * The lengthen() branch below is unreachable: the outer guard
+			 * already ensures the player is not confused, so a repeat dose
+			 * while confused has no effect. Unix Rogue 3.6 has no outer
+			 * guard, so a repeat dose extends the confusion there. The
+			 * guard was added in 5.2 (and kept in 5.3) while the inner
+			 * logic was left in place, so the dead code is likely an
+			 * intentional leftover rather than a mistake.
+			 */
 			if (on(player, ISHUH))
 				lengthen(unconfuse, rnd(8)+HUHDURATION);
 			else
+#endif
 				fuse(unconfuse, rnd(8)+HUHDURATION);
 			player.t_flags |= ISHUH;
 			msg("wait, what's going on? Huh? What? Who?");
